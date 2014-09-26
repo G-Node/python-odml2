@@ -1,0 +1,19 @@
+nguage: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+
+virtualenv:
+  system_site_packages: true
+
+install:
+  - sudo pip2 install coveralls enum34 lxml
+
+script:
+  - coverage run --source=odml setup.py test
+  - coverage report -m
+
+after_success:
+  - coveralls
