@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://www.g-node.org"
+           xmlns="http://www.g-node.org"
+           elementFormDefault="qualified">
+
+    <!-- define value containers -->
+    <xs:complexType name="int-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:int">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="double-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:double">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="string-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:token">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="text-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="boolean-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:boolean">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="date-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:date">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="time-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:time">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="datetime-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:dateTime">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="base64-type">
+        <xs:simpleContent>
+            <xs:extension base="xs:base64Binary">
+                <xs:attribute name="order" use="required" type="xs:int" />
+                <xs:attribute name="uncertainty" type="xs:double" />
+                <xs:attribute name="checksum" type="xs:hexBinary" />
+                <xs:attribute name="filename" type="xs:token" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <!-- the value type -->
+    <xs:complexType name="value-type">
+        <xs:choice>
+            <xs:sequence>
+                <xs:element name="int" type="int-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="double" type="double-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="string" type="string-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="text" type="text-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="boolean" type="boolean-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="date" type="date-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="time" type="time-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="datetime" type="datetime-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:sequence>
+                <xs:element name="base64" type="base64-type"
+                            minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:choice>
+    </xs:complexType>
+
+    <!-- the property type and its node type -->
+    <xs:complexType name="property-type">
+        <xs:all>
+            <xs:element name="name" type="xs:token" minOccurs="1" />
+            <xs:element name="unit" type="xs:token" minOccurs="0" />
+            <xs:element name="mapping" type="xs:token" minOccurs="0" />
+            <xs:element name="definition" type="xs:token" minOccurs="0" />
+
+            <!-- is this sill needed since base64 can now have a file name? -->
+            <xs:element name="filename" type="xs:token" minOccurs="0" />
+
+            <xs:element name="values" type="value-type" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="property-node-type">
+        <xs:sequence>
+            <xs:element name="property" type="property-type"
+                        minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- the section type and its node type -->
+    <xs:complexType name="section-type">
+        <xs:all>
+            <xs:element name="name" type="xs:token" minOccurs="1" />
+            <xs:element name="type" type="xs:token" minOccurs="1" />
+            <xs:element name="definition" type="xs:token" minOccurs="0" />
+            <xs:element name="link" type="xs:token" minOccurs="0" />
+            <xs:element name="repository" type="xs:anyURI" minOccurs="0" />
+            <xs:element name="mapping" type="xs:token" minOccurs="0" />
+
+            <xs:element name="sections" type="section-node-type" minOccurs="0"/>
+            <xs:element name="properties" type="property-node-type" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="section-node-type">
+        <xs:sequence>
+            <xs:element name="section" type="section-type"
+                        minOccurs="0" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- the root node type and element -->
+    <xs:simpleType name="version-type">
+        <xs:restriction base="xs:float">
+            <xs:pattern value="2.0" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="odml-root-type">
+        <xs:all>
+            <xs:element name="author" type="xs:token" minOccurs="0" />
+            <xs:element name="date" type="xs:date" minOccurs="0" />
+            <xs:element name="time" type="xs:time" minOccurs="0" />
+            <xs:element name="repository" type="xs:token" minOccurs="0" />
+            <xs:element name="documentversion" type="xs:float" minOccurs="0" />
+            <xs:element name="sections" type="section-node-type" minOccurs="0" />
+        </xs:all>
+        <xs:attribute name="version" type="version-type" use="required" />
+    </xs:complexType>
+
+    <xs:element name="odml" type="odml-root-type" />
+
+</xs:schema>

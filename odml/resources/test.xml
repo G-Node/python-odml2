@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://www.g-node.org"
+      xsi:schemaLocation="http://www.g-node.org odml-2.xsd"
+      version="2.0">
+
+    <author>Johan</author>
+    <date>2002-10-04</date>
+    <documentversion>1.2</documentversion>
+
+    <sections>
+        <section>
+            <name>name</name>
+            <type>type</type>
+            <definition>some definition</definition>
+            <link>path/to/section</link>
+            <mapping>mapping info</mapping>
+            <repository>url://to/repository</repository>
+            <properties>
+                <property>
+                    <name>foo</name>
+                    <values>
+                        <boolean order="1">false</boolean>
+                    </values>
+                </property>
+            </properties>
+        </section>
+        <section>
+            <name>foo</name>
+            <type>bla</type>
+            <properties>
+                <property>
+                    <name>tolle property</name>
+                    <unit>mV</unit>
+                    <definition>foo</definition>
+                    <mapping>bla</mapping>
+                    <values>
+                        <double order="1" uncertainty="0.1">4</double>
+                        <double order="2" uncertainty="0.01">0.3</double>
+                    </values>
+                </property>
+                <property>
+                    <name>tolle property2</name>
+                    <unit>mV</unit>
+                    <definition>foo</definition>
+                    <mapping>bla</mapping>
+                    <!--
+                    <values>
+                        <base64 order="1" filename="foo.txt" checksum="ffff">Zm9vYmFy</base64>
+                    </values>
+                    -->
+                </property>
+            </properties>
+        </section>
+    </sections>
+
+</odml>
