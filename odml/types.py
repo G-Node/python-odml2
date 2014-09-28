@@ -41,6 +41,15 @@ TYPE_MAP = {
 
 
 def guess_odml_type(val):
+    """
+    Guess a odML type from a given value.
+
+    :param val: The value to get the type from.
+    :type val: int|float|bool|str|date|time|datetime|bytes
+
+    :return: The odML type of the value. If the value can't be guessed the function assumes
+             Type.str.
+    """
     typ = type(val)
 
     if typ in TYPE_MAP:
