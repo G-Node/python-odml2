@@ -26,28 +26,28 @@ class TestValue(unittest.TestCase):
 
     def test_init(self):
         self.assertEqual(self.v_int.dtype, Type.int)
-        self.assertEqual(self.v_int.data, 0)
+        self.assertEqual(self.v_int.get(), 0)
 
         self.assertEqual(self.v_bool.dtype, Type.boolean)
-        self.assertEqual(self.v_bool.data, True)
+        self.assertEqual(self.v_bool.get(), True)
 
         self.assertEqual(self.v_float.dtype, Type.double)
-        self.assertEqual(self.v_float.data, 0.0)
+        self.assertEqual(self.v_float.get(), 0.0)
 
         self.assertEqual(self.v_str.dtype, Type.string)
-        self.assertEqual(self.v_str.data, "foo")
+        self.assertEqual(self.v_str.get(), "foo")
 
         self.assertEqual(self.v_date.dtype, Type.date)
-        self.assertEqual(self.v_date.data, date(2001, 10, 11))
+        self.assertEqual(self.v_date.get(), date(2001, 10, 11))
 
         self.assertEqual(self.v_time.dtype, Type.time)
-        self.assertEqual(self.v_time.data, time(12, 30, 45))
+        self.assertEqual(self.v_time.get(), time(12, 30, 45))
 
         self.assertEqual(self.v_dt.dtype, Type.datetime)
-        self.assertEqual(self.v_dt.data, datetime(2001, 10, 11, 12, 30, 45))
+        self.assertEqual(self.v_dt.get(), datetime(2001, 10, 11, 12, 30, 45))
 
         self.assertEqual(self.v_base.dtype, Type.base64)
-        self.assertEqual(self.v_base.data, "foo")
+        self.assertEqual(self.v_base.get(), "foo")
 
     def test_data_strict(self):
         pass

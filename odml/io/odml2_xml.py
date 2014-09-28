@@ -28,7 +28,7 @@ from odml.io.xmlutil import *
 # some global constants
 # TODO change schema and namespace location as soon as it is published in the web
 ODML2_NAMESPACE = "http://www.g-node.org"
-ODML2_SCHEMA    = "odml/resources/odml-2.xsd"
+ODML2_SCHEMA = "odml/resources/odml-2.xsd"
 
 # register namespaces (this is a global setting and needs to be called only once)
 register_namespace("xsi", "http://www.w3.org/2001/XMLSchema-instance")
@@ -173,7 +173,7 @@ class Odml2XmlReader(object):
         val = string_to_value(element.text, typ)
 
         return Value(
-            data=val,
+            value=val,
             dtype=typ,
             uncertainty=attr_read_opt(element, "uncertainty", Type.double),
             order=attr_read_strict(element, "order", Type.int),
@@ -251,7 +251,7 @@ class Odml2XmlWriter(object):
     def __add_value(self, element, value):
         dtype = value.dtype
         value_elem = SubElement(element, make_name(dtype.value, ODML2_NAMESPACE))
-        value_elem.text = value_to_string(value.data, dtype)
+        value_elem.text = value_to_string(value.get(), dtype)
         value_elem.set(Odml2.order, value_to_string(value.order, Type.int))
 
         if value.uncertainty is not None:
@@ -263,7 +263,6 @@ class Odml2XmlWriter(object):
 
             if value.filename is not None:
                 value_elem.set(Odml2.filename, value.filename)
-
 
 
 class Odml2Xml(Odml2XmlReader, Odml2XmlWriter):

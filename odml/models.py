@@ -257,16 +257,17 @@ class Property(object):
 
 class Value(WithStrictMode):
 
-    def __init__(self, data, dtype=None, uncertainty=None, order=None, checksum=None, filename=None, strict_mode=False):
+    def __init__(self, value, dtype=None, uncertainty=None, order=None, checksum=None, filename=None,
+                 strict_mode=False):
         super(Value, self).__init__(strict_mode)
 
         if dtype is None:
-            self.__dtype = guess_odml_type(data)
+            self.__dtype = guess_odml_type(value)
         else:
             self.__dtype = dtype
 
-        self.__assert_matching_dtype(data=data)
-        self.__data = data
+        self.__assert_matching_dtype(value=value)
+        self.__value = value
 
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
         self.__order = int(order) if order is not None else None
@@ -277,14 +278,12 @@ class Value(WithStrictMode):
         self.__assert_base64_type(filename)
         self.__filename = filename
 
-    @property
-    def data(self):
-        return self.__data
+    def get(self):
+        return self.__value
 
-    @data.setter
-    def data(self, data):
-        self.__assert_matching_dtype(data=data)
-        self.__data = data
+    def set(self, value):
+        self.__assert_matching_dtype(value=value)
+        self.__value = value
 
     @property
     def dtype(self):
@@ -329,16 +328,16 @@ class Value(WithStrictMode):
         self.__assert_base64_type(filename)
         self.__filename = filename
 
-    def __assert_base64_type(self, val):
-        if self.strict_mode and val is not None and self.dtype != Type.base64:
+    def __assert_base64_type(self, value):
+        if self.strict_mode and value is not None and self.dtype != Type.base64:
             msg = "This value is only valid if type is Type.base64, but type was %s"
             raise ValueError(msg % self.dtype)
 
-    def __assert_matching_dtype(self, data=None, dtype=None):
+    def __assert_matching_dtype(self, value=None, dtype=None):
         if self.strict_mode:
 
-            if data is None:
-                data = self.data
+            if value is None:
+                value = self.get()
             if dtype is None:
                 dtype = self.dtype
 
@@ -346,6 +345,6 @@ class Value(WithStrictMode):
                 if not is_valid_type(dtype):
                     msg = "The given dtype is not valid: %s"
                     raise ValueError(msg % str(dtype))
-                if data is not None and not is_valid_value(data, dtype):
+                if value is not None and not is_valid_value(value, dtype):
                     msg = "The value '%s' does not match the dtype %s"
-                    raise ValueError(msg % (str(data), str(dtype)))
+                    raise ValueError(msg % (str(value), str(dtype)))
