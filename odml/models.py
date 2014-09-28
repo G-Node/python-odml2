@@ -11,7 +11,7 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 from datetime import datetime as dt
 from odml.base import WithSections, WithStrictMode
 from odml.info import DEFAULT_REPOSITORY
-from odml.types import Type, is_valid_type, is_valid_value
+from odml.types import Type, is_valid_type, is_valid_value, guess_odml_type
 
 
 class Document(WithSections):
@@ -260,7 +260,10 @@ class Value(WithStrictMode):
     def __init__(self, data, dtype=None, uncertainty=None, order=None, checksum=None, filename=None, strict_mode=False):
         super(Value, self).__init__(strict_mode)
 
-        self.__dtype = dtype
+        if dtype is None:
+            self.__dtype = guess_odml_type(data)
+        else:
+            self.__dtype = dtype
 
         self.__assert_matching_dtype(data=data)
         self.__data = data
