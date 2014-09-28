@@ -14,22 +14,20 @@ from setuptools import setup, find_packages
 with open("README.md") as f:
     description_text = f.read()
 
-
 with open("LICENSE.txt") as f:
     license_text = f.read()
-
 
 with open("odml/info.py") as f:
     info = f.read()
 
-VERSION     = re.search(r"VERSION\s*=\s*'([^']*)'", info).group(1)
-AUTHORS     = re.search(r"AUTHORS\s*=\s*'([^']*)'", info).group(1)
-CONTACT     = re.search(r"CONTACT\s*=\s*'([^']*)'", info).group(1)
+VERSION = re.search(r"VERSION\s*=\s*'([^']*)'", info).group(1)
+AUTHORS = re.search(r"AUTHORS\s*=\s*'([^']*)'", info).group(1)
+CONTACT = re.search(r"CONTACT\s*=\s*'([^']*)'", info).group(1)
 DESCRIPTION = re.search(r"DESCRIPTION\s*=\s*'([^']*)'", info).group(1)
-LONG_DESC   = re.search(r"LONG_DESC\s*=\s*'([^']*)'", info).group(1)
-HOMEPAGE    = re.search(r"HOMEPAGE\s*=\s*'([^']*)'", info).group(1)
-PACKAGE     = re.search(r"PACKAGE\s*=\s*'([^']*)'", info).group(1)
-LICENSE     = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
+LONG_DESC = re.search(r"LONG_DESC\s*=\s*'([^']*)'", info).group(1)
+HOMEPAGE = re.search(r"HOMEPAGE\s*=\s*'([^']*)'", info).group(1)
+PACKAGE = re.search(r"PACKAGE\s*=\s*'([^']*)'", info).group(1)
+LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 
 install_requires = (
     "setuptools",
