@@ -34,6 +34,20 @@ class Type(str, Enum):
 
 TYPE_NAMES = set(x.name for x in Type)
 
+TYPE_MAP = {
+    int: Type.int, float: Type.double, bool: Type.boolean,
+    date: Type.date, time: Type.time, datetime: Type.datetime
+}
+
+
+def guess_odml_type(val):
+    typ = type(val)
+
+    if typ in TYPE_MAP:
+        return TYPE_MAP[typ]
+    else:
+        return Type.string
+
 
 def is_valid_type(typ):
     """
