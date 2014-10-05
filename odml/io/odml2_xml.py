@@ -64,6 +64,10 @@ class Odml2(str, Enum):
     checksum = make_name("checksum", ODML2_NAMESPACE)
     filename = make_name("filename", ODML2_NAMESPACE)
 
+    def __str__(self):
+        # lxml on python 2.x seems to need this method
+        return self.value
+
 
 # noinspection PyMethodMayBeStatic
 class Odml2XmlReader(object):
