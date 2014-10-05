@@ -48,14 +48,15 @@ def make_name(name, ns=None):
     The result looks like this '{<namespace>}<name>'
 
     :param name:    The name of the element.
-    :type name:     str
+    :type name:     str|unicode
     :param ns:      The namespace of the element.
-    :type ns:       str
+    :type ns:       str|unicode
 
     :return: The combined name as described above.
     :rtype:   str
     """
-    return "{%s}%s" % (ns, name) if ns is not None else name
+    name = "{%s}%s" % (ns, name) if ns is not None else name
+    return str(name)
 
 
 def elem_get_opt(element, name):
@@ -149,7 +150,7 @@ def attr_read_opt(element, name, typ=Type.string):
     :param element: The element from where to read the attribute.
     :type element:  xml.etree.Element
     :param name:    The name of the attribute.
-    :type name:     str
+    :type name:     str|unicode
     :param typ:     Try to convert the attribute value to the specified odML type.
     :type typ:      Type
 
@@ -176,7 +177,7 @@ def attr_read_strict(element, name, typ=Type.string):
     :param element: The element from where to read the attribute
     :type element:  xml.etree.Element
     :param name:    The name of the attribute.
-    :type name:     str
+    :type name:     str|unicode
     :param typ:     Try to convert the attribute value to the specified odML type.
     :type typ:      Type
 
@@ -208,7 +209,7 @@ def elem_add_opt(element, name, val, typ=Type.string):
     :param element: The parent element.
     :type element:  xml.etree.Element
     :param name:    The tag name of the child element to add.
-    :type name:     str
+    :type name:     str|unicode
     :param val:     The value of the child elements body.
     :type val:      int|float|bool|str|date|time|datetime|bytes
     :param typ:     The type of the given value (default odml.types.Type.string)
