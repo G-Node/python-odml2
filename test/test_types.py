@@ -16,42 +16,42 @@ class TestTypes(unittest.TestCase):
 
     def test_is_valid_type(self):
         for name in [x.name for x in Type]:
-            assert(is_valid_type(name))
-            assert(not is_valid_type(name + 'x'))
-            assert(not is_valid_type('y' + name))
-            assert(not is_valid_type(name[0:len(name) - 2]))
-            assert(not is_valid_type(name[1:len(name)]))
+            assert(is_valid_typename(name))
+            assert(not is_valid_typename(name + 'x'))
+            assert(not is_valid_typename('y' + name))
+            assert(not is_valid_typename(name[0:len(name) - 2]))
+            assert(not is_valid_typename(name[1:len(name)]))
 
     def test_is_valid_value(self):
-        assert(is_valid_value('99 ', Type.int))
-        assert(is_valid_value(' 00', Type.int))
-        assert(not is_valid_value('a99', Type.int))
-        assert(not is_valid_value('1.1', Type.int))
+        assert(is_valid_string('99 ', Type.int))
+        assert(is_valid_string(' 00', Type.int))
+        assert(not is_valid_string('a99', Type.int))
+        assert(not is_valid_string('1.1', Type.int))
 
-        assert(is_valid_value('9.9 ', Type.double))
-        assert(is_valid_value(' 0.0e10', Type.double))
-        assert(not is_valid_value('a9.9', Type.double))
-        assert(not is_valid_value('1.1e', Type.double))
+        assert(is_valid_string('9.9 ', Type.double))
+        assert(is_valid_string(' 0.0e10', Type.double))
+        assert(not is_valid_string('a9.9', Type.double))
+        assert(not is_valid_string('1.1e', Type.double))
 
-        assert(is_valid_value('true ', Type.boolean))
-        assert(is_valid_value(' false', Type.boolean))
-        assert(is_valid_value('0 ', Type.boolean))
-        assert(is_valid_value('1', Type.boolean))
-        assert(not is_valid_value('9', Type.boolean))
-        assert(not is_valid_value('False', Type.boolean))
+        assert(is_valid_string('true ', Type.boolean))
+        assert(is_valid_string(' false', Type.boolean))
+        assert(is_valid_string('0 ', Type.boolean))
+        assert(is_valid_string('1', Type.boolean))
+        assert(not is_valid_string('9', Type.boolean))
+        assert(not is_valid_string('False', Type.boolean))
 
-        assert(is_valid_value('2004-10-10', Type.date))
-        assert(not is_valid_value('2003/01/02', Type.date))
+        assert(is_valid_string('2004-10-10', Type.date))
+        assert(not is_valid_string('2003/01/02', Type.date))
 
-        assert(is_valid_value('16:50:50', Type.time))
-        assert(not is_valid_value('16:70:90', Type.time))
+        assert(is_valid_string('16:50:50', Type.time))
+        assert(not is_valid_string('16:70:90', Type.time))
 
-        assert(is_valid_value('2004-10-10 16:50:50', Type.datetime))
-        assert(not is_valid_value('2004/10/10 16:70:90', Type.datetime))
-        assert(not is_valid_value('2004-10-0T13:10:10', Type.datetime))
+        assert(is_valid_string('2004-10-10 16:50:50', Type.datetime))
+        assert(not is_valid_string('2004/10/10 16:70:90', Type.datetime))
+        assert(not is_valid_string('2004-10-0T13:10:10', Type.datetime))
 
-        assert(is_valid_value('Zm9vYmFy', Type.base64))
-        assert(not is_valid_value('foo', Type.base64))
+        assert(is_valid_string('Zm9vYmFy', Type.base64))
+        assert(not is_valid_string('foo', Type.base64))
 
     def test_value_to_string(self):
         assert(value_to_string(11, Type.int) == '11')

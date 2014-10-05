@@ -13,7 +13,8 @@ from base64 import b64encode, b64decode
 from datetime import datetime, date, time
 
 
-__all__ = ('Type', 'is_valid_type', 'is_valid_value', 'value_to_string', 'string_to_value')
+__all__ = ('Type', 'guess_odml_type', 'is_valid_typename', 'is_valid_value', 'is_valid_string',
+           'value_to_string', 'string_to_value')
 
 
 class Type(str, Enum):
@@ -32,11 +33,12 @@ class Type(str, Enum):
     base64 = 'base64'
 
 
-TYPE_NAMES = set(x.name for x in Type)
+TYPE_NAMES = tuple(x.name for x in Type)
 
 TYPE_MAP = {
     int: Type.int, float: Type.double, bool: Type.boolean,
-    date: Type.date, time: Type.time, datetime: Type.datetime
+    date: Type.date, time: Type.time, datetime: Type.datetime,
+    str: Type.string, bytes: Type.string
 }
 
 
@@ -47,18 +49,21 @@ def guess_odml_type(val):
     :param val: The value to get the type from.
     :type val: int|float|bool|str|date|time|datetime|bytes
 
-    :return: The odML type of the value. If the value can't be guessed the function assumes
-             Type.str.
+    :return: The odML type of the value. If the value can't be guessed the function will return None.
+    :rtype: Type|None
     """
-    typ = type(val)
+    for data_type, odml_type in TYPE_MAP.items():
+        if type(val) == data_type:
+            return odml_type
 
-    if typ in TYPE_MAP:
-        return TYPE_MAP[typ]
-    else:
-        return Type.string
+    for data_type, odml_type in TYPE_MAP.items():
+        if isinstance(val, data_type):
+            return odml_type
+
+    return None
 
 
-def is_valid_type(typ):
+def is_valid_typename(typ):
     """
     Check if a string represents the name of a valid odML data type.
 
@@ -73,10 +78,26 @@ def is_valid_type(typ):
 
 def is_valid_value(val, typ):
     """
-    Check if a string value is a valid encoding of the respective date type.
+    Check if a given value matches the given odML type.
 
-    :param val: A string that encodes a value of a certain type.
-    :type val: str|bytes
+    :param val:
+    :type val: int|float|bool|str|date|time|datetime|bytes
+    :param typ:
+    :type typ: Type
+
+    :return: True if the type matches false otherwise.
+    :rtype: bool
+    """
+    guessed = guess_odml_type(val)
+    return guessed == typ
+
+
+def is_valid_string(string, typ):
+    """
+    Check if a string value is a valid encoding of the respective data type.
+
+    :param string: A string that encodes a value of a certain type.
+    :type string: str|bytes
     :param typ: The type of the value.
     :type typ: Type
 
@@ -84,7 +105,7 @@ def is_valid_value(val, typ):
     :rtype: bool
     """
     try:
-        string_to_value(val, typ)
+        string_to_value(string, typ)
     except (ValueError, TypeError):
         return False
 
