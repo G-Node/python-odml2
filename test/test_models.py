@@ -49,8 +49,27 @@ class TestValue(unittest.TestCase):
         self.assertEqual(self.v_base.dtype, Type.base64)
         self.assertEqual(self.v_base.get(), "foo")
 
-    def test_data_strict(self):
-        pass
+    def test_set_strict(self):
+        self.v_int.strict_mode = True
+
+        self.v_int.set(100)
+        self.assertEqual(self.v_int.get(), 100)
+
+        self.assertRaises(ValueError, lambda: self.v_int.set(True))
+        self.assertRaises(ValueError, lambda: self.v_int.set(0.11))
+        self.assertRaises(ValueError, lambda: self.v_int.set("NoInt"))
+        self.assertRaises(ValueError, lambda: self.v_int.set(date(2000, 1, 1)))
+        self.assertRaises(ValueError, lambda: self.v_int.set(time(11, 20, 50)))
+
+        self.v_date.strict_mode = True
+
+        self.v_date.set(date(1999, 1, 2))
+        self.assertEqual(self.v_date.get(), date(1999, 1, 2))
+
+        self.assertRaises(ValueError, lambda: self.v_date.set(time(11, 20, 50)))
+        self.assertRaises(ValueError, lambda: self.v_date.set("NoDate"))
+        self.assertRaises(ValueError, lambda: self.v_date.set(11.11))
+        self.assertRaises(ValueError, lambda: self.v_date.set(False))
 
     def test_dtype_strict(self):
         pass

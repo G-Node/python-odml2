@@ -11,7 +11,7 @@ from __future__ import unicode_literals, absolute_import, division, print_functi
 from datetime import datetime as dt
 from odml.base import WithSections, WithStrictMode
 from odml.info import DEFAULT_REPOSITORY
-from odml.types import Type, is_valid_type, is_valid_value, guess_odml_type
+from odml.types import Type, is_valid_value, guess_odml_type
 
 
 class Document(WithSections):
@@ -341,10 +341,6 @@ class Value(WithStrictMode):
             if dtype is None:
                 dtype = self.dtype
 
-            if dtype is not None:
-                if not is_valid_type(dtype):
-                    msg = "The given dtype is not valid: %s"
-                    raise ValueError(msg % str(dtype))
-                if value is not None and not is_valid_value(value, dtype):
-                    msg = "The value '%s' does not match the dtype %s"
-                    raise ValueError(msg % (str(value), str(dtype)))
+            if dtype is not None and value is not None and not is_valid_value(value, dtype):
+                msg = "The value '%s' does not match the dtype %s"
+                raise ValueError(msg % (str(value), str(dtype)))
