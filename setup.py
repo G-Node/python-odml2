@@ -30,29 +30,27 @@ PACKAGE = re.search(r"PACKAGE\s*=\s*'([^']*)'", info).group(1)
 LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 
 install_requires = (
-    "setuptools"
+    "setuptools",
 )
 
 if sys.version_info < (3, 4):
-    requires += ("enum34", )
+    install_requires += ("enum34", )
 
 setup(
     name=PACKAGE,
+    url=HOMEPAGE,
     author=AUTHORS,
     version=VERSION,
     author_email=CONTACT,
     description=DESCRIPTION,
     long_description=LONG_DESC,
-
     license=LICENSE,
-    packages=find_packages(),
-    package_dir={'': PACKAGE},
 
+    packages=find_packages(exclude=("test", )),
 
-    requires=requires,
-    
-    tests_require    = ['nose'],
-    test_suite       = 'nose.collector',
+    install_requires=install_requires,
+    tests_require=['nose'],
+    test_suite='nose.collector',
 
     classifiers=(
         "Programming Language :: Python",

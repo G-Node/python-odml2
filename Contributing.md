@@ -23,8 +23,7 @@ would stick to the following development workflow:
    If you want to add further text you can do so from the 3rd line on without limitations.
    If possible reference fixed issues in the commit message (e.g. "fixes #101"). 
 
-3. When done with the implementation, run the unit tests with python2.7 python3 and the mose recent version of
-   jython.
+3. When done with the implementation, run the unit tests with python 2.7 and python 3.4.
    
 4. Send us a pull request with your changes. 
    The pull request message should explain the changes and reference the *issue* addressed by your code.
