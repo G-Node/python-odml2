@@ -1,0 +1,29 @@
+---
+author: Jhon Doe
+date: 2004-06-14T23:34:30
+terms:
+  default:
+    - type: Experiment
+      definition: Something I do in the lab
+      properties:
+        - date
+        - experimenter
+    - name: date
+      defintition: The date something was created or an activity or event happened.
+      types:
+        - xsd::Date
+    - name: experimenter
+      definition: The person conducting an experiment
+      types:
+        - Person
+  gnode: http://portal.g-node.org/odml/terminologies/v2.0/terminologies.xml
+metadata:
+  name: Experiment 1
+  uuid: abef03
+  type: Experiment
+  date: 2004-06-14T23:34:30
+  experimenter:
+    name: John Doe
+    type: gnode:Person
+
+
