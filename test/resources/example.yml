@@ -1,29 +1,96 @@
----
-author: Jhon Doe
+# here starts the root section
+author: John Doe
 date: 2004-06-14T23:34:30
+# part of the file that contains all term definitions (may be empty)
 terms:
+  # definitions in the default name space (can be used without prefix)
   default:
-    - type: Experiment
+    # list with definitions for sections and properties
+    # - definitions for sections must have an attribute 'type'
+    # - definitions for properties must have an attribute 'name'
+    - type: RecordingSession
       definition: Something I do in the lab
       properties:
         - date
         - experimenter
+        - stimuli
     - name: date
       defintition: The date something was created or an activity or event happened.
       types:
-        - xsd::Date
+        - xsd:date
+        - xsd:dateTime
     - name: experimenter
       definition: The person conducting an experiment
       types:
-        - Person
+        - gnode:Person
+    - name: stimuli
+      definition: The stimuli used in a recording session
+      types:
+        - PulseStimulus
+    - type: PulseStimulus
+      definition: Stimulus that injects a short pulse with a defined current
+      properties:
+        - offset
+        - duration
+        - current
+    - name: offset
+      definition: The temporal offset of a stimulus
+      types:
+        - xsd:float
+    - name: duration
+      definition: The duration of a stimulus
+      types:
+        - xsd:float
+    - name: current
+      definition: Electric current measured in ampere
+      types:
+        - xsd:float
+  # definitions in the gnode name space (located in another file) terms may only be
+  # used with the 'gnode:' prefix.
   gnode: http://portal.g-node.org/odml/terminologies/v2.0/terminologies.xml
+# part of the file that contains the actual metadata
 metadata:
-  name: Experiment 1
+  type: RecordingSession
   uuid: abef03
-  type: Experiment
+  name: Session 1
+  # value property with just a as value literal
   date: 2004-06-14T23:34:30
+  # section property pointing to one single section
   experimenter:
-    name: John Doe
     type: gnode:Person
-
-
+    uuid: def78ab
+    name: John Doe
+    # a value property
+    gnode:birthday: 1988-03-20
+  # section property pointing to two sections
+  stimuli:
+    # here is the first section
+    - type: PulseStimulus
+      uuid: ad25feb
+      name: Pulse 1
+      # value proerties with value objects
+      offset:
+        value: 10
+        unit: ms
+      duration:
+        value: 5
+        unit: ms
+      current:
+        value: 0.6
+        unit: nA
+        uncertainty: 0.001
+    # here is the second section
+    - type: PulseStimulus
+      uuid: da37bd1
+      name: Pulse 2
+      # value properties with value objects
+      offset:
+        value: 30
+        unit: ms
+      duration:
+        value: 5
+        unit: ms
+      current:
+        value: 0.8
+        unit: nA
+        uncertainty: 0.001
