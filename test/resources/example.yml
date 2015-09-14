@@ -52,45 +52,32 @@ terms:
 metadata:
   type: RecordingSession
   uuid: abef03
-  name: Session 1
+  label: Session 1
   # value property with just a as value literal
   date: 2004-06-14T23:34:30
   # section property pointing to one single section
   experimenter:
     type: gnode:Person
     uuid: def78ab
-    name: John Doe
     # a value property
+    gnode:first_name: John
+    gnode:last_name: Doe
     gnode:birthday: 1988-03-20
   # section property pointing to two sections
   stimuli:
     # here is the first section
     - type: PulseStimulus
       uuid: ad25feb
-      name: Pulse 1
-      # value proerties with value objects
-      offset:
-        value: 10
-        unit: ms
-      duration:
-        value: 5
-        unit: ms
-      current:
-        value: 0.6
-        unit: nA
-        uncertainty: 0.001
+      label: Pulse 1
+      # value proerties with composed values
+      offset: 10ms
+      duration: 5 ms
+      current: 0.6nA+-0.001
     # here is the second section
     - type: PulseStimulus
       uuid: da37bd1
-      name: Pulse 2
-      # value properties with value objects
-      offset:
-        value: 30
-        unit: ms
-      duration:
-        value: 5
-        unit: ms
-      current:
-        value: 0.8
-        unit: nA
-        uncertainty: 0.001
+      label: Pulse 2
+      # value properties with composed values
+      offset: 30 ms
+      duration: 5ms
+      current: 0.8nA±0.001
