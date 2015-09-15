@@ -8,10 +8,10 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+__all__ = ("Value", )
+
 import datetime as dt
 import odml2.compat as compat
-
-__all__ = ("Value", )
 
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
