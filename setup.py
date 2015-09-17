@@ -29,16 +29,14 @@ HOMEPAGE = re.search(r"HOMEPAGE\s*=\s*'([^']*)'", info).group(1)
 PACKAGE = re.search(r"PACKAGE\s*=\s*'([^']*)'", info).group(1)
 LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 
-requires = (
+install_requires = (
+    "setuptools",
+    "PyYAML>=3.10",
     "pysistence>=0.4.1",
 )
 
 if sys.version_info < (3, 4):
-    requires += ("enum34", )
-
-install_requires = (
-    "setuptools",
-)
+    install_requires += ("enum34", )
 
 tests_require = (
     "nose",
@@ -56,7 +54,6 @@ setup(
 
     packages=find_packages(exclude=("test", )),
 
-    requires=requires,
     install_requires=install_requires,
     tests_require=tests_require,
     test_suite='nose.collector',
