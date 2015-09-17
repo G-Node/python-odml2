@@ -39,7 +39,7 @@ class Value(object):
     def uncertainty(self):
         return self.__uncertainty
 
-    def set(self, value=None, unit=None, uncertainty=None):
+    def using(self, value=None, unit=None, uncertainty=None):
         return Value(
             value if value is not None else self.value,
             unit if unit is not None else self.unit,
