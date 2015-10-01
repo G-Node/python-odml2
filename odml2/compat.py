@@ -27,6 +27,7 @@ else:
     from abc import ABC
 
 if PY2:
+    # noinspection PyUnresolvedReferences,PyUnboundLocalVariable
     unicode = unicode
 else:
     unicode = str
