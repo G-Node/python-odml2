@@ -8,11 +8,10 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-import nose
 import unittest
 
-import odml2.compat as compat
-from odml2.value import Value
+from odml2 import compat
+from odml2.model import Value
 
 
 class ValueTest(unittest.TestCase):
@@ -66,6 +65,3 @@ class ValueTest(unittest.TestCase):
             self.assertEqual(compat.unicode(v1), u"1mV±0.1")
         else:
             self.assertEqual(str(v1), "1mV±0.1")
-
-if __name__ == '__main__':
-    nose.main()
