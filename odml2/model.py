@@ -8,9 +8,8 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-__all__ = ("BaseSection", "Section", "Value")
+__all__ = ("Section", "Value")
 
-import abc
 import datetime as dt
 import odml2.compat as compat
 
@@ -19,41 +18,7 @@ PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
 
 
-class BaseSection(compat.ABC):
-
-    @abc.abstractproperty
-    def type(self):
-        raise NotImplemented()
-
-    @abc.abstractproperty
-    def uuid(self):
-        raise NotImplemented()
-
-    @abc.abstractproperty
-    def label(self):
-        raise NotImplemented()
-
-    @abc.abstractproperty
-    def reference(self):
-        raise NotImplemented()
-
-    def __eq__(self, other):
-        if isinstance(other, BaseSection):
-            return self.uuid == other.uuid
-        else:
-            return False
-
-    def __str__(self):
-        return "%s(type=%s, uuid=%s, label=%s)" % (self.__class__.__name__, self.type, self.uuid, self.label)
-
-    def __repr__(self):
-        return str(self)
-
-    def __unicode__(self):
-        return compat.unicode(str(self))
-
-
-class Section(BaseSection):
+class Section(object):
     """
     Represents an odML section entity.
     """
@@ -105,6 +70,25 @@ class Section(BaseSection):
 
     def __delitem__(self, key):
         pass
+
+    #
+    # built in methods
+    #
+
+    def __eq__(self, other):
+        if isinstance(other, Section):
+            return self.uuid == other.uuid
+        else:
+            return False
+
+    def __str__(self):
+        return "Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
+
+    def __repr__(self):
+        return str(self)
+
+    def __unicode__(self):
+        return compat.unicode(str(self))
 
 
 class Value(object):
