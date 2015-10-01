@@ -12,11 +12,10 @@
 Contains classes and base classes needed for all back-end implementations.
 """
 
-__all__ = ("BackEnd", "SecData", "ValData")
+__all__ = ("BackEnd", )
 
-from abc import abstractmethod
-from uuid import uuid4
-import odml2.compat as compat
+import abc
+from odml2 import compat
 
 
 class BackEnd(compat.ABC):
@@ -24,140 +23,94 @@ class BackEnd(compat.ABC):
     A base class for a back-end that represents data of an odML document and provides access to it.
     """
 
-    @abstractmethod
-    def has_root(self):
+    @abc.abstractproperty
+    def autosave(self):
         raise NotImplemented()
 
-    @abstractmethod
+    @abc.abstractmethod
+    def root_exists(self):
+        raise NotImplemented()
+
+    @abc.abstractmethod
     def root_get(self):
         raise NotImplemented()
 
-    @abstractmethod
-    def root_reset(self, section):
+    @abc.abstractmethod
+    def root_create(self, typ, uuid=None, label=None, reference=None):
         raise NotImplemented()
 
-    @abstractmethod
+    @abc.abstractmethod
     def section_exists(self, uuid):
         raise NotImplemented()
 
-    @abstractmethod
-    def section_get(self, uuid):
+    @abc.abstractmethod
+    def section_get_type(self, uuid):
         raise NotImplemented()
 
-    @abstractmethod
-    def section_update(self, section):
+    @abc.abstractmethod
+    def section_set_type(self, uuid, typ):
         raise NotImplemented()
 
-    @abstractmethod
+    @abc.abstractmethod
+    def section_get_label(self, uuid):
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def section_set_label(self, uuid, label):
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def section_get_reference(self, uuid):
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def section_set_reference(self, uuid, reference):
+        raise NotImplemented()
+
+    @abc.abstractmethod
     def section_remove(self, uuid):
         raise NotImplemented()
 
-    @abstractmethod
+    @abc.abstractmethod
     def section_get_properties(self, uuid):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_has_sections(self, uuid, prop):
+    @abc.abstractmethod
+    def property_has_sections(self, parent_uuid, prop):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_has_value(self, uuid, prop):
+    @abc.abstractmethod
+    def property_get_sections(self, parent_uuid, prop):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_get_sections(self, uuid, prop):
+    @abc.abstractmethod
+    def property_add_section(self, parent_uuid, prop, typ, uuid=None, label=None, reference=None):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_add_section(self, uuid, prop, section):
+    @abc.abstractmethod
+    def property_has_value(self, parent_uuid, prop):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_remove_section(self, uuid, prop, child_uuid):
+    @abc.abstractmethod
+    def property_get_value(self, parent_uuid, prop):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_get_value(self, uuid, prop):
+    @abc.abstractmethod
+    def property_set_value(self, parent_uuid, prop, value):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_set_value(self, uuid, prop, value):
+    @abc.abstractmethod
+    def property_remove_value(self, parent_uuid, prop):
         raise NotImplemented()
 
-    @abstractmethod
-    def property_remove_value(self, uuid, prop):
+    @abc.abstractmethod
+    def property_remove(self, parent_uuid, prop):
         raise NotImplemented()
 
-    @abstractmethod
-    def store(self, file_name):
+    @abc.abstractmethod
+    def store(self, location):
         raise NotImplemented()
 
-
-class SecData(object):
-    """
-    Simple section representation used by Context
-    """
-
-    def __init__(self, typ, uuid=None, label=None, reference=None):
-        self.__type = typ
-        self.__uuid = str(uuid4()) if uuid is None else uuid
-        self.__label = label
-        self.__reference = reference
-
-    @property
-    def type(self):
-        return self.__type
-
-    @property
-    def uuid(self):
-        return self.__uuid
-
-    @property
-    def label(self):
-        return self.__label
-
-    @property
-    def reference(self):
-        return self.__reference
-
-    def using(self, typ=None, uuid=None, label=None, reference=None):
-        return SecData(
-            typ if typ is not None else self.type,
-            uuid if uuid is not None else self.uuid,
-            label if label is not None else self.label,
-            reference if reference is not None else self.reference,
-        )
-
-    @classmethod
-    def create_from(cls, other):
-        return SecData(other.type, other.uuid, other.label, other.reference)
-
-
-class ValData(object):
-    """
-    Simple value representation use by Context
-    """
-
-    def __init__(self, value, unit=None, uncertainty=None):
-        self.__value = value
-        self.__unit = unit
-        self.__uncertainty = uncertainty
-
-    @property
-    def value(self):
-        return self.__value
-
-    @property
-    def unit(self):
-        return self.__unit
-
-    @property
-    def uncertainty(self):
-        return self.__uncertainty
-
-    def using(self, value=None, unit=None, uncertainty=None):
-        return ValData(
-            value if value is not None else self.value,
-            unit if unit is not None else self.unit,
-            uncertainty if uncertainty is not None else self.uncertainty
-        )
+    @abc.abstractmethod
+    def add_all(self, back_end):
+        raise NotImplemented()
