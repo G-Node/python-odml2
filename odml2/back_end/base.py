@@ -25,11 +25,15 @@ class BackEnd(compat.ABC):
     """
 
     @abstractmethod
+    def has_root(self):
+        raise NotImplemented()
+
+    @abstractmethod
     def root_get(self):
         raise NotImplemented()
 
     @abstractmethod
-    def root_update(self, section):
+    def root_reset(self, section):
         raise NotImplemented()
 
     @abstractmethod
@@ -53,14 +57,15 @@ class BackEnd(compat.ABC):
         raise NotImplemented()
 
     @abstractmethod
-    def property_has_section(self, uuid, prop):
+    def property_has_sections(self, uuid, prop):
         raise NotImplemented()
 
+    @abstractmethod
     def property_has_value(self, uuid, prop):
-        return not self.property_has_section(uuid, prop)
+        raise NotImplemented()
 
     @abstractmethod
-    def property_get_section(self, uuid, prop):
+    def property_get_sections(self, uuid, prop):
         raise NotImplemented()
 
     @abstractmethod
@@ -95,7 +100,7 @@ class SecData(object):
 
     def __init__(self, typ, uuid=None, label=None, reference=None):
         self.__type = typ
-        self.__uuid = uuid4() if uuid is None else uuid
+        self.__uuid = str(uuid4()) if uuid is None else uuid
         self.__label = label
         self.__reference = reference
 
