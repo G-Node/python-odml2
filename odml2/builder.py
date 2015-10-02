@@ -17,7 +17,7 @@ class SB(object):
     """
 
     def __init__(self, typ, uuid=None, label=None, references=None, **properties):
-        pass
+        raise NotImplemented()
 
-    def build(self, back_end, parent):
-        pass
+    def build(self, back_end, parent_uuid=None, prop=None):
+        raise NotImplemented()

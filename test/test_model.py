@@ -11,7 +11,16 @@
 import unittest
 
 from odml2 import compat
-from odml2.model import Value
+from odml2 import Value
+
+# TODO implement all section tests
+class TestSection(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def test_uuid(self):
+        pass
 
 
 class ValueTest(unittest.TestCase):
