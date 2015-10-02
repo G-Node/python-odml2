@@ -11,8 +11,11 @@
 __all__ = ("Section", "Value")
 
 import datetime as dt
-import odml2.compat as compat
+import numbers
+import odml2
+from odml2 import compat
 
+ALLOWED_VALUE_TYPES = (bool, int, float, numbers.Number, str, compat.unicode, dt.date, dt.time, dt.datetime)
 
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
@@ -33,43 +36,74 @@ class Section(object):
 
     @property
     def type(self):
-        raise NotImplemented()
+        return self.__back_end.section_get_type(self.uuid)
 
     # noinspection PyMethodOverriding
     @type.setter
     def type(self, typ):
-        raise NotImplemented()
+        self.__back_end.section_set_type(self.uuid, typ)
 
     @property
     def label(self):
-        raise NotImplemented()
+        return self.__back_end.section_get_label(self.uuid)
 
     # noinspection PyMethodOverriding
     @label.setter
     def label(self, label):
-        raise NotImplemented()
+        self.__back_end.section_set_label(self.uuid, label)
 
     @property
     def reference(self):
-        raise NotImplemented()
+        return self.__back_end.section_get_reference(self.uuid)
 
     # noinspection PyMethodOverriding
     @reference.setter
     def reference(self, reference):
-        raise NotImplemented()
+        self.__back_end.section_set_reference(self.uuid, reference)
 
     #
-    # value and related section access
+    # dict like access to sections and values
     #
 
-    def __getitem__(self, item):
-        pass
+    def items(self):
+        for key in self.__back_end.section_get_properties(self.uuid):
+            yield (key, self.get(key))
 
-    def __setitem__(self, key, value):
-        pass
+    def keys(self):
+        for key in self.__back_end.section_get_properties(self.uuid):
+            yield key
+
+    def get(self, key):
+        if self.__back_end.property_has_sections(self.uuid, key):
+            return self.__back_end.property_get_sections(self.uuid, key)
+        elif self.__back_end.property_has_value(self.uuid, key):
+            return self.__back_end.property_get_value()
+
+    def __len__(self):
+        return len(self.__back_end.section_get_properties(self.uuid))
+
+    def __iter__(self):
+        return self.keys()
+
+    def __getitem__(self, key):
+        element = self.get(key)
+        if element is None:
+            raise KeyError("Key '%s' not in section with uuid '%s'" % (key, self.uuid))
+        return element
+
+    def __setitem__(self, key, element):
+        # TODO handle list of Section and SB
+        if isinstance(element, odml2.SB):
+            element.build(self.__back_end, self.uuid, key)
+        if isinstance(element, Section):
+            # TODO implement setting a section as subsection
+            raise NotImplemented()
+        else:
+            val = value_from(element)
+            self.__back_end.property_set_value(self.uuid, key, val)
 
     def __delitem__(self, key):
-        pass
+        self.__back_end.property_remove(self.uuid, key)
 
     #
     # built in methods
@@ -155,3 +189,12 @@ class Value(object):
 
     def __repr__(self):
         return str(self)
+
+
+def value_from(thing):
+    if isinstance(thing, ALLOWED_VALUE_TYPES):
+        return Value(thing)
+    elif isinstance(thing, Value):
+        return thing
+    else:
+        raise ValueError("Can't covert '%s' to a value" % repr(thing))
