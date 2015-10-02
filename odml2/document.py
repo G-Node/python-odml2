@@ -46,7 +46,7 @@ class Document(object):
             element.build(self.__back_end)
         if isinstance(element, odml2.Section):
             # TODO implement setting a section as subsection
-            raise NotImplemented()
+            raise NotImplementedError()
         else:
             raise ValueError("Only Section and SB can be used as root")
 
@@ -56,4 +56,4 @@ def load_document(location):
 
 
 def save_document(document, location=None):
-    raise NotImplemented()
+    raise NotImplementedError()

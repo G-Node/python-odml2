@@ -97,7 +97,7 @@ class Section(object):
             element.build(self.__back_end, self.uuid, key)
         if isinstance(element, Section):
             # TODO implement setting a section as subsection
-            raise NotImplemented()
+            raise NotImplementedError()
         else:
             val = value_from(element)
             self.__back_end.property_set_value(self.uuid, key, val)

@@ -25,108 +25,108 @@ class BackEnd(compat.ABC):
 
     @abc.abstractproperty
     def autosave(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def author_get(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def author_set(self, author):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def date_get(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def date_set(self, date):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def root_exists(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def root_get(self):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def root_create(self, typ, uuid=None, label=None, reference=None):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_exists(self, uuid):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_get_type(self, uuid):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_set_type(self, uuid, typ):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_get_label(self, uuid):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_set_label(self, uuid, label):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_get_reference(self, uuid):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_set_reference(self, uuid, reference):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_remove(self, uuid):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def section_get_properties(self, uuid):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_has_sections(self, parent_uuid, prop):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_get_sections(self, parent_uuid, prop):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_add_section(self, parent_uuid, prop, typ, uuid=None, label=None, reference=None):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_has_value(self, parent_uuid, prop):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_get_value(self, parent_uuid, prop):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_set_value(self, parent_uuid, prop, value):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_remove_value(self, parent_uuid, prop):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def property_remove(self, parent_uuid, prop):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def store(self, location):
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @abc.abstractmethod
     def add_all(self, back_end):
-        raise NotImplemented()
+        raise NotImplementedError()

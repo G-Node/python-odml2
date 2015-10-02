@@ -168,16 +168,16 @@ class YamlBackEnd(base.BackEnd):
 
     def add_all(self, back_end):
         # TODO implement add_all
-        raise NotImplemented()
+        raise NotImplementedError()
 
     def store(self, location):
         # TODO implement store
-        raise NotImplemented()
+        raise NotImplementedError()
 
     @classmethod
     def load(cls, location):
         # TODO implement load
-        raise NotImplemented()
+        raise NotImplementedError()
 
     #
     # internal methods
