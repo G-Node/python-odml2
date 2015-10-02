@@ -11,7 +11,6 @@
 __all__ = ("Document", "load_document", "save_document")
 
 import odml2
-from odml2.back_end.yaml import YamlBackEnd
 
 
 class Document(object):
@@ -52,8 +51,13 @@ class Document(object):
 
 
 def load_document(location):
-    return Document(YamlBackEnd(), location)
+    # TODO implement load_document
+    # TODO can be a class method
+    # return Document(YamlBackEnd(), location)
+    raise NotImplementedError()
 
 
 def save_document(document, location=None):
+    # TODO implement save_document
+    # TODO can be a method
     raise NotImplementedError()

@@ -8,12 +8,14 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+import os
 import unittest
 import datetime as dt
 from uuid import uuid4
 
 import odml2
 from odml2.back_end.yaml import YamlBackEnd
+
 
 class DocumentTest(unittest.TestCase):
 
@@ -47,8 +49,16 @@ class DocumentTest(unittest.TestCase):
             self.doc.root = self.other.root
         self.assertRaises(NotImplementedError, add_root)
 
+        def add_builder():
+            self.doc.root = odml2.SB("SomeType")
+        self.assertRaises(NotImplementedError, add_builder)
+
     def test_load_document(self):
-        pass
+        def load():
+            _ = odml2.load_document(os.path.join("resources", "example.yml"))
+        self.assertRaises(NotImplementedError, load)
 
     def test_save_document(self):
-        pass
+        def save():
+            odml2.save_document(self.doc, os.path.join("resources", "example.yml"))
+        self.assertRaises(NotImplementedError, save)
