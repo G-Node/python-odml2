@@ -6,3 +6,6 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+from odml2.model import Section, Value
+from odml2.document import Document, load_document, save_document
+from odml2.builder import SB
