@@ -28,6 +28,22 @@ class BackEnd(compat.ABC):
         raise NotImplemented()
 
     @abc.abstractmethod
+    def author_get(self):
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def author_set(self, author):
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def date_get(self):
+        raise NotImplemented()
+
+    @abc.abstractmethod
+    def date_set(self, date):
+        raise NotImplemented()
+
+    @abc.abstractmethod
     def root_exists(self):
         raise NotImplemented()
 

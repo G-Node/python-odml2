@@ -24,10 +24,24 @@ class YamlBackEnd(base.BackEnd):
     def __init__(self):
         self.__content = {}     # all sections (by uuid)
         self.__root = None      # the uuid of the root section
+        self.__date = None
+        self.__author = None
 
     @property
     def autosave(self):
         return False
+
+    def author_get(self):
+        return self.__author
+
+    def author_set(self, author):
+        self.__author = author
+
+    def date_get(self):
+        return self.__date
+
+    def date_set(self, date):
+        self.__date = date
 
     def root_exists(self):
         return self.__root is not None
