@@ -16,9 +16,6 @@ import numbers
 import odml2
 from odml2 import compat
 
-PLUS_MINUS_UNICODE = u"±"
-PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
-
 
 class Section(object):
     """
@@ -123,6 +120,9 @@ class Section(object):
     def __unicode__(self):
         return compat.unicode(str(self))
 
+PLUS_MINUS_UNICODE = u"±"
+PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
+
 
 class Value(object):
     """
@@ -191,19 +191,22 @@ class Value(object):
 
 ALLOWED_VALUE_TYPES = (
     bool, int, float, numbers.Number, dt.date, dt.time, dt.datetime)
-VALUE_EXPR = re.compile(
-    u"^([-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?)" +
-    "([A-Za-z]{1,2})?" +
-    "((\+-|\\xb1)([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?))?$")
+VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))" +
+                        u"([A-Za-zΩμ]{1,4})?" +
+                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?$")
+
 
 def value_from(thing):
     if isinstance(thing, (str, compat.unicode)):
-        match = VALUE_EXPR.match()
+        match = VALUE_EXPR.match(thing)
         if match is None:
             return Value(thing)
         else:
-            groups = match.groups()
-            return Value(float(groups[0]), str(groups[2]), float(groups[5]))
+            g = match.groups()
+            num, is_float, unit, uncertainty = (g[0], g[3], g[5], g[8])
+            num = float(num) if is_float is not None else int(num)
+            uncertainty = float(uncertainty) if uncertainty is not None else None
+            return Value(num, unit, uncertainty)
     if isinstance(thing, ALLOWED_VALUE_TYPES):
         return Value(thing)
     elif isinstance(thing, Value):

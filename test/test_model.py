@@ -11,7 +11,8 @@
 import unittest
 
 from odml2 import compat
-from odml2 import Value
+from odml2 import Value, value_from
+
 
 # TODO implement all section tests
 class TestSection(unittest.TestCase):
@@ -56,6 +57,26 @@ class ValueTest(unittest.TestCase):
         self.assertEqual(v1.value, 100)
         self.assertEqual(v1.unit, "mV")
         self.assertEqual(v1.uncertainty, 0.1)
+
+    def test_value_from(self):
+        v = value_from("foo")
+        self.assertEqual(v.value, "foo")
+        self.assertIsNone(v.unit)
+        self.assertIsNone(v.uncertainty)
+        v = value_from(u"µ")
+        self.assertEqual(v.value, u"µ")
+        self.assertIsNone(v.unit)
+        self.assertIsNone(v.uncertainty)
+        v = value_from(u"10μΩ±0.2e-2")
+        self.assertEqual(v.value, 10)
+        self.assertIsInstance(v.value, int)
+        self.assertEqual(v.unit, u"μΩ")
+        self.assertEqual(v.uncertainty, 0.002)
+        v = value_from(u"10.2kmol")
+        self.assertEqual(v.value, 10.2)
+        self.assertIsInstance(v.value, float)
+        self.assertEqual(v.unit, u"kmol")
+        self.assertIsNone(v.uncertainty)
 
     def test_eq(self):
         self.assertEqual(Value("foo"), Value("foo"))
