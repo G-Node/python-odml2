@@ -11,6 +11,7 @@
 
 __all__ = ("YamlBackEnd", )
 
+from itertools import chain
 from uuid import uuid4
 from odml2.back_end import base
 
@@ -44,7 +45,7 @@ class YamlBackEnd(base.BackEnd):
         sd = SecData(typ, uuid, label, reference)
         self.__content.clear()
         self.__content[uuid] = sd
-        self.__root = sd
+        self.__root = uuid
 
     def section_exists(self, uuid):
         return uuid in self.__content
@@ -79,12 +80,12 @@ class YamlBackEnd(base.BackEnd):
         if sd_parent is not None:
             sd_parent.section_props[prop].remove(uuid)
         self.__section_remove_with_children(sd)
-        if len(self.__content):
+        if len(self.__content) == 0:
             self.__root = None
 
     def section_get_properties(self, uuid):
         sd = self.__section_get(uuid)
-        return tuple(sorted(sd.section_props.keys() + sd.value_props.keys()))
+        return sorted(chain(sd.section_props, sd.value_props))
 
     def property_has_sections(self, uuid, prop):
         sd = self.__section_get(uuid)
@@ -177,7 +178,7 @@ class YamlBackEnd(base.BackEnd):
         for parent_uuid, sd_parent in self.__content.items():
             for (prop, child_uuids) in sd_parent.section_props.items():
                 if uuid in child_uuids:
-                    return parent_uuid, prop
+                    return sd_parent, prop
         return None, None
 
     def __section_remove_with_children(self, sec_data):
