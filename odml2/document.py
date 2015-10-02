@@ -10,6 +10,7 @@
 
 __all__ = ("Document", "load_document", "save_document")
 
+import odml2
 from odml2.back_end.yaml import YamlBackEnd
 
 
@@ -21,19 +22,33 @@ class Document(object):
 
     @property
     def author(self):
-        raise NotImplemented()
+        return self.__back_end.author_get()
+
+    @author.setter
+    def author(self, author):
+        self.__back_end.author_set(author)
 
     @property
     def date(self):
-        raise NotImplemented()
+        return self.__back_end.date_get()
+
+    @date.setter
+    def date(self, date):
+        self.__back_end.date_set(date)
 
     @property
     def root(self):
-        raise NotImplemented()
+        return odml2.Section(self.__back_end.root_get(), self)
 
     @root.setter
-    def root(self):
-        raise NotImplemented()
+    def root(self, element):
+        if isinstance(element, odml2.SB):
+            element.build(self.__back_end)
+        if isinstance(element, odml2.Section):
+            # TODO implement setting a section as subsection
+            raise NotImplemented()
+        else:
+            raise ValueError("Only Section and SB can be used as root")
 
 
 def load_document(location):
