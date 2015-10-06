@@ -114,13 +114,14 @@ class YamlBackEnd(base.BackEnd):
         return sd.section_props[prop]
 
     def property_add_section(self, parent_uuid, prop, typ, uuid=None, label=None, reference=None):
+        # TODO check for forbidden/reserved property names
         sd = self.__section_get(parent_uuid)
         if prop in sd.value_props:
             del sd.value_props[prop]
         if uuid is None:
             uuid = str(uuid4())
         if prop in sd.section_props:
-            sd.section_props.append(uuid)
+            sd.section_props[prop].append(uuid)
         else:
             sd.section_props[prop] = [uuid]
         self.__content[uuid] = SecData(typ, uuid, label, reference)
@@ -138,6 +139,7 @@ class YamlBackEnd(base.BackEnd):
         return sd.value_props[prop]
 
     def property_set_value(self, parent_uuid, prop, value):
+        # TODO check for forbidden/reserved property names
         sd = self.__section_get(parent_uuid)
         if prop in sd.section_props:
             for child_uuid in sd.section_props[prop]:
