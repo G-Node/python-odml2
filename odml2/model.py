@@ -71,9 +71,14 @@ class Section(object):
 
     def get(self, key):
         if self.__back_end.property_has_sections(self.uuid, key):
-            return self.__back_end.property_get_sections(self.uuid, key)
+            ids = self.__back_end.property_get_sections(self.uuid, key)
+            # TODO should this return only one single section if the len(ids) == 1?
+            return [Section(i, self.__back_end) for i in ids]
         elif self.__back_end.property_has_value(self.uuid, key):
-            return self.__back_end.property_get_value()
+            # TODO should this always return the value or value.value?
+            return self.__back_end.property_get_value(self.uuid, key)
+        else:
+            return None
 
     def __len__(self):
         return len(self.__back_end.section_get_properties(self.uuid))
@@ -91,7 +96,7 @@ class Section(object):
         # TODO handle list of Section and SB
         if isinstance(element, odml2.SB):
             element.build(self.__back_end, self.uuid, key)
-        if isinstance(element, Section):
+        elif isinstance(element, Section):
             # TODO implement setting a section as subsection
             raise NotImplementedError()
         else:
@@ -100,6 +105,9 @@ class Section(object):
 
     def __delitem__(self, key):
         self.__back_end.property_remove(self.uuid, key)
+
+    def __contains__(self, key):
+        return key in self.__back_end.section_get_properties(self.uuid)
 
     #
     # built in methods
@@ -110,6 +118,9 @@ class Section(object):
             return self.uuid == other.uuid
         else:
             return False
+
+    def __ne__(self, other):
+        return not (self == other)
 
     def __str__(self):
         return "Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
