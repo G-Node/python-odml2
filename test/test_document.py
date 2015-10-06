@@ -13,20 +13,20 @@ import unittest
 import datetime as dt
 from uuid import uuid4
 
-import odml2
-from odml2.back_end.yaml import YamlBackEnd
+from odml2 import Document, Section, SB, load_document, save_document
+from odml2.back_end import yaml
 
 
 class DocumentTest(unittest.TestCase):
 
     def setUp(self):
         self.root_uuid = str(uuid4())
-        self.back_end = YamlBackEnd()
+        self.back_end = yaml.YamlBackEnd()
         self.back_end.root_create("Experiment", self.root_uuid, "Experiment 01", "./example.dat")
-        self.doc = odml2.Document("example.yml", self.back_end)
-        other_be = YamlBackEnd()
+        self.doc = Document("example.yml", self.back_end)
+        other_be = yaml.YamlBackEnd()
         other_be.root_create("OtherType")
-        self.other = odml2.Document("other.yml", other_be)
+        self.other = Document("other.yml", other_be)
 
     def test_author(self):
         self.assertIsNone(self.doc.author)
@@ -41,7 +41,7 @@ class DocumentTest(unittest.TestCase):
 
     def test_get_root(self):
         root = self.doc.root
-        self.assertIsInstance(root, odml2.Section)
+        self.assertIsInstance(root, Section)
         self.assertEqual(root.uuid, self.root_uuid)
 
     def test_set_root(self):
@@ -49,16 +49,15 @@ class DocumentTest(unittest.TestCase):
             self.doc.root = self.other.root
         self.assertRaises(NotImplementedError, add_root)
 
-        def add_builder():
-            self.doc.root = odml2.SB("SomeType")
-        self.assertRaises(NotImplementedError, add_builder)
+        self.doc.root = SB("SomeType")
+        self.assertIsInstance(self.doc.root, Section)
 
     def test_load_document(self):
         def load():
-            _ = odml2.load_document(os.path.join("resources", "example.yml"))
+            load_document(os.path.join("resources", "example.yml"))
         self.assertRaises(NotImplementedError, load)
 
     def test_save_document(self):
         def save():
-            odml2.save_document(self.doc, os.path.join("resources", "example.yml"))
+            save_document(self.doc, os.path.join("resources", "example.yml"))
         self.assertRaises(NotImplementedError, save)
