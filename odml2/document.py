@@ -37,7 +37,7 @@ class Document(object):
 
     @property
     def root(self):
-        return odml2.Section(self.__back_end.root_get(), self)
+        return odml2.Section(self.__back_end.root_get(), self.__back_end)
 
     @root.setter
     def root(self, element):
