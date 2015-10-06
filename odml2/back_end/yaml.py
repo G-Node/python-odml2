@@ -60,6 +60,7 @@ class YamlBackEnd(base.BackEnd):
         self.__content.clear()
         self.__content[uuid] = sd
         self.__root = uuid
+        return uuid
 
     def section_exists(self, uuid):
         return uuid in self.__content
@@ -123,6 +124,7 @@ class YamlBackEnd(base.BackEnd):
         else:
             sd.section_props[prop] = [uuid]
         self.__content[uuid] = SecData(typ, uuid, label, reference)
+        return uuid
 
     def property_has_value(self, parent_uuid, prop):
         sd = self.__section_get(parent_uuid)
