@@ -43,8 +43,8 @@ class Document(object):
     def root(self, element):
         if isinstance(element, odml2.SB):
             element.build(self.__back_end)
-        if isinstance(element, odml2.Section):
-            # TODO implement setting a section as subsection
+        elif isinstance(element, odml2.Section):
+            # TODO handle sections
             raise NotImplementedError()
         else:
             raise ValueError("Only Section and SB can be used as root")
