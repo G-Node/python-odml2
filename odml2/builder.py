@@ -38,16 +38,16 @@ class SB(object):
                 for sub in element:
                     if isinstance(sub, SB):
                         sub.build(back_end, uuid, p)
-                    if isinstance(sub, odml2.Section):
+                    elif isinstance(sub, odml2.Section):
                         # TODO Handle sections
                         raise NotImplementedError()
                     else:
                         ValueError("Section builder expected but was %s" % type(sub))
-            if isinstance(element, SB):
+            elif isinstance(element, SB):
                 element.build(back_end, uuid, p)
-            if isinstance(element, odml2.Section):
+            elif isinstance(element, odml2.Section):
                 # TODO Handle sections
                 raise NotImplementedError()
             else:
                 value = odml2.value_from(element)
-                back_end.property_add_value(uuid, p, value)
+                back_end.property_set_value(uuid, p, value)
