@@ -136,17 +136,17 @@ class ValueTest(unittest.TestCase):
         self.assertIsNone(v1.unit)
         self.assertIsNone(v1.uncertainty)
 
-        v1 = v1.using(value=100)
+        v1 = v1.copy(value=100)
         self.assertEqual(v1.value, 100)
         self.assertIsNone(v1.unit)
         self.assertIsNone(v1.uncertainty)
 
-        v1 = v1.using(unit="mV")
+        v1 = v1.copy(unit="mV")
         self.assertEqual(v1.value, 100)
         self.assertEqual(v1.unit, "mV")
         self.assertIsNone(v1.uncertainty)
 
-        v1 = v1.using(uncertainty=0.1)
+        v1 = v1.copy(uncertainty=0.1)
         self.assertEqual(v1.value, 100)
         self.assertEqual(v1.unit, "mV")
         self.assertEqual(v1.uncertainty, 0.1)
