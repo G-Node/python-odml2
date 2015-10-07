@@ -11,7 +11,7 @@
 __all__ = ("Document", "load_document", "save_document")
 
 import odml2
-
+from odml2 import compat
 
 class Document(object):
 
@@ -37,7 +37,10 @@ class Document(object):
 
     @property
     def root(self):
-        return odml2.Section(self.__back_end.root_get(), self.__back_end)
+        if not self.__back_end.root_exists():
+            return None
+        else:
+            return odml2.Section(self.__back_end.root_get(), self.__back_end)
 
     @root.setter
     def root(self, element):
@@ -48,6 +51,15 @@ class Document(object):
             raise NotImplementedError()
         else:
             raise ValueError("Only Section and SB can be used as root")
+
+    def __str__(self):
+        return "Document(location='%s', author='%s', date=%s)" % (self.__location, self.author, self.date)
+
+    def __repr__(self):
+        return str(self)
+
+    def __unicode__(self):
+        return compat.unicode(str(self))
 
 
 def load_document(location):
