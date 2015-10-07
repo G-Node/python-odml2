@@ -75,13 +75,13 @@ class TestSection(unittest.TestCase):
 
     def test_len(self):
         self.assertEqual(len(self.sec), 2)
-        self.assertEqual(len(self.sec["prop_11"][0]), 2)
+        self.assertEqual(len(self.sec["prop_11"]), 2)
 
     def test_get_and_getitem(self):
         self.assertIsInstance(self.sec.get("prop_11"), list)
-        self.assertIsInstance(self.sec["prop_11"], list)
+        self.assertIsInstance(self.sec["prop_11"], Section)
         self.assertIsInstance(self.sec.get("prop_foo"), Value)
-        self.assertIsInstance(self.sec["prop_foo"], Value)
+        self.assertIsInstance(self.sec["prop_foo"], str)
         self.assertIsNone(self.sec.get("not_existing"))
 
         self.assertRaises(KeyError, lambda: self.sec["not_existing"])
@@ -90,10 +90,12 @@ class TestSection(unittest.TestCase):
         self.assertEqual(len(self.empty), 0)
         self.empty["sec"] = SB("type")
         self.assertEqual(len(self.empty), 1)
-        self.assertEqual(self.empty["sec"][0].type, "type")
+        self.assertEqual(self.empty["sec"].type, "type")
+        self.assertEqual(self.empty.get("sec")[0].type, "type")
         self.empty["prop"] = "some_str_value"
         self.assertEqual(len(self.empty), 2)
-        self.assertEqual(self.empty["prop"].value, "some_str_value")
+        self.assertEqual(self.empty["prop"], "some_str_value")
+        self.assertEqual(self.empty.get("prop"), Value("some_str_value"))
 
         def set_sec():
             self.empty["sec2"] = self.sec

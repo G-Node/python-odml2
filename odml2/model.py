@@ -72,10 +72,8 @@ class Section(object):
     def get(self, key):
         if self.__back_end.property_has_sections(self.uuid, key):
             ids = self.__back_end.property_get_sections(self.uuid, key)
-            # TODO should this return only one single section if the len(ids) == 1?
             return [Section(i, self.__back_end) for i in ids]
         elif self.__back_end.property_has_value(self.uuid, key):
-            # TODO should this always return the value or value.value?
             return self.__back_end.property_get_value(self.uuid, key)
         else:
             return None
@@ -90,11 +88,25 @@ class Section(object):
         element = self.get(key)
         if element is None:
             raise KeyError("Key '%s' not in section with uuid '%s'" % (key, self.uuid))
+        elif isinstance(element, list) and len(element) == 1:
+            element = element[0]
+        elif isinstance(element, odml2.Value):
+            element = element.value
         return element
 
     def __setitem__(self, key, element):
-        # TODO handle list of Section and SB
-        if isinstance(element, odml2.SB):
+        if key in self:
+            del self[key]
+        if isinstance(element, list):
+            for sub in element:
+                if isinstance(sub, odml2.SB):
+                    sub.build(self.__back_end, self.uuid, key)
+                elif isinstance(sub, odml2.Section):
+                    # TODO implement setting a section as subsection
+                    raise NotImplementedError()
+                else:
+                    ValueError("Section builder expected but was %s" % type(sub))
+        elif isinstance(element, odml2.SB):
             element.build(self.__back_end, self.uuid, key)
         elif isinstance(element, Section):
             # TODO implement setting a section as subsection

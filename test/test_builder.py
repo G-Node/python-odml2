@@ -31,10 +31,11 @@ class TestSB(unittest.TestCase):
         self.doc = Document("./example.yaml", yaml.YamlBackEnd())
 
     def test_document_root(self):
+        today = dt.date.today()
         self.doc.root = SB(
             typ="RecordingSession",
             label="session one",
-            date=dt.date.today(),
+            date=today,
             experimenter=SB(
                 typ="Person",
                 first_name="John",
@@ -61,28 +62,40 @@ class TestSB(unittest.TestCase):
         self.assertIsInstance(self.doc.root, Section)
         root = self.doc.root
         self.assertEqual([p for p in root], ["date", "experimenter", "stimuli"])
-        self.assertEqual(root["date"], Value(dt.date.today()))
-        exp = root["experimenter"][0]
+        self.assertEqual(root["date"], today)
+        self.assertEqual(root.get("date"), Value(today))
+
+        exp = root["experimenter"]
         self.assertEqual(exp.type, "Person")
-        self.assertEqual(exp["first_name"], Value("John"))
-        self.assertEqual(exp["last_name"], Value("Doe"))
+        self.assertEqual(exp["first_name"], "John")
+        self.assertEqual(exp.get("first_name"), Value("John"))
+        self.assertEqual(exp["last_name"], "Doe")
+        self.assertEqual(exp.get("last_name"), Value("Doe"))
+
         stim01, stim02 = root["stimuli"]
         self.assertEqual(stim01.type, "PulseStimulus")
         self.assertEqual(stim01.label, "first pulse")
-        self.assertEqual(stim01["offset"], Value(10, "ms"))
-        self.assertEqual(stim01["duration"], Value(5, "ms"))
-        self.assertEqual(stim01["current"], Value(0.6, "nA", 0.001))
+        self.assertEqual(stim01["offset"], 10)
+        self.assertEqual(stim01.get("offset"), Value(10, "ms"))
+        self.assertEqual(stim01["duration"], 5)
+        self.assertEqual(stim01.get("duration"), Value(5, "ms"))
+        self.assertEqual(stim01["current"], 0.6)
+        self.assertEqual(stim01.get("current"), Value(0.6, "nA", 0.001))
         self.assertEqual(stim02.type, "PulseStimulus")
         self.assertEqual(stim02.label, "second pulse")
-        self.assertEqual(stim02["offset"], Value(30, "ms"))
-        self.assertEqual(stim02["duration"], Value(5, "ms"))
-        self.assertEqual(stim02["current"], Value(0.8, "nA", 0.001))
+        self.assertEqual(stim02["offset"], 30)
+        self.assertEqual(stim02.get("offset"), Value(30, "ms"))
+        self.assertEqual(stim02["duration"], 5)
+        self.assertEqual(stim02.get("duration"), Value(5, "ms"))
+        self.assertEqual(stim02["current"], 0.8)
+        self.assertEqual(stim02.get("current"), Value(0.8, "nA", 0.001))
 
     def test_subsection(self):
+        today = dt.date.today()
         self.sec["test"] = SB(
             typ="RecordingSession",
             label="session one",
-            date=dt.date.today(),
+            date=today,
             experimenter=SB(
                 typ="Person",
                 first_name="John",
@@ -106,25 +119,36 @@ class TestSB(unittest.TestCase):
                 )
             ]
         )
-        self.assertIsInstance(self.sec["test"][0], Section)
-        section = self.sec["test"][0]
+        self.assertIsInstance(self.sec["test"], Section)
+        section = self.sec["test"]
         self.assertEqual([p for p in section], ["date", "experimenter", "stimuli"])
-        self.assertEqual(section["date"], Value(dt.date.today()))
-        exp = section["experimenter"][0]
+        self.assertEqual(section["date"], today)
+        self.assertEqual(section.get("date"), Value(today))
+
+        exp = section["experimenter"]
         self.assertEqual(exp.type, "Person")
-        self.assertEqual(exp["first_name"], Value("John"))
-        self.assertEqual(exp["last_name"], Value("Doe"))
+        self.assertEqual(exp["first_name"], "John")
+        self.assertEqual(exp.get("first_name"), Value("John"))
+        self.assertEqual(exp["last_name"], "Doe")
+        self.assertEqual(exp.get("last_name"), Value("Doe"))
+
         stim01, stim02 = section["stimuli"]
         self.assertEqual(stim01.type, "PulseStimulus")
         self.assertEqual(stim01.label, "first pulse")
-        self.assertEqual(stim01["offset"], Value(10, "ms"))
-        self.assertEqual(stim01["duration"], Value(5, "ms"))
-        self.assertEqual(stim01["current"], Value(0.6, "nA", 0.001))
+        self.assertEqual(stim01["offset"], 10)
+        self.assertEqual(stim01.get("offset"), Value(10, "ms"))
+        self.assertEqual(stim01["duration"], 5)
+        self.assertEqual(stim01.get("duration"), Value(5, "ms"))
+        self.assertEqual(stim01["current"], 0.6)
+        self.assertEqual(stim01.get("current"), Value(0.6, "nA", 0.001))
         self.assertEqual(stim02.type, "PulseStimulus")
         self.assertEqual(stim02.label, "second pulse")
-        self.assertEqual(stim02["offset"], Value(30, "ms"))
-        self.assertEqual(stim02["duration"], Value(5, "ms"))
-        self.assertEqual(stim02["current"], Value(0.8, "nA", 0.001))
+        self.assertEqual(stim02["offset"], 30)
+        self.assertEqual(stim02.get("offset"), Value(30, "ms"))
+        self.assertEqual(stim02["duration"], 5)
+        self.assertEqual(stim02.get("duration"), Value(5, "ms"))
+        self.assertEqual(stim02["current"], 0.8)
+        self.assertEqual(stim02.get("current"), Value(0.8, "nA", 0.001))
 
     def test_errors(self):
         def set_sec():
