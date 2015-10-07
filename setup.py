@@ -7,7 +7,6 @@
 # LICENSE file in the root of the project.
 
 import re
-import sys
 from setuptools import setup, find_packages
 
 
@@ -32,11 +31,7 @@ LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 install_requires = (
     "setuptools",
     "PyYAML>=3.10",
-    "pysistence>=0.4.1",
 )
-
-if sys.version_info < (3, 4):
-    install_requires += ("enum34", )
 
 tests_require = (
     "nose",
