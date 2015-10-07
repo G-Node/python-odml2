@@ -24,6 +24,9 @@ htmlcov
 *.iml
 .idea
 
+# ipython notebook checkpoints
+.ipynb_checkpoints
+
 # playground file
 playground.py
 
