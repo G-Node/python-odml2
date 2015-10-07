@@ -11,8 +11,13 @@
 
 __all__ = ("YamlBackEnd", )
 
-from itertools import chain
+import io
+import yaml
+import itertools
 from uuid import uuid4
+
+import odml2
+from odml2 import compat
 from odml2.back_end import base
 
 
@@ -21,9 +26,11 @@ class YamlBackEnd(base.BackEnd):
     Back end implementation for yaml files.
     """
 
-    def __init__(self):
-        self.__content = {}     # all sections (by uuid)
-        self.__root = None      # the uuid of the root section
+    def __init__(self, content=None):
+        if content is None:
+            content = {}
+        self.__content = content  # all sections (by uuid)
+        self.__root = None        # the uuid of the root section
         self.__date = None
         self.__author = None
 
@@ -100,7 +107,7 @@ class YamlBackEnd(base.BackEnd):
 
     def section_get_properties(self, uuid):
         sd = self.__section_get(uuid)
-        return sorted(chain(sd.section_props, sd.value_props))
+        return sorted(itertools.chain(sd.section_props, sd.value_props))
 
     def property_has_sections(self, uuid, prop):
         sd = self.__section_get(uuid)
@@ -175,13 +182,83 @@ class YamlBackEnd(base.BackEnd):
         raise NotImplementedError()
 
     def store(self, location):
-        # TODO implement store
-        raise NotImplementedError()
+        data = self.to_dict()
+        if hasattr(location, "write"):
+            # TODO may perform better with a stream used for decoding
+            yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True)
+            if compat.PY2:
+                yaml_str = yaml_str.decode("utf-8")
+            location.write(yaml_str)
+        else:
+            with io.open(location, "w", encoding="utf-8") as f:
+                yaml.safe_dump(data, f, default_flow_style=False, allow_unicode=True)
+
+    def to_dict(self):
+        # TODO can this be implemented nicely without using back-end internals?
+        root = {"author": self.author_get(), "date": self.date_get(),
+                "terms": {"default": []}}
+
+        def convert_value(val):
+            if val.unit is not None or val.uncertainty is not None:
+                return str(val)
+            else:
+                return val.value
+
+        def convert_section(sec_data):
+            sec = {"type": sec_data.type, "uuid": sec_data.uuid}
+            if sec_data.label is not None:
+                sec["label"] = sec_data.label
+            if sec_data.reference is not None:
+                sec["reference"] = sec_data.reference
+            for p, val in sec_data.value_props.items():
+                sec[p] = convert_value(val)
+            for p, children in sec_data.section_props.items():
+                children = [self.__content[uuid] for uuid in children]
+                if len(children) == 1:
+                    sec[p] = convert_section(children[0])
+                else:
+                    sec[p] = [convert_section(c) for c in children]
+            return sec
+
+        sd = self.__content[self.root_get()]
+        root["metadata"] = convert_section(sd)
+        return root
 
     @classmethod
     def load(cls, location):
-        # TODO implement load
-        raise NotImplementedError()
+        if hasattr(location, "read"):
+            data = yaml.load(location)
+        else:
+            with io.open(location, "r", encoding="utf-8") as f:
+                data = yaml.load(f)
+        return cls.from_dict(data)
+
+    @classmethod
+    def from_dict(cls, data):
+        be = YamlBackEnd()
+        if "author" in data:
+            be.author_set(data["author"])
+        if "date" in data:
+            be.date_set(data["date"])
+
+        def read_section(back_end, parent_uuid, parent_prop, sec):
+            if parent_uuid is None:
+                back_end.root_create(sec["type"], sec["uuid"], sec.get("label"), sec.get("reference"))
+            else:
+                back_end.property_add_section(parent_uuid, parent_prop, sec["type"], sec["uuid"],
+                                              sec.get("label"), sec.get("reference"))
+            properties = ((k, v) for k, v in sec.items() if k not in ("type", "uuid", "label", "reference"))
+            for prop, element in properties:
+                if isinstance(element, dict):
+                    read_section(back_end, sec["uuid"], prop, element)
+                elif isinstance(element, list):
+                    for sub_elem in element:
+                        read_section(back_end, sec["uuid"], prop, sub_elem)
+                else:
+                    back_end.property_set_value(sec["uuid"], prop, odml2.value_from(element))
+
+        read_section(be, None, None, data["metadata"])
+        return be
 
     #
     # internal methods

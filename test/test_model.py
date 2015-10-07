@@ -12,7 +12,7 @@ import unittest
 from uuid import uuid4
 
 from odml2 import compat
-from odml2.back_end import yaml
+from odml2.back_end import yaml_io
 from odml2 import Section, SB, Value, value_from
 
 
@@ -22,7 +22,7 @@ class TestSection(unittest.TestCase):
         # populate a backend to provide a section with subsections
         ids = tuple(str(uuid4()) for _ in range(4))
         id_1, id_11, id_111, id_112 = ids
-        be = yaml.YamlBackEnd()
+        be = yaml_io.YamlBackEnd()
         be.root_create("type", id_1, "root", "./example.dat")
         be.property_set_value(id_1, "prop_foo", value_from("foo"))
         be.property_add_section(id_1, "prop_11", "type", id_11)
@@ -32,7 +32,7 @@ class TestSection(unittest.TestCase):
         self.sec = Section(id_1, be)
         # populate a back end to provide an empty section
         self.empty_id = str(uuid4())
-        be = yaml.YamlBackEnd()
+        be = yaml_io.YamlBackEnd()
         be.root_create("type", self.empty_id, "root", "./example.dat")
         self.empty = Section(self.empty_id, be)
 

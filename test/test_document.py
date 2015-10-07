@@ -14,17 +14,17 @@ import datetime as dt
 from uuid import uuid4
 
 from odml2 import Document, Section, SB, load_document, save_document
-from odml2.back_end import yaml
+from odml2.back_end import yaml_io
 
 
 class DocumentTest(unittest.TestCase):
 
     def setUp(self):
         self.root_uuid = str(uuid4())
-        self.back_end = yaml.YamlBackEnd()
+        self.back_end = yaml_io.YamlBackEnd()
         self.back_end.root_create("Experiment", self.root_uuid, "Experiment 01", "./example.dat")
         self.doc = Document("example.yml", self.back_end)
-        other_be = yaml.YamlBackEnd()
+        other_be = yaml_io.YamlBackEnd()
         other_be.root_create("OtherType")
         self.other = Document("other.yml", other_be)
 

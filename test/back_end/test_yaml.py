@@ -8,10 +8,13 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+import io
 import unittest
+import datetime as dt
 from uuid import uuid4
-from odml2.model import Value
-from odml2.back_end.yaml import YamlBackEnd
+
+from odml2 import Document, SB, Value
+from odml2.back_end.yaml_io import YamlBackEnd
 
 
 class YamlBackEndTest(unittest.TestCase):
@@ -62,3 +65,45 @@ class YamlBackEndTest(unittest.TestCase):
         self.assertTrue(be.section_exists(id_1))
         for i in ids[1:]:
             self.assertFalse(be.section_exists(i))
+
+    def test_marshalling(self):
+        be = YamlBackEnd()
+        doc = Document("./example.yaml", be)
+        doc.author = "John Doe"
+        doc.date = dt.date.today()
+        doc.root = SB(
+            typ="RecordingSession",
+            label="session one",
+            date=dt.date.today(),
+            experimenter=SB(
+                typ="Person",
+                first_name="John",
+                last_name="Doe",
+                birthday=dt.date(1970, 11, 11)
+            ),
+            stimuli=[
+                SB(
+                    typ="PulseStimulus",
+                    label="first pulse",
+                    offset="10ms",
+                    duration=Value(5, "ms"),
+                    current="0.6nA+-0.001"
+                ),
+                SB(
+                    typ="PulseStimulus",
+                    label="second pulse",
+                    offset="30ms",
+                    duration="5ms",
+                    current=Value(0.8, "nA", 0.001)
+                )
+            ]
+        )
+        with io.StringIO() as str_io:
+            be.store(str_io)
+            yaml_str = str_io.getvalue()
+        with io.StringIO(yaml_str) as str_io:
+            be = YamlBackEnd.load(str_io)
+        with io.StringIO() as str_io:
+            be.store(str_io)
+            other_yaml_str = str_io.getvalue()
+        self.assertEqual(yaml_str, other_yaml_str)
