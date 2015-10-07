@@ -154,7 +154,7 @@ class Value(object):
 
     def __init__(self, value, unit=None, uncertainty=None):
         self.__value = value
-        self.__unit = str(unit) if unit is not None else None
+        self.__unit = compat.unicode(unit) if unit is not None else None
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
 
     @property
