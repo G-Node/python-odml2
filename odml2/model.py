@@ -154,8 +154,8 @@ class Value(object):
 
     def __init__(self, value, unit=None, uncertainty=None):
         self.__value = value
-        self.__unit = unit
-        self.__uncertainty = uncertainty
+        self.__unit = str(unit) if unit is not None else None
+        self.__uncertainty = float(uncertainty) if uncertainty is not None else None
 
     @property
     def value(self):
@@ -169,18 +169,24 @@ class Value(object):
     def uncertainty(self):
         return self.__uncertainty
 
-    def using(self, value=None, unit=None, uncertainty=None):
+    def copy(self, value=None, unit=None, uncertainty=None):
         return Value(
             value if value is not None else self.value,
             unit if unit is not None else self.unit,
             uncertainty if uncertainty is not None else self.uncertainty
         )
 
+    def __lt__(self, other):
+        return self.value < other.value
+
     def __eq__(self, other):
         if isinstance(other, Value):
             return self.value == other.value and self.unit == other.unit and self.uncertainty == other.uncertainty
         else:
             return False
+
+    def __ne__(self, other):
+        return not self == other
 
     @property
     def __value_str(self):
