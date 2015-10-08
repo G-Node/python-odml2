@@ -12,11 +12,10 @@
 __all__ = ("YamlBackEnd", )
 
 import io
-import yaml
 import itertools
+import yaml
 from uuid import uuid4
 
-import odml2
 from odml2 import compat
 from odml2.back_end import base
 
@@ -29,11 +28,9 @@ class YamlBackEnd(base.BackEnd):
     NAME = "yaml"
     FILE_EXT = ("yaml", "yml")
 
-    def __init__(self, content=None):
-        if content is None:
-            content = {}
-        self.__content = content  # all sections (by uuid)
-        self.__root = None        # the uuid of the root section
+    def __init__(self):
+        self.__content = {}  # all sections (by uuid)
+        self.__root = None   # the uuid of the root section
         self.__date = None
         self.__author = None
 

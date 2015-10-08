@@ -28,7 +28,7 @@ class TestSB(unittest.TestCase):
         uuid = be.root_create("some_type")
         self.other = Section(uuid, be)
         # create an empty document
-        self.doc = Document("./example.yaml", yaml_io.YamlBackEnd())
+        self.doc = Document()
 
     def test_document_root(self):
         today = dt.date.today()

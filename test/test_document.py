@@ -8,25 +8,22 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-import os
+import io
 import unittest
 import datetime as dt
 from uuid import uuid4
 
-from odml2 import Document, Section, SB, load_document, save_document
-from odml2.back_end import yaml_io
+from odml2 import Document, Section, SB, Value
 
 
 class DocumentTest(unittest.TestCase):
 
     def setUp(self):
         self.root_uuid = str(uuid4())
-        self.back_end = yaml_io.YamlBackEnd()
-        self.back_end.root_create("Experiment", self.root_uuid, "Experiment 01", "./example.dat")
-        self.doc = Document("example.yml", self.back_end)
-        other_be = yaml_io.YamlBackEnd()
-        other_be.root_create("OtherType")
-        self.other = Document("other.yml", other_be)
+        self.doc = Document()
+        self.doc.root = SB("Experiment", self.root_uuid, "Experiment 01", "./example.dat")
+        self.other = Document()
+        self.other.root = SB("OtherType")
 
     def test_author(self):
         self.assertIsNone(self.doc.author)
@@ -52,12 +49,49 @@ class DocumentTest(unittest.TestCase):
         self.doc.root = SB("SomeType")
         self.assertIsInstance(self.doc.root, Section)
 
-    def test_load_document(self):
-        def load():
-            load_document(os.path.join("resources", "example.yml"))
-        self.assertRaises(NotImplementedError, load)
+    def test_load_save_document(self):
+        today = dt.date.today()
+        doc = Document()
+        doc.author = "John Doe"
+        doc.date = dt.date.today()
+        root_builder = SB(
+            typ="RecordingSession",
+            label="session one",
+            date=today,
+            experimenter=SB(
+                typ="Person",
+                first_name="John",
+                last_name="Doe",
+                birthday=dt.date(1970, 11, 11)
+            ),
+            stimuli=[
+                SB(
+                    typ="PulseStimulus",
+                    label="first pulse",
+                    offset="10ms",
+                    duration=Value(5, "ms"),
+                    current="0.6nA+-0.001"
+                ),
+                SB(
+                    typ="PulseStimulus",
+                    label="second pulse",
+                    offset="30ms",
+                    duration="5ms",
+                    current=Value(0.8, "nA", 0.001)
+                )
+            ]
+        )
+        doc.root = root_builder
 
-    def test_save_document(self):
-        def save():
-            save_document(self.doc, os.path.join("resources", "example.yml"))
-        self.assertRaises(NotImplementedError, save)
+        f1 = io.StringIO()
+        doc.save(f1)
+        yaml_str = f1.getvalue()
+        f1.close()
+        f1 = io.StringIO(yaml_str)
+        doc = Document()
+        doc.load(f1)
+        f1.close()
+        f1 = io.StringIO()
+        doc.save(f1)
+        self.assertEqual(yaml_str, f1.getvalue())
+        f1.close()
