@@ -55,25 +55,25 @@ class DocumentTest(unittest.TestCase):
         doc.author = "John Doe"
         doc.date = dt.date.today()
         root_builder = SB(
-            typ="RecordingSession",
+            type="RecordingSession",
             label="session one",
             date=today,
             experimenter=SB(
-                typ="Person",
+                type="Person",
                 first_name="John",
                 last_name="Doe",
                 birthday=dt.date(1970, 11, 11)
             ),
             stimuli=[
                 SB(
-                    typ="PulseStimulus",
+                    type="PulseStimulus",
                     label="first pulse",
                     offset="10ms",
                     duration=Value(5, "ms"),
-                    current="0.6nA+-0.001"
+                    current="0.6+-0.001nA"
                 ),
                 SB(
-                    typ="PulseStimulus",
+                    type="PulseStimulus",
                     label="second pulse",
                     offset="30ms",
                     duration="5ms",
