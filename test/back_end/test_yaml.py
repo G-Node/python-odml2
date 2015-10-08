@@ -99,11 +99,12 @@ class YamlBackEndTest(unittest.TestCase):
             ]
         )
         with io.StringIO() as str_io:
-            be.store(str_io)
+            be.save(str_io)
             yaml_str = str_io.getvalue()
         with io.StringIO(yaml_str) as str_io:
-            be = YamlBackEnd.load(str_io)
+            be = YamlBackEnd()
+            be.load(str_io)
         with io.StringIO() as str_io:
-            be.store(str_io)
+            be.save(str_io)
             other_yaml_str = str_io.getvalue()
         self.assertEqual(yaml_str, other_yaml_str)

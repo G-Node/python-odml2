@@ -8,13 +8,11 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-"""
-Contains classes and base classes needed for all back-end implementations.
-"""
-
 __all__ = ("BackEnd", )
 
 import abc
+
+import odml2
 from odml2 import compat
 
 
@@ -124,9 +122,70 @@ class BackEnd(compat.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def store(self, location):
+    def save(self, destination):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def add_all(self, back_end):
+    def load(self, source):
         raise NotImplementedError()
+
+    @abc.abstractmethod
+    def set_from(self, back_end):
+        raise NotImplementedError()
+
+    def to_dict(self):
+        root = {"author": self.author_get(), "date": self.date_get(),
+                "terms": {"default": []}}
+
+        def convert_value(val):
+            if val.unit is not None or val.uncertainty is not None:
+                return str(val)
+            else:
+                return val.value
+
+        def convert_section(uuid):
+            sec = {"uuid": uuid, "type": self.section_get_type(uuid)}
+            label = self.section_get_label(uuid)
+            if label is not None:
+                sec["label"] = label
+            reference = self.section_get_reference(uuid)
+            if reference is not None:
+                sec["reference"] = reference
+            properties = self.section_get_properties(uuid)
+            for p in properties:
+                if self.property_has_value(uuid, p):
+                    sec[p] = convert_value(self.property_get_value(uuid, p))
+                elif self.property_has_sections(uuid, p):
+                    child_uuids = self.property_get_sections(uuid, p)
+                    if len(child_uuids) == 1:
+                        sec[p] = convert_section(child_uuids[0])
+                    else:
+                        sec[p] = [convert_section(child_uuid) for child_uuid in child_uuids]
+            return sec
+
+        root["metadata"] = convert_section(self.root_get())
+        return root
+
+    def from_dict(self, data):
+        if "author" in data:
+            self.author_set(data["author"])
+        if "date" in data:
+            self.date_set(data["date"])
+
+        def read_section(parent_uuid, parent_prop, sec):
+            if parent_uuid is None:
+                self.root_create(sec["type"], sec["uuid"], sec.get("label"), sec.get("reference"))
+            else:
+                self.property_add_section(parent_uuid, parent_prop, sec["type"], sec["uuid"],
+                                              sec.get("label"), sec.get("reference"))
+            properties = ((k, v) for k, v in sec.items() if k not in ("type", "uuid", "label", "reference"))
+            for prop, element in properties:
+                if isinstance(element, dict):
+                    read_section(sec["uuid"], prop, element)
+                elif isinstance(element, list):
+                    for sub_elem in element:
+                        read_section(sec["uuid"], prop, sub_elem)
+                else:
+                    self.property_set_value(sec["uuid"], prop, odml2.value_from(element))
+
+        read_section(None, None, data["metadata"])
