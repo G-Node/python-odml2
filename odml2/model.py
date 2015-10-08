@@ -145,6 +145,8 @@ class Section(object):
 
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
+ALLOWED_VALUE_TYPES = (
+    bool, numbers.Number, dt.date, dt.time, dt.datetime)
 
 
 class Value(object):
@@ -153,7 +155,11 @@ class Value(object):
     """
 
     def __init__(self, value, unit=None, uncertainty=None):
+        if not compat.is_str(value) and not isinstance(value, ALLOWED_VALUE_TYPES):
+            raise ValueError("value must be a string, number, bool or datetime")
         self.__value = value
+        if (unit is not None or uncertainty is not None) and not isinstance(value, numbers.Number):
+            raise ValueError("uncertainty and unit must be None if value is not a number")
         self.__unit = compat.unicode(unit) if unit is not None else None
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
 
@@ -218,15 +224,13 @@ class Value(object):
     def __repr__(self):
         return str(self)
 
-ALLOWED_VALUE_TYPES = (
-    bool, int, float, numbers.Number, dt.date, dt.time, dt.datetime)
 VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
                         u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
                         u"([A-Za-zΩμ]{1,4})?$")
 
 
 def value_from(thing):
-    if isinstance(thing, (str, compat.unicode)):
+    if compat.is_str(thing):
         match = VALUE_EXPR.match(thing)
         if match is None:
             return Value(thing)

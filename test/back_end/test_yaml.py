@@ -10,8 +10,9 @@
 
 import unittest
 from uuid import uuid4
-from odml2.model import Value
-from odml2.back_end.yaml import YamlBackEnd
+
+from odml2 import Value
+from odml2.back_end.yaml_io import YamlBackEnd
 
 
 class YamlBackEndTest(unittest.TestCase):

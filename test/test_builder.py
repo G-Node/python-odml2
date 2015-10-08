@@ -12,7 +12,7 @@ import unittest
 import datetime as dt
 from uuid import uuid4
 
-from odml2.back_end import yaml
+from odml2.back_end import yaml_io
 from odml2 import Document, Section, SB, Value
 
 
@@ -21,14 +21,14 @@ class TestSB(unittest.TestCase):
     def setUp(self):
         # populate a back end to provide an empty section
         self.sec_id = str(uuid4())
-        be = yaml.YamlBackEnd()
+        be = yaml_io.YamlBackEnd()
         be.root_create("type", self.sec_id, "root", "./example.dat")
         self.sec = Section(self.sec_id, be)
-        be = yaml.YamlBackEnd()
+        be = yaml_io.YamlBackEnd()
         uuid = be.root_create("some_type")
         self.other = Section(uuid, be)
         # create an empty document
-        self.doc = Document("./example.yaml", yaml.YamlBackEnd())
+        self.doc = Document()
 
     def test_document_root(self):
         today = dt.date.today()

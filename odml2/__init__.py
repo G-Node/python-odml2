@@ -7,5 +7,5 @@
 # LICENSE file in the root of the project.
 
 from odml2.model import Section, Value, value_from
-from odml2.document import Document, load_document, save_document
+from odml2.document import Document
 from odml2.builder import SB

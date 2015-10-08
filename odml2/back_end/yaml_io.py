@@ -11,8 +11,12 @@
 
 __all__ = ("YamlBackEnd", )
 
-from itertools import chain
+import io
+import itertools
+import yaml
 from uuid import uuid4
+
+from odml2 import compat
 from odml2.back_end import base
 
 
@@ -21,9 +25,12 @@ class YamlBackEnd(base.BackEnd):
     Back end implementation for yaml files.
     """
 
+    NAME = "yaml"
+    FILE_EXT = ("yaml", "yml")
+
     def __init__(self):
-        self.__content = {}     # all sections (by uuid)
-        self.__root = None      # the uuid of the root section
+        self.__content = {}  # all sections (by uuid)
+        self.__root = None   # the uuid of the root section
         self.__date = None
         self.__author = None
 
@@ -52,8 +59,6 @@ class YamlBackEnd(base.BackEnd):
         return self.__root
 
     def root_create(self, typ, uuid=None, label=None, reference=None):
-        if uuid is not None and uuid in self.__content:
-            raise RuntimeError("A section whit the uuid '%s' already exists" % uuid)
         if uuid is None:
             uuid = str(uuid4())
         sd = SecData(typ, uuid, label, reference)
@@ -100,7 +105,7 @@ class YamlBackEnd(base.BackEnd):
 
     def section_get_properties(self, uuid):
         sd = self.__section_get(uuid)
-        return sorted(chain(sd.section_props, sd.value_props))
+        return sorted(itertools.chain(sd.section_props, sd.value_props))
 
     def property_has_sections(self, uuid, prop):
         sd = self.__section_get(uuid)
@@ -170,18 +175,28 @@ class YamlBackEnd(base.BackEnd):
             raise RuntimeError("Unable to remove property '%s' on section with uuid '%s'" %
                                (prop, parent_uuid))
 
-    def add_all(self, back_end):
+    def set_from(self, back_end):
         # TODO implement add_all
         raise NotImplementedError()
 
-    def store(self, location):
-        # TODO implement store
-        raise NotImplementedError()
+    def save(self, destination):
+        data = self.to_dict()
+        if hasattr(destination, "write"):
+            yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True)
+            if compat.PY2:
+                yaml_str = yaml_str.decode("utf-8")
+            destination.write(yaml_str)
+        else:
+            with io.open(destination, "w", encoding="utf-8") as f:
+                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
 
-    @classmethod
-    def load(cls, location):
-        # TODO implement load
-        raise NotImplementedError()
+    def load(self, source):
+        if hasattr(source, "read"):
+            data = yaml.load(source)
+        else:
+            with io.open(source, "r", encoding="utf-8") as f:
+                data = yaml.load(f)
+        self.from_dict(data)
 
     #
     # internal methods

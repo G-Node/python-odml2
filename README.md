@@ -44,17 +44,17 @@ Current development state
 
 The prototype is still in an early development phase and many features are currently not implemented. 
 However some aspects of the library can already be tested. 
-There is a simple ipython notebook [intro.ipynb](/G-Node/python-odml2/blob/master/intro.ipynb) that shows the basic usage.
+There is a simple ipython notebook [intro.ipynb](https://github.com/G-Node/python-odml2/blob/master/intro.ipynb) that shows the basic usage.
 
 #### Implemented features
 
 * Basic API design for accessing and populating documents and sections
 * Value parsing
 * Back-end API design and front-end back-end interaction
+* Serialization and deserialization to Yaml
 
 #### List of unimplemented features
 
-* Serialization and deserialization
 * Everything related to terminologies such as property and section type definitions
 * Links between sections (see link and include in the odML paper)
 * Iteration and filtering of documents

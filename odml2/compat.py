@@ -15,7 +15,7 @@ Some utilities for python 2 and 3 compliant code
 import sys
 import abc
 
-__all__ = ("PY2", "PY3", "ABC", "unicode")
+__all__ = ("PY2", "PY3", "ABC", "unicode", "is_str")
 
 PY2 = sys.version_info[0] == 2
 PY3 = sys.version_info[0] == 3
@@ -31,3 +31,10 @@ if PY2:
     unicode = unicode
 else:
     unicode = str
+
+def is_str(string):
+    if PY2:
+        # noinspection PyUnresolvedReferences
+        return isinstance(string, basestring)
+    else:
+        return isinstance(string, str)
