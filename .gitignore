@@ -12,6 +12,7 @@ parts
 pip-log.txt
 
 # Unit test / coverage reports
+htmlcov
 .coverage
 .tox
 
@@ -22,6 +23,9 @@ pip-log.txt
 # pycharm files
 *.iml
 .idea
+
+# ipython notebook checkpoints
+.ipynb_checkpoints
 
 # playground file
 playground.py

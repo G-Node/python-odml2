@@ -4,10 +4,9 @@
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted under the terms of the BSD License. See
-# LICENSE file in the root of the Project.
+# LICENSE file in the root of the project.
 
 import re
-import sys
 from setuptools import setup, find_packages
 
 
@@ -31,10 +30,12 @@ LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 
 install_requires = (
     "setuptools",
+    "PyYAML>=3.10",
 )
 
-if sys.version_info < (3, 4):
-    install_requires += ("enum34", )
+tests_require = (
+    "nose",
+)
 
 setup(
     name=PACKAGE,
@@ -49,7 +50,7 @@ setup(
     packages=find_packages(exclude=("test", )),
 
     install_requires=install_requires,
-    tests_require=['nose'],
+    tests_require=tests_require,
     test_suite='nose.collector',
 
     classifiers=(
