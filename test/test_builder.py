@@ -48,12 +48,12 @@ class TestSB(unittest.TestCase):
                     label="first pulse",
                     offset="10ms",
                     duration=Value(5, "ms"),
-                    current="0.6nA+-0.001"
+                    current="0.6 +-0.001 nA"
                 ),
                 SB(
                     typ="PulseStimulus",
                     label="second pulse",
-                    offset="30ms",
+                    offset="30 ms",
                     duration="5ms",
                     current=Value(0.8, "nA", 0.001)
                 )
@@ -108,7 +108,7 @@ class TestSB(unittest.TestCase):
                     label="first pulse",
                     offset="10ms",
                     duration=Value(5, "ms"),
-                    current="0.6nA+-0.001"
+                    current="0.6 +-0.001 nA"
                 ),
                 SB(
                     typ="PulseStimulus",

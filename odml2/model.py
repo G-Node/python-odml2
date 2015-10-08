@@ -199,20 +199,20 @@ class Value(object):
 
     def __str__(self):
         parts = [self.__value_str]
-        if self.unit is not None:
-            parts.append(self.unit)
         if self.uncertainty is not None:
             parts.append(PLUS_MINUS)
             parts.append(str(self.uncertainty))
+        if self.unit is not None:
+            parts.append(self.unit)
         return str().join(parts)
 
     def __unicode__(self):
         parts = [self.__value_str]
-        if self.unit is not None:
-            parts.append(self.unit)
         if self.uncertainty is not None:
             parts.append(PLUS_MINUS_UNICODE)
             parts.append(str(self.uncertainty))
+        if self.unit is not None:
+            parts.append(self.unit)
         return compat.unicode().join(parts)
 
     def __repr__(self):
@@ -220,9 +220,9 @@ class Value(object):
 
 ALLOWED_VALUE_TYPES = (
     bool, int, float, numbers.Number, dt.date, dt.time, dt.datetime)
-VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))" +
-                        u"([A-Za-zΩμ]{1,4})?" +
-                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?$")
+VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
+                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
+                        u"([A-Za-zΩμ]{1,4})?$")
 
 
 def value_from(thing):
@@ -232,7 +232,7 @@ def value_from(thing):
             return Value(thing)
         else:
             g = match.groups()
-            num, is_float, unit, uncertainty = (g[0], g[3], g[5], g[8])
+            num, is_float, uncertainty, unit = (g[0], g[3], g[7], g[11])
             num = float(num) if is_float is not None else int(num)
             uncertainty = float(uncertainty) if uncertainty is not None else None
             return Value(num, unit, uncertainty)

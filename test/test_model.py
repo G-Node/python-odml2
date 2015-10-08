@@ -160,7 +160,7 @@ class ValueTest(unittest.TestCase):
         self.assertEqual(v.value, u"µ")
         self.assertIsNone(v.unit)
         self.assertIsNone(v.uncertainty)
-        v = value_from(u"10μΩ±0.2e-2")
+        v = value_from(u"10±0.2e-2μΩ")
         self.assertEqual(v.value, 10)
         self.assertIsInstance(v.value, int)
         self.assertEqual(v.unit, u"μΩ")
@@ -184,7 +184,7 @@ class ValueTest(unittest.TestCase):
         v1 = Value(1, "mV", 0.1)
 
         if compat.PY2:
-            self.assertEqual(str(v1), "1mV+-0.1")
-            self.assertEqual(compat.unicode(v1), u"1mV±0.1")
+            self.assertEqual(str(v1), "1+-0.1mV")
+            self.assertEqual(compat.unicode(v1), u"1±0.1mV")
         else:
-            self.assertEqual(str(v1), "1mV±0.1")
+            self.assertEqual(str(v1), "1±0.1mV")
