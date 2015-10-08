@@ -188,7 +188,7 @@ class YamlBackEnd(base.BackEnd):
             destination.write(yaml_str)
         else:
             with io.open(destination, "w", encoding="utf-8") as f:
-                yaml.safe_dump(data, f, default_flow_style=False, allow_unicode=True)
+                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
 
     def load(self, source):
         if hasattr(source, "read"):
