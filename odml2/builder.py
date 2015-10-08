@@ -18,8 +18,9 @@ class SB(object):
     A section builder
     """
 
-    def __init__(self, typ, uuid=None, label=None, reference=None, **properties):
-        self.type = typ
+    # noinspection PyShadowingBuiltins
+    def __init__(self, type, uuid=None, label=None, reference=None, **properties):
+        self.type = type
         self.uuid = uuid
         self.label = label
         self.reference = reference

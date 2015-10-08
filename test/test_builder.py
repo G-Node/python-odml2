@@ -33,25 +33,25 @@ class TestSB(unittest.TestCase):
     def test_document_root(self):
         today = dt.date.today()
         self.doc.root = SB(
-            typ="RecordingSession",
+            type="RecordingSession",
             label="session one",
             date=today,
             experimenter=SB(
-                typ="Person",
+                type="Person",
                 first_name="John",
                 last_name="Doe",
                 birthday=dt.date(1970, 11, 11)
             ),
             stimuli=[
                 SB(
-                    typ="PulseStimulus",
+                    type="PulseStimulus",
                     label="first pulse",
                     offset="10ms",
                     duration=Value(5, "ms"),
                     current="0.6 +-0.001 nA"
                 ),
                 SB(
-                    typ="PulseStimulus",
+                    type="PulseStimulus",
                     label="second pulse",
                     offset="30 ms",
                     duration="5ms",
@@ -93,25 +93,25 @@ class TestSB(unittest.TestCase):
     def test_subsection(self):
         today = dt.date.today()
         self.sec["test"] = SB(
-            typ="RecordingSession",
+            type="RecordingSession",
             label="session one",
             date=today,
             experimenter=SB(
-                typ="Person",
+                type="Person",
                 first_name="John",
                 last_name="Doe",
                 birthday=dt.date(1970, 11, 11)
             ),
             stimuli=[
                 SB(
-                    typ="PulseStimulus",
+                    type="PulseStimulus",
                     label="first pulse",
                     offset="10ms",
                     duration=Value(5, "ms"),
                     current="0.6 +-0.001 nA"
                 ),
                 SB(
-                    typ="PulseStimulus",
+                    type="PulseStimulus",
                     label="second pulse",
                     offset="30ms",
                     duration="5ms",
@@ -153,14 +153,14 @@ class TestSB(unittest.TestCase):
     def test_errors(self):
         def set_sec():
             self.doc.root = SB(
-                typ="some_type",
+                type="some_type",
                 something=self.other
             )
         self.assertRaises(NotImplementedError, set_sec)
 
         def set_sec_list():
             self.doc.root = SB(
-                typ="some_type",
+                type="some_type",
                 something=[self.other]
             )
         self.assertRaises(NotImplementedError, set_sec_list)
