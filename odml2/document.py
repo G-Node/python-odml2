@@ -30,14 +30,10 @@ class Document(object):
                     break
             if not found:
                 raise ValueError("No back-end found for '%s'" % back_end)
-        elif isinstance(back_end, base.BackEnd):
+        elif isinstance(back_end, base.DocumentBackEnd):
             self.__back_end = back_end
         else:
             raise ValueError("Not a valid back-end %s" % type(back_end))
-
-    @property
-    def autosave(self):
-        return self.__back_end.autosave
 
     @property
     def location(self):
@@ -61,10 +57,10 @@ class Document(object):
 
     @property
     def root(self):
-        if not self.__back_end.root_exists():
+        if not self.__back_end.metadata.root_exists():
             return None
         else:
-            return odml2.Section(self.__back_end.root_get(), self.__back_end)
+            return odml2.Section(self.__back_end.metadata.root_get(), self.__back_end)
 
     @root.setter
     def root(self, element):

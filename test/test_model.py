@@ -23,17 +23,17 @@ class TestSection(unittest.TestCase):
         ids = tuple(str(uuid4()) for _ in range(4))
         id_1, id_11, id_111, id_112 = ids
         be = yaml_io.YamlBackEnd()
-        be.root_create("type", id_1, "root", "./example.dat")
-        be.property_set_value(id_1, "prop_foo", value_from("foo"))
-        be.property_add_section(id_1, "prop_11", "type", id_11)
-        be.property_add_section(id_11, "prop_111", "type", id_111)
-        be.property_add_section(id_11, "prop_112", "type", id_112)
+        be.metadata.root_create("type", id_1, "root", "./example.dat")
+        be.metadata.property_set_value(id_1, "prop_foo", value_from("foo"))
+        be.metadata.property_add_section(id_1, "prop_11", "type", id_11)
+        be.metadata.property_add_section(id_11, "prop_111", "type", id_111)
+        be.metadata.property_add_section(id_11, "prop_112", "type", id_112)
         self.sec_id = id_1
         self.sec = Section(id_1, be)
         # populate a back end to provide an empty section
         self.empty_id = str(uuid4())
         be = yaml_io.YamlBackEnd()
-        be.root_create("type", self.empty_id, "root", "./example.dat")
+        be.metadata.root_create("type", self.empty_id, "root", "./example.dat")
         self.empty = Section(self.empty_id, be)
 
     def test_uuid(self):

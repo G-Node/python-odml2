@@ -32,54 +32,54 @@ class Section(object):
 
     @property
     def type(self):
-        return self.__back_end.section_get_type(self.uuid)
+        return self.__back_end.metadata.section_get_type(self.uuid)
 
     # noinspection PyMethodOverriding
     @type.setter
     def type(self, typ):
-        self.__back_end.section_set_type(self.uuid, typ)
+        self.__back_end.metadata.section_set_type(self.uuid, typ)
 
     @property
     def label(self):
-        return self.__back_end.section_get_label(self.uuid)
+        return self.__back_end.metadata.section_get_label(self.uuid)
 
     # noinspection PyMethodOverriding
     @label.setter
     def label(self, label):
-        self.__back_end.section_set_label(self.uuid, label)
+        self.__back_end.metadata.section_set_label(self.uuid, label)
 
     @property
     def reference(self):
-        return self.__back_end.section_get_reference(self.uuid)
+        return self.__back_end.metadata.section_get_reference(self.uuid)
 
     # noinspection PyMethodOverriding
     @reference.setter
     def reference(self, reference):
-        self.__back_end.section_set_reference(self.uuid, reference)
+        self.__back_end.metadata.section_set_reference(self.uuid, reference)
 
     #
     # dict like access to sections and values
     #
 
     def items(self):
-        for key in self.__back_end.section_get_properties(self.uuid):
+        for key in self.__back_end.metadata.section_get_properties(self.uuid):
             yield (key, self.get(key))
 
     def keys(self):
-        for key in self.__back_end.section_get_properties(self.uuid):
+        for key in self.__back_end.metadata.section_get_properties(self.uuid):
             yield key
 
     def get(self, key):
-        if self.__back_end.property_has_sections(self.uuid, key):
-            ids = self.__back_end.property_get_sections(self.uuid, key)
+        if self.__back_end.metadata.property_has_sections(self.uuid, key):
+            ids = self.__back_end.metadata.property_get_sections(self.uuid, key)
             return [Section(i, self.__back_end) for i in ids]
-        elif self.__back_end.property_has_value(self.uuid, key):
-            return self.__back_end.property_get_value(self.uuid, key)
+        elif self.__back_end.metadata.property_has_value(self.uuid, key):
+            return self.__back_end.metadata.property_get_value(self.uuid, key)
         else:
             return None
 
     def __len__(self):
-        return len(self.__back_end.section_get_properties(self.uuid))
+        return len(self.__back_end.metadata.section_get_properties(self.uuid))
 
     def __iter__(self):
         return self.keys()
@@ -113,13 +113,13 @@ class Section(object):
             raise NotImplementedError()
         else:
             val = value_from(element)
-            self.__back_end.property_set_value(self.uuid, key, val)
+            self.__back_end.metadata.property_set_value(self.uuid, key, val)
 
     def __delitem__(self, key):
-        self.__back_end.property_remove(self.uuid, key)
+        self.__back_end.metadata.property_remove(self.uuid, key)
 
     def __contains__(self, key):
-        return key in self.__back_end.section_get_properties(self.uuid)
+        return key in self.__back_end.metadata.section_get_properties(self.uuid)
 
     #
     # built in methods

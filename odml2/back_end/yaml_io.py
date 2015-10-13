@@ -27,7 +27,7 @@ class YamlBackEnd(memory.MemDocumentBackEnd):
     FILE_EXT = ("yaml", "yml")
 
     def __init__(self):
-        super(YamlBackEnd, self).__init__(memory.MemMetadataBackEnd, memory.MemTerminologyBackEnd)
+        super(YamlBackEnd, self).__init__(memory.MemMetadataBackEnd(), memory.MemTerminologyBackEnd())
 
     def save(self, destination):
         data = self.to_dict()

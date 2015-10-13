@@ -22,10 +22,10 @@ class TestSB(unittest.TestCase):
         # populate a back end to provide an empty section
         self.sec_id = str(uuid4())
         be = yaml_io.YamlBackEnd()
-        be.root_create("type", self.sec_id, "root", "./example.dat")
+        be.metadata.root_create("type", self.sec_id, "root", "./example.dat")
         self.sec = Section(self.sec_id, be)
         be = yaml_io.YamlBackEnd()
-        uuid = be.root_create("some_type")
+        uuid = be.metadata.root_create("some_type")
         self.other = Section(uuid, be)
         # create an empty document
         self.doc = Document()
