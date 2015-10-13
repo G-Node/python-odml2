@@ -200,4 +200,47 @@ class MetadataBackEnd(compat.ABC):
 
 
 class TerminologyBeckEnd(compat.ABC):
-    pass
+
+    @abc.abstractmethod
+    def namespace_get_all(self):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def namespace_create(self, prefix, location=None):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def namespace_remove(self, prefix):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def namespace_get_types(self, prefix):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_create(self, typ, definition=None, properties=None):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_exists(self, typ):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_remove(self, typ):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_get_definition(self, typ):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_set_definition(self, typ, definition):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_add_property(self, typ, prop):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def type_remove_property(self, typ, prop):
+        raise NotImplementedError()
