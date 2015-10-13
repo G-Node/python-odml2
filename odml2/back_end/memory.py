@@ -203,8 +203,78 @@ class MemMetadataBackEnd(base.MetadataBackEnd):
 
 
 class MemTerminologyBackEnd(base.TerminologyBeckEnd):
-    pass
 
+    def __init__(self):
+        self.__namespaces = {"default": NameSpaceData("default")}
+
+    def namespace_get_all(self):
+        return list(self.__namespaces.keys())
+
+    def namespace_create(self, prefix, location=None):
+        if prefix in self.__namespaces:
+            raise RuntimeError("The back-end contains already a namespace with the prefix '%s'" % prefix)
+        if location is not None:
+            # TODO support loading of name-space from other locations
+            raise NotImplementedError()
+        self.__namespaces[prefix] = NameSpaceData(prefix)
+
+    def namespace_remove(self, prefix):
+        ns = self.__namespace_get(prefix)
+        del self.__namespaces[ns.prefix]
+
+    def namespace_get_location(self, prefix):
+        ns = self.__namespace_get(prefix)
+        return ns.location
+
+    def namespace_get_types(self, prefix):
+        ns = self.__namespace_get(prefix)
+        return list(ns.types.keys())
+
+    def type_create(self, typ, definition=None, properties=None):
+        prefix, typ = split_type(typ)
+        ns = self.__namespace_get(prefix)
+        if typ in ns.types:
+            raise RuntimeError("The type already exists: %s:%s" % (prefix, typ))
+        ns[typ] = TypeData(typ, definition, properties)
+
+    def type_exists(self, typ):
+        prefix, typ = split_type(typ)
+        return prefix in self.__namespaces and typ in self.__namespaces[prefix].types
+
+    def type_remove(self, typ):
+        prefix, typ = split_type(typ)
+        ns = self.__namespace_get(prefix)
+        if typ not in ns.types:
+            raise RuntimeError("The type does not exist: %s:%s" % (prefix, typ))
+        del ns[typ]
+
+    def type_get_definition(self, typ):
+        type_data = self.__type_get(typ)
+        return type_data.definition
+
+    def type_set_definition(self, typ, definition):
+        type_data = self.__type_get(typ)
+        type_data.definition = definition
+
+    def type_add_property(self, typ, prop):
+        raise NotImplementedError()
+
+    def type_remove_property(self, typ, prop):
+        raise NotImplementedError()
+
+    def __namespace_get(self, prefix):
+        if prefix is None:
+            prefix = "default"
+        if prefix not in self.__namespaces:
+            raise RuntimeError("The back-end contains no namespace with the prefix '%s'" % prefix)
+        return self.__namespaces[prefix]
+
+    def __type_get(self, typ):
+        prefix, typ = split_type(typ)
+        ns = self.__namespace_get(prefix)
+        if typ in ns.types:
+            raise RuntimeError("The type already exists: %s:%s" % (prefix, typ))
+        return ns[typ]
 
 class SecData(object):
     """
@@ -218,3 +288,48 @@ class SecData(object):
         self.reference = reference
         self.value_props = value_props if value_props is not None else {}
         self.section_props = section_props if section_props is not None else {}
+
+
+class NameSpaceData(object):
+    """
+    Simple container for namespace date managed by the back-end
+    """
+
+    def __init__(self, prefix, location=None, types=None):
+        self.__prefix = prefix
+        self.__location = location
+        self.types = types if types is not None else {}
+
+    @property
+    def prefix(self):
+        return self.__prefix
+
+    @property
+    def location(self):
+        return self.__location
+
+
+class TypeData(object):
+    """
+    Simple container for type definition data managed by the back-end
+    """
+
+    # noinspection PyShadowingBuiltins
+    def __init__(self, type, definition, properties):
+        self.__type = type
+        self.definition = definition
+        self.properties = properties
+
+    @property
+    def type(self):
+        return self.__type
+
+
+def split_type(typ):
+    count = typ.count(":")
+    if count == 0:
+        return "default", typ
+    elif count == 1:
+        return typ.split(":")
+    else:
+        raise RuntimeError("Not a valid type: %s" % type)

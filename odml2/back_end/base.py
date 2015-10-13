@@ -214,6 +214,10 @@ class TerminologyBeckEnd(compat.ABC):
         raise NotImplementedError()
 
     @abc.abstractmethod
+    def namespace_get_location(self, prefix):
+        raise NotImplementedError()
+
+    @abc.abstractmethod
     def namespace_get_types(self, prefix):
         raise NotImplementedError()
 
