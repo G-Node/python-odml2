@@ -8,12 +8,12 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-__all__ = ("DocumentBackEnd", "MetadataBackEnd", "TerminologyBeckEnd")
-
 import abc
 
 import odml2
 from odml2 import compat
+
+__all__ = ("DocumentBackEnd", "MetadataBackEnd", "TerminologyBeckEnd")
 
 
 class DocumentBackEnd(compat.ABC):
