@@ -63,7 +63,7 @@ class BaseDocument(compat.ABC):
 
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
-    def create_root(self, type, uuid, label, reference):
+    def create_root(self, type, uuid, label=None, reference=None):
         pass
 
     @abc.abstractmethod
@@ -136,6 +136,14 @@ class _DictLike(compat.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def remove(self, key):
+        pass
+
+    @abc.abstractmethod
+    def clear(self):
+        pass
+
     def values(self):
         for key in self.keys():
             yield self[key]
@@ -149,6 +157,9 @@ class _DictLike(compat.ABC):
         if item is None:
             raise KeyError(key)
         return item
+
+    def __delitem__(self, key):
+        self.remove(key)
 
     def __contains__(self, item):
         return item in self.keys() or item in self.values()
@@ -164,6 +175,10 @@ class BaseNameSpaceDict(_DictLike):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
+
+    @abc.abstractmethod
+    def add(self, prefix, uri):
+        pass
 
     @abc.abstractmethod
     def get(self, key):
@@ -188,6 +203,10 @@ class BasePropertyDefDict(_DictLike):
     """
 
     @abc.abstractmethod
+    def add(self, name, types=tuple()):
+        pass
+
+    @abc.abstractmethod
     def get(self, key):
         """
         :param key: The namespaces name.
@@ -208,6 +227,11 @@ class BaseTypeDefDict(_DictLike):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
+
+    # noinspection PyShadowingBuiltins
+    @abc.abstractmethod
+    def add(self, type, properties=tuple()):
+        pass
 
     @abc.abstractmethod
     def get(self, key):
@@ -231,6 +255,11 @@ class BaseSectionDict(_DictLike):
     Dict like accessor for namespaces of a odML2 document.
     """
 
+    # noinspection PyShadowingBuiltins
+    @abc.abstractmethod
+    def add(self, type, uuid, label, reference):
+        pass
+
     @abc.abstractmethod
     def get(self, key):
         """
@@ -252,6 +281,10 @@ class BaseSection(compat.ABC):
     """
     Low level access to a section within a document.
     """
+
+    @abc.abstractmethod
+    def is_linked(self):
+        pass
 
     @abc.abstractmethod
     def get_uuid(self):
@@ -297,10 +330,21 @@ class BaseSectionPropertyDict(_DictLike):
     """
 
     @abc.abstractmethod
+    def set(self, prop, refs):
+        """
+        Set the section ids for a section property.
+        :param prop: The property name.
+        :type prop: str
+        :param refs: Tuple of references to sections.
+        :type refs: tuple[Ref]
+        """
+        pass
+
+    @abc.abstractmethod
     def get(self, key):
         """
         :param key: The namespaces name.
-        :return: tuple[BaseSection]
+        :return: tuple[str]
         """
         pass
 
@@ -312,11 +356,44 @@ class BaseSectionPropertyDict(_DictLike):
         """
         pass
 
+    class Ref(object):
+        """
+        Holds information about a section used in a section property.
+        """
+
+        def __init__(self, uuid, namespace, is_link):
+            self.__uuid = uuid
+            self.__namespace = namespace
+            self.__is_link = is_link
+
+        @property
+        def uuid(self):
+            return self.__uuid
+
+        @property
+        def namespace(self):
+            return self.__namespace
+
+        @property
+        def is_link(self):
+            return self.__is_link
+
 
 class BaseValuePropertyDict(_DictLike):
     """
     Dict like accessor for section properties.
     """
+
+    @abc.abstractmethod
+    def set(self, prop, value):
+        """
+        Set the value for a property.
+        :param prop: The name of the property.
+        :type prop: str
+        :param value: The value to set.
+        :type value: odml2.Value
+        """
+        pass
 
     @abc.abstractmethod
     def get(self, key):
@@ -333,6 +410,9 @@ class BaseValuePropertyDict(_DictLike):
         :rtype: collections.Iterable[str]
         """
         pass
+
+    def __setitem__(self, key, value):
+        self.set(key, value)
 
 
 class BaseNameSpace(compat.ABC):

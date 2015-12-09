@@ -21,8 +21,20 @@ Provides abstract base classes for back-end implementations.
 
 class MemDocument(base.BaseDocument):
 
+    def __init__(self, is_writable=True):
+        self.__is_writable = is_writable
+        self.__uri = None
+        self.__date = None
+        self.__author = None
+        self.__version = None
+        self.__root = None
+        self.__namespaces = MemNameSpaceDict(self)
+        self.__property_defs = MemPropertyDefDict(self)
+        self.__type_defs = MemTypeDefDict(self)
+        self.__sections = MemSectionDict(self)
+
     def is_attached(self):
-        pass
+        return False
 
     def is_writable(self):
         pass
@@ -49,7 +61,7 @@ class MemDocument(base.BaseDocument):
         pass
 
     # noinspection PyShadowingBuiltins
-    def create_root(self, type, uuid, label, reference):
+    def create_root(self, type, uuid, label=None, reference=None):
         pass
 
     def get_root(self):
@@ -83,6 +95,15 @@ class MemDocument(base.BaseDocument):
 
 class MemNameSpaceDict(base.BaseNameSpaceDict):
 
+    def add(self, prefix, uri):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def clear(self):
+        pass
+
     def get(self, key):
         pass
 
@@ -91,6 +112,15 @@ class MemNameSpaceDict(base.BaseNameSpaceDict):
 
 
 class MemPropertyDefDict(base.BasePropertyDefDict):
+
+    def add(self, name, types=tuple()):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def clear(self):
+        pass
 
     def get(self, key):
         pass
@@ -101,6 +131,16 @@ class MemPropertyDefDict(base.BasePropertyDefDict):
 
 class MemTypeDefDict(base.BaseTypeDefDict):
 
+    # noinspection PyShadowingBuiltins
+    def add(self, type, properties=tuple()):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def clear(self):
+        pass
+
     def get(self, key):
         pass
 
@@ -110,6 +150,16 @@ class MemTypeDefDict(base.BaseTypeDefDict):
 
 class MemSectionDict(base.BaseSectionDict):
 
+    # noinspection PyShadowingBuiltins
+    def add(self, type, uuid, label, reference):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def clear(self):
+        pass
+
     def get(self, key):
         pass
 
@@ -118,6 +168,9 @@ class MemSectionDict(base.BaseSectionDict):
 
 
 class MemSection(base.BaseSection):
+
+    def is_linked(self):
+        pass
 
     def get_uuid(self):
         pass
@@ -152,6 +205,15 @@ class MemSection(base.BaseSection):
 
 class MemSectionPropertyDict(base.BaseSectionPropertyDict):
 
+    def set(self, prop, refs):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def clear(self):
+        pass
+
     def get(self, key):
         pass
 
@@ -160,6 +222,15 @@ class MemSectionPropertyDict(base.BaseSectionPropertyDict):
 
 
 class MemValuePropertyDict(base.BaseValuePropertyDict):
+
+    def set(self, prop, value):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def clear(self):
+        pass
 
     def get(self, key):
         pass
