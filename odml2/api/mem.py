@@ -71,8 +71,7 @@ class MemDocument(base.BaseDocument):
     def sections(self):
         pass
 
-    @classmethod
-    def load(cls, path):
+    def load(self, path):
         pass
 
     def close(self):

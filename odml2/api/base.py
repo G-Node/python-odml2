@@ -102,7 +102,7 @@ class BaseDocument(compat.ABC):
         """
         pass
 
-    @abc.abstractclassmethod
+    @abc.abstractmethod
     def load(self, path):
         pass
 
