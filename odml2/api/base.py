@@ -9,7 +9,8 @@
 # LICENSE file in the root of the project.
 
 import abc
-from odml2 import compat
+import collections
+from odml2 import compat, value_from
 
 """
 Provides abstract base classes for back-end implementations.
@@ -18,6 +19,9 @@ Provides abstract base classes for back-end implementations.
 # NOTICE: Classes have a getter/setter pattern for attributes instead of
 #         properties in order to distinguish more precisely between read-only
 #         and read-write attributes.
+
+# TODO evaluate use of abc
+# TODO evaluate use of type hints in docstrings
 
 
 class BaseDocument(compat.ABC):
@@ -35,6 +39,10 @@ class BaseDocument(compat.ABC):
 
     @abc.abstractmethod
     def get_uri(self,):
+        pass
+
+    @abc.abstractmethod
+    def set_uri(self, uri):
         pass
 
     @abc.abstractmethod
@@ -58,48 +66,52 @@ class BaseDocument(compat.ABC):
         pass
 
     @abc.abstractmethod
-    def set_version(self):
+    def set_version(self, version):
         pass
 
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
-    def create_root(self, type, uuid, label=None, reference=None):
+    def create_root(self, type, uuid, label, reference):
         pass
 
     @abc.abstractmethod
     def get_root(self):
         pass
 
-    @abc.abstractproperty
+    @property
     def namespaces(self):
         """
         Access to document namespaces.
         :rtype: BaseNameSpaceDict
         """
-        pass
+        raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
     def property_defs(self):
         """
         Access to document property definitions.
         :rtype: BasePropertyDefDict
         """
-        pass
+        raise NotImplementedError
 
-    @abc.abstractproperty
+    @property
     def type_defs(self):
         """
         Access to document type definitions.
         :rtype: BaseTypeDefDict
         """
-        pass
+        raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
     def sections(self):
         """
         Access to ALL document sections.
         :rtype: BaseSectionDict
         """
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def clear(self):
         pass
 
     @abc.abstractmethod
@@ -113,6 +125,114 @@ class BaseDocument(compat.ABC):
     @abc.abstractmethod
     def save(self, path):
         pass
+
+    def to_dict(self):
+        root = {"author": self.get_author(), "date": self.get_date(), "document_version": self.get_version(),
+                "format_version": (2, 0)}
+
+        def convert_value(val):
+            if val.unit is not None or val.uncertainty is not None:
+                return str(val)
+            else:
+                return val.value
+
+        def convert_ns():
+            ns_dict = {}
+            for ns in self.namespaces.values():
+                ns_dict[ns.get_prefix()] = ns.get_uri()
+            return ns_dict
+
+        def convert_definitions():
+            defs_dict = {}
+            for pd in self.property_defs.values():
+                pd_dict = {"types": pd.get_types()}
+                definition = pd.get_definition()
+                if definition is not None:
+                    pd_dict["definition"] = definition
+                defs_dict[pd.get_name()] = pd_dict
+            for td in self.type_defs.values():
+                td_dict = {"properties": td.get_properties()}
+                definition = td.get_definition()
+                if definition is not None:
+                    td_dict["definition"] = definition
+                defs_dict[td.get_type()] = td_dict
+            return defs_dict
+
+        def convert_ref(ref):
+            if ref.is_link:
+                link = ref.uuid
+                if ref.namespace is not None:
+                    link = ref.namespace + ":" + link
+                return link
+            else:
+                return convert_section(ref.uuid)
+
+        def convert_section(uuid):
+            sec = self.sections[uuid]
+            sec_dict = {"uuid": uuid, "type": sec.get_type()}
+            label = sec.get_label()
+            if label is not None:
+                sec_dict["label"] = label
+            reference = sec.get_reference()
+            if reference is not None:
+                sec_dict["reference"] = reference
+            for prop in sec.value_properties:
+                value = sec.value_properties[prop]
+                sec_dict[prop] = convert_value(value)
+            for prop in sec.section_properties:
+                refs = sec.section_properties[prop]
+                if len(refs) == 1:
+                    sec_dict[prop] = convert_ref(refs[0])
+                else:
+                    sec_dict[prop] = [convert_ref(ref) for ref in refs]
+            return sec_dict
+
+        root["namespaces"] = convert_ns()
+        root["definitions"] = convert_definitions()
+        root["metadata"] = convert_section(self.get_root())
+        return root
+
+    def from_dict(self, data):
+        if data["format_version"] != (2, 0):
+            raise RuntimeError("Format version must be 2.0")
+
+        self.clear()
+
+        if "author" in data:
+            self.set_author(data["author"])
+        if "date" in data:
+            self.set_date(data["date"])
+        if "document_version" in data:
+            self.set_version(data["document_version"])
+
+        if "namespaces" in data and data["namespaces"] is not None:
+            for prefix, uri in enumerate(data["namespaces"]):
+                self.namespaces.add(prefix, uri)
+        if "definitions" in data and data["definitions"] is not None:
+            for name, def_data in enumerate(data["definitions"]):
+                if "types" in def_data:
+                    self.property_defs.add(name, def_data.get("definition"), def_data["types"])
+                elif "properties" in def_data:
+                    self.type_defs.add(name, def_data.get("definition"), def_data["properties"])
+
+        def read_section(parent_uuid, parent_prop, sec_data):
+            if parent_uuid is None:
+                self.create_root(sec_data["type"], sec_data["uuid"], sec_data.get("label"), sec_data.get("reference"))
+            else:
+                self.sections.add(sec_data["type"], sec_data["uuid"], sec_data.get("label"), sec_data.get("reference"),
+                                  parent_uuid, parent_prop)
+            properties = ((k, v) for k, v in sec_data.items() if k not in ("type", "uuid", "label", "reference"))
+            for prop, element in properties:
+                if isinstance(element, dict):
+                    read_section(sec_data["uuid"], prop, element)
+                elif isinstance(element, list):
+                    for sub_elem in element:
+                        read_section(sec_data["uuid"], prop, sub_elem)
+                else:
+                    section = self.sections[sec_data["uuid"]]
+                    section.value_properties.set(prop, value_from(element))
+
+        read_section(None, None, data["metadata"])
 
 
 class _DictLike(compat.ABC):
@@ -168,7 +288,9 @@ class _DictLike(compat.ABC):
         return self.keys()
 
     def __len__(self):
-        return len(tuple(self))
+        return len([self.keys()])
+
+collections.Iterable.register(_DictLike)
 
 
 class BaseNameSpaceDict(_DictLike):
@@ -230,7 +352,7 @@ class BaseTypeDefDict(_DictLike):
 
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
-    def add(self, type, properties=tuple()):
+    def add(self, type, definition=None, properties=tuple()):
         pass
 
     @abc.abstractmethod
@@ -257,7 +379,7 @@ class BaseSectionDict(_DictLike):
 
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
-    def add(self, type, uuid, label, reference):
+    def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
         pass
 
     @abc.abstractmethod
@@ -312,16 +434,22 @@ class BaseSection(compat.ABC):
         pass
 
     @abc.abstractmethod
-    def set_reference(self):
+    def set_reference(self, reference):
         pass
 
-    @abc.abstractproperty
+    @property
     def section_properties(self):
-        pass
+        """
+        :rtype: BaseSectionPropertyDict
+        """
+        raise NotImplementedError()
 
-    @abc.abstractproperty
+    @property
     def value_properties(self):
-        pass
+        """
+        :rtype: BasePropertyDefDict
+        """
+        raise NotImplementedError()
 
 
 class BaseSectionPropertyDict(_DictLike):
@@ -344,7 +472,7 @@ class BaseSectionPropertyDict(_DictLike):
     def get(self, key):
         """
         :param key: The namespaces name.
-        :return: tuple[str]
+        :return: tuple[Ref]
         """
         pass
 
@@ -421,7 +549,7 @@ class BaseNameSpace(compat.ABC):
     """
 
     @abc.abstractmethod
-    def get_name(self):
+    def get_prefix(self):
         pass
 
     @abc.abstractmethod
@@ -429,7 +557,7 @@ class BaseNameSpace(compat.ABC):
         pass
 
     @abc.abstractmethod
-    def set_uri(self):
+    def set_uri(self, uri):
         pass
 
 
@@ -447,7 +575,7 @@ class BasePropertyDefinition(compat.ABC):
         pass
 
     @abc.abstractmethod
-    def set_definition(self):
+    def set_definition(self, definition):
         pass
 
     @abc.abstractmethod
@@ -479,7 +607,7 @@ class BaseTypeDefinition(compat.ABC):
         pass
 
     @abc.abstractmethod
-    def set_definition(self):
+    def set_definition(self, definition):
         pass
 
     @abc.abstractmethod
