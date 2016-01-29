@@ -21,7 +21,7 @@ Provides abstract base classes for back-end implementations.
 #         and read-write attributes.
 
 # TODO evaluate use of abc
-# TODO evaluate use of type hints in docstrings
+# TODO evaluate use of docstring type hints
 
 
 class BaseDocument(compat.ABC):
@@ -288,7 +288,7 @@ class _DictLike(compat.ABC):
         return self.keys()
 
     def __len__(self):
-        return len([self.keys()])
+        return sum(1 for _ in self.keys())
 
 collections.Iterable.register(_DictLike)
 
@@ -464,7 +464,7 @@ class BaseSectionPropertyDict(_DictLike):
         :param prop: The property name.
         :type prop: str
         :param refs: Tuple of references to sections.
-        :type refs: tuple[Ref]
+        :type refs: tuple[SectionRef]
         """
         pass
 
@@ -472,7 +472,7 @@ class BaseSectionPropertyDict(_DictLike):
     def get(self, key):
         """
         :param key: The namespaces name.
-        :return: tuple[Ref]
+        :return: tuple[SectionRef]
         """
         pass
 
@@ -484,27 +484,28 @@ class BaseSectionPropertyDict(_DictLike):
         """
         pass
 
-    class Ref(object):
-        """
-        Holds information about a section used in a section property.
-        """
 
-        def __init__(self, uuid, namespace, is_link):
-            self.__uuid = uuid
-            self.__namespace = namespace
-            self.__is_link = is_link
+class SectionRef(object):
+    """
+    Holds information about a reference to a section used in a section property.
+    """
 
-        @property
-        def uuid(self):
-            return self.__uuid
+    def __init__(self, uuid, namespace, is_link):
+        self.__uuid = uuid
+        self.__namespace = namespace
+        self.__is_link = is_link
 
-        @property
-        def namespace(self):
-            return self.__namespace
+    @property
+    def uuid(self):
+        return self.__uuid
 
-        @property
-        def is_link(self):
-            return self.__is_link
+    @property
+    def namespace(self):
+        return self.__namespace
+
+    @property
+    def is_link(self):
+        return self.__is_link
 
 
 class BaseValuePropertyDict(_DictLike):

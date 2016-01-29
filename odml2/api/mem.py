@@ -10,7 +10,9 @@
 
 import abc
 from uuid import UUID
+import odml2
 from odml2.api import base
+
 
 """
 Provides abstract base classes for back-end implementations.
@@ -70,15 +72,14 @@ class MemDocument(base.BaseDocument):
         self.__version = version
 
     # noinspection PyShadowingBuiltins
-    def create_root(self, type, uuid, label=None, reference=None):
-        self.sections.clear()
-        if isinstance(uuid, UUID):
-            uuid = str(uuid)
+    def create_root(self, type, uuid, label, reference):
         self.sections.add(type, uuid, label, reference, None, None)
-        self.__root = uuid
 
     def get_root(self):
         return self.__root
+
+    def set_root(self, uuid):
+        self.__root = uuid
 
     @property
     def namespaces(self):
@@ -198,13 +199,47 @@ class MemSectionDict(base.BaseSectionDict):
 
     # noinspection PyShadowingBuiltins
     def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
-        # TODO handle parent uuid and property
         if isinstance(uuid, UUID):
             uuid = str(uuid)
-        self.__sections[uuid] = MemSection(self.__doc, type, uuid, label, reference, is_linked=False)
+        if parent_uuid is None and parent_prop is None:
+            # add a new root section
+            self.clear()
+            self.__sections[uuid] = MemSection(self.__doc, type, uuid, label, reference, is_linked=False)
+            self.__doc.set_root(uuid)
+        elif parent_uuid is not None and parent_prop is not None:
+            # add a new sub section
+            # TODO handle parents with namespace
+            if uuid in self:
+                raise ValueError("A section with the given uuid '%s' does already exist" % uuid)
+
+            parent = self.get(parent_uuid)
+            if parent is None:
+                raise ValueError("Parent section with uuid '%s' does not exist" % parent_uuid)
+
+            refs = (base.SectionRef(uuid, None, False), )
+            if parent_prop in parent.section_properties:
+                refs = parent.section_properties[parent_prop] + refs
+            parent.section_properties.set(parent_prop, refs)
+            self.__sections[uuid] = MemSection(self.__doc, type, uuid, label, reference, is_linked=False)
+        else:
+            raise RuntimeError("Parent uuid and prop must be either both None or both not None!")
 
     def remove(self, key):
-        del self.__sections[key]
+        if key not in self:
+            raise KeyError("A section with the given uuid '%s' does not exist" % key)
+
+        def remove_with_subsections(key):
+            sec = self[key]
+            for refs in sec.section_properties.values():
+                for ref in refs:
+                    if not ref.is_link:
+                        remove_with_subsections(ref.uuid)
+            del self.__sections[key]
+
+        remove_with_subsections(key)
+
+        if len(self.__sections) == 0:
+            self.__doc.set_root(None)
 
     def clear(self):
         self.__sections.clear()
@@ -293,6 +328,8 @@ class MemValuePropertyDict(base.BaseValuePropertyDict):
         self.__value_props = {}
 
     def set(self, prop, value):
+        if not isinstance(value, odml2.Value):
+            raise ValueError("Type odml2.Value expected, but was %s" % type(value))
         self.__value_props[prop] = value
 
     def remove(self, key):
