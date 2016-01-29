@@ -22,7 +22,8 @@ class Section(object):
     Represents an odML section entity.
     """
 
-    def __init__(self, uuid, back_end):
+    def __init__(self, uuid, back_end, is_link):
+        self.__is_link = is_link
         self.__uuid = uuid
         self.__back_end = back_end
 
@@ -32,54 +33,64 @@ class Section(object):
 
     @property
     def type(self):
-        return self.__back_end.metadata.section_get_type(self.uuid)
+        return self.__back_end.sections[self.uuid].get_type()
 
-    # noinspection PyMethodOverriding
+    # noinspection PyShadowingBuiltins
     @type.setter
-    def type(self, typ):
-        self.__back_end.metadata.section_set_type(self.uuid, typ)
+    def type(self, type):
+        self.__back_end.sections[self.uuid].set_type(type)
 
     @property
     def label(self):
-        return self.__back_end.metadata.section_get_label(self.uuid)
+        return self.__back_end.sections[self.uuid].get_label()
 
-    # noinspection PyMethodOverriding
     @label.setter
     def label(self, label):
-        self.__back_end.metadata.section_set_label(self.uuid, label)
+        self.__back_end.sections[self.uuid].set_label(label)
 
     @property
     def reference(self):
-        return self.__back_end.metadata.section_get_reference(self.uuid)
+        return self.__back_end.sections[self.uuid].get_reference()
 
-    # noinspection PyMethodOverriding
     @reference.setter
     def reference(self, reference):
-        self.__back_end.metadata.section_set_reference(self.uuid, reference)
+        self.__back_end.sections[self.uuid].set_reference(reference)
+
+    @property
+    def is_link(self):
+        return self.__is_link
 
     #
     # dict like access to sections and values
     #
 
     def items(self):
-        for key in self.__back_end.metadata.section_get_properties(self.uuid):
+        sec = self.__back_end.sections[self.uuid]
+        for key in sec.value_properties:
+            yield (key, self.get(key))
+        for key in sec.section_properties:
             yield (key, self.get(key))
 
     def keys(self):
-        for key in self.__back_end.metadata.section_get_properties(self.uuid):
+        sec = self.__back_end.sections[self.uuid]
+        for key in sec.value_properties:
+            yield key
+        for key in sec.section_properties:
             yield key
 
     def get(self, key):
-        if self.__back_end.metadata.property_has_sections(self.uuid, key):
-            ids = self.__back_end.metadata.property_get_sections(self.uuid, key)
-            return [Section(i, self.__back_end) for i in ids]
-        elif self.__back_end.metadata.property_has_value(self.uuid, key):
-            return self.__back_end.metadata.property_get_value(self.uuid, key)
+        sec = self.__back_end.sections[self.uuid]
+        if key in sec.value_properties:
+            return sec.value_properties[key]
+        elif key in sec.section_properties:
+            refs = sec.section_properties[key]
+            return [Section(ref.uuid, self.__back_end, ref.is_link) for ref in refs]
         else:
             return None
 
     def __len__(self):
-        return len(self.__back_end.metadata.section_get_properties(self.uuid))
+        sec = self.__back_end.sections[self.uuid]
+        return len(sec.value_properties) + len(sec.section_properties)
 
     def __iter__(self):
         return self.keys()
@@ -113,13 +124,21 @@ class Section(object):
             raise NotImplementedError()
         else:
             val = value_from(element)
-            self.__back_end.metadata.property_set_value(self.uuid, key, val)
+            sec = self.__back_end.sections[self.uuid]
+            sec.value_properties[key] = val
 
     def __delitem__(self, key):
-        self.__back_end.metadata.property_remove(self.uuid, key)
+        sec = self.__back_end.sections[self.uuid]
+        if key in sec.value_properties:
+            del sec.value_properties[key]
+        elif key in sec.section_properties:
+            del sec.section_properties[key]
+        else:
+            raise KeyError("The section has no property with the name '%s'" % key)
 
     def __contains__(self, key):
-        return key in self.__back_end.metadata.section_get_properties(self.uuid)
+        sec = self.__back_end.sections[self.uuid]
+        return key in sec.value_properties or key in sec.section_properties
 
     #
     # built in methods
