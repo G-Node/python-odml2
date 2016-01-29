@@ -29,12 +29,11 @@ class SB(object):
     def build(self, back_end, parent_uuid=None, prop=None):
         # TODO What about error handling (undo already built sections)?
         if parent_uuid is None:
-            uuid = back_end.metadata.root_create(self.type, self.uuid, self.label, self.reference)
+            uuid = back_end.sections.create_root(self.type, self.uuid, self.label, self.reference)
         else:
             if prop is None:
                 raise ValueError("A property name is needed to append the section")
-            uuid = back_end.metadata.property_add_section(parent_uuid, prop, self.type, self.uuid,
-                                                          self.label, self.reference)
+            uuid = back_end.sections.add(self.type, self.uuid, self.label, self.reference, parent_uuid, prop)
         for p, element in self.properties.items():
             if isinstance(element, list):
                 for sub in element:
@@ -52,4 +51,4 @@ class SB(object):
                 raise NotImplementedError()
             else:
                 value = odml2.value_from(element)
-                back_end.metadata.property_set_value(uuid, p, value)
+                back_end.sections[uuid].value_properties.set(p, value)
