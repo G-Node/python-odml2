@@ -32,6 +32,7 @@ if PY2:
 else:
     unicode = str
 
+
 def is_str(string):
     if PY2:
         # noinspection PyUnresolvedReferences
