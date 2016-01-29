@@ -8,13 +8,13 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-__all__ = ("Section", "Value", "value_from")
-
 import re
 import datetime as dt
 import numbers
 import odml2
 from odml2 import compat
+
+__all__ = ("Section", "Value", "value_from")
 
 
 class Section(object):
