@@ -8,9 +8,9 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-__all__ = ("SB", )
-
 import odml2
+
+__all__ = ("SB", )
 
 
 class SB(object):
@@ -33,7 +33,8 @@ class SB(object):
         else:
             if prop is None:
                 raise ValueError("A property name is needed to append the section")
-            uuid = back_end.metadata.property_add_section(parent_uuid, prop, self.type, self.uuid, self.label, self.reference)
+            uuid = back_end.metadata.property_add_section(parent_uuid, prop, self.type, self.uuid,
+                                                          self.label, self.reference)
         for p, element in self.properties.items():
             if isinstance(element, list):
                 for sub in element:
