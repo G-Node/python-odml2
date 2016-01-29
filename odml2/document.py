@@ -8,19 +8,18 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-__all__ = ("Document", "load_document", "save_document")
-
 import odml2
 from odml2 import compat
-from odml2.back_end import yaml_io, base
+from odml2.api import yml, base
 
-BACK_ENDS = (yaml_io.YamlBackEnd, )
+__all__ = ("BACK_ENDS", "Document", "load_document", "save_document")
+
+BACK_ENDS = (yml.YamlDocument, )
 
 
 class Document(object):
 
     def __init__(self, back_end="yaml"):
-        self.__location = None
         if compat.is_str(back_end):
             found = False
             for be in BACK_ENDS:
@@ -30,37 +29,53 @@ class Document(object):
                     break
             if not found:
                 raise ValueError("No back-end found for '%s'" % back_end)
-        elif isinstance(back_end, base.DocumentBackEnd):
+        elif isinstance(back_end, base.BaseDocument):
             self.__back_end = back_end
         else:
             raise ValueError("Not a valid back-end %s" % type(back_end))
 
     @property
+    def is_attached(self):
+        return self.__back_end.is_attached()
+
+    @property
+    def is_writable(self):
+        return self.__back_end.is_writable()
+
+    @property
     def location(self):
-        return self.__location
+        return self.__back_end.get_uri()
 
     @property
     def author(self):
-        return self.__back_end.author_get()
+        return self.__back_end.get_author()
 
     @author.setter
     def author(self, author):
-        self.__back_end.author_set(author)
+        self.__back_end.set_author(author)
 
     @property
     def date(self):
-        return self.__back_end.date_get()
+        return self.__back_end.get_date()
 
     @date.setter
     def date(self, date):
-        self.__back_end.date_set(date)
+        self.__back_end.set_date(date)
+
+    @property
+    def version(self):
+        return self.__back_end.get_version()
+
+    @version.setter
+    def version(self, version):
+        self.__back_end.set_version(version)
 
     @property
     def root(self):
-        if not self.__back_end.metadata.root_exists():
+        uuid = self.__back_end.get_root()
+        if uuid is None:
             return None
-        else:
-            return odml2.Section(self.__back_end.metadata.root_get(), self.__back_end)
+        return odml2.Section(uuid, self.__back_end)
 
     @root.setter
     def root(self, element):
@@ -73,17 +88,13 @@ class Document(object):
             raise ValueError("Only Section and SB can be used as root")
 
     def save(self, destination=None):
-        if destination is None:
-            destination = self.__location
         self.__back_end.save(destination)
 
     def load(self, source):
-        if compat.is_str(source):
-            self.__location = source
         self.__back_end.load(source)
 
     def __str__(self):
-        return "Document(location='%s', author='%s', date=%s)" % (self.__location, self.author, self.date)
+        return "Document(location='%s', author='%s', date=%s)" % (self.__back_end.get_uri(), self.author, self.date)
 
     def __repr__(self):
         return str(self)

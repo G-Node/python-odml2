@@ -23,6 +23,8 @@ from odml2.api import mem
 
 class YamlDocument(mem.MemDocument):
 
+    NAME = "yaml"
+
     def __init__(self, is_writable=True):
         super(YamlDocument, self).__init__(is_writable)
 
