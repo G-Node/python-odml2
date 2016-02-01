@@ -8,9 +8,10 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+import six
 import abc
 import collections
-from odml2 import compat, value_from
+from odml2 import value_from
 
 """
 Provides abstract base classes for back-end implementations.
@@ -24,7 +25,8 @@ Provides abstract base classes for back-end implementations.
 # TODO evaluate use of docstring type hints
 
 
-class BaseDocument(compat.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class BaseDocument(object):
     """
     Low level access to an odML2 document
     """
@@ -235,7 +237,8 @@ class BaseDocument(compat.ABC):
         read_section(None, None, data["metadata"])
 
 
-class _DictLike(compat.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class _DictLike(object):
     """
     Dictionary like access to related objects.
     """
@@ -399,7 +402,8 @@ class BaseSectionDict(_DictLike):
         pass
 
 
-class BaseSection(compat.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class BaseSection(object):
     """
     Low level access to a section within a document.
     """
@@ -544,7 +548,8 @@ class BaseValuePropertyDict(_DictLike):
         self.set(key, value)
 
 
-class BaseNameSpace(compat.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class BaseNameSpace(object):
     """
     Low level access to the name-spaces of an odML2 document.
     """
@@ -562,7 +567,8 @@ class BaseNameSpace(compat.ABC):
         pass
 
 
-class BasePropertyDefinition(compat.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class BasePropertyDefinition(object):
     """
     Low level access to a property definition of an odML2 document.
     """
@@ -594,7 +600,8 @@ class BasePropertyDefinition(compat.ABC):
         pass
 
 
-class BaseTypeDefinition(compat.ABC):
+@six.add_metaclass(abc.ABCMeta)
+class BaseTypeDefinition(object):
     """
     Low-level access to a type definition of an odML2 document.
     """

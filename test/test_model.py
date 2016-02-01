@@ -8,10 +8,10 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+import six
 import unittest
 from uuid import uuid4
 
-from odml2 import compat
 from odml2.api import yml
 from odml2 import Section, SB, Value, value_from
 
@@ -188,8 +188,8 @@ class ValueTest(unittest.TestCase):
     def test_str(self):
         v1 = Value(1, "mV", 0.1)
 
-        if compat.PY2:
+        if six.PY2:
             self.assertEqual(str(v1), "1+-0.1mV")
-            self.assertEqual(compat.unicode(v1), u"1±0.1mV")
+            self.assertEqual(six.u(v1), u"1±0.1mV")
         else:
             self.assertEqual(str(v1), "1±0.1mV")

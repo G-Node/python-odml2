@@ -9,10 +9,10 @@
 # LICENSE file in the root of the project.
 
 import re
+import six
 import datetime as dt
 import numbers
 import odml2
-from odml2 import compat
 
 __all__ = ("Section", "Value", "value_from")
 
@@ -160,12 +160,11 @@ class Section(object):
         return str(self)
 
     def __unicode__(self):
-        return compat.unicode(str(self))
+        return six.u(str(self))
 
 PLUS_MINUS_UNICODE = u"±"
-PLUS_MINUS = PLUS_MINUS_UNICODE if compat.PY3 else "+-"
-ALLOWED_VALUE_TYPES = (
-    bool, numbers.Number, dt.date, dt.time, dt.datetime)
+PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
+ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
 
 
 class Value(object):
@@ -174,12 +173,12 @@ class Value(object):
     """
 
     def __init__(self, value, unit=None, uncertainty=None):
-        if not compat.is_str(value) and not isinstance(value, ALLOWED_VALUE_TYPES):
+        if not isinstance(value, ALLOWED_VALUE_TYPES):
             raise ValueError("value must be a string, number, bool or datetime")
         self.__value = value
         if (unit is not None or uncertainty is not None) and not isinstance(value, numbers.Number):
             raise ValueError("uncertainty and unit must be None if value is not a number")
-        self.__unit = compat.unicode(unit) if unit is not None else None
+        self.__unit = six.u(unit) if unit is not None else None
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
 
     @property
@@ -217,7 +216,7 @@ class Value(object):
     def __value_str(self):
         if isinstance(self.value, (dt.date, dt.time, dt.datetime)):
             return self.value.isoformat()
-        elif isinstance(self.value, (compat.unicode, str)):
+        elif isinstance(self.value, six.string_types):
             return self.value
         else:
             return str(self.value)
@@ -238,7 +237,7 @@ class Value(object):
             parts.append(str(self.uncertainty))
         if self.unit is not None:
             parts.append(self.unit)
-        return compat.unicode().join(parts)
+        return six.u("").join(parts)
 
     def __repr__(self):
         return str(self)
@@ -249,7 +248,7 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
 
 
 def value_from(thing):
-    if compat.is_str(thing):
+    if isinstance(thing, six.string_types):
         match = VALUE_EXPR.match(thing)
         if match is None:
             return Value(thing)

@@ -13,9 +13,9 @@ Provides a back-and implementation for yaml using the memory back-end base class
 """
 
 import io
+import six
 import yaml
 
-from odml2 import compat
 from odml2.api import mem
 
 # TODO implement loading and saving to URI
@@ -35,7 +35,7 @@ class YamlDocument(mem.MemDocument):
         data = self.to_dict()
         if hasattr(source, "write"):
             yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True)
-            if compat.PY2:
+            if six.PY2:
                 yaml_str = yaml_str.decode("utf-8")
             source.write(yaml_str)
             if hasattr(source, "name"):

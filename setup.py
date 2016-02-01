@@ -30,6 +30,7 @@ LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 
 install_requires = (
     "setuptools",
+    "six",
     "PyYAML>=3.10",
 )
 

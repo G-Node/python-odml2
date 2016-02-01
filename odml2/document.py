@@ -8,8 +8,8 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+import six
 import odml2
-from odml2 import compat
 from odml2.api import yml, base
 
 __all__ = ("BACK_ENDS", "Document", "load_document", "save_document")
@@ -20,7 +20,7 @@ BACK_ENDS = (yml.YamlDocument, )
 class Document(object):
 
     def __init__(self, back_end="yaml"):
-        if compat.is_str(back_end):
+        if isinstance(back_end, six.string_types):
             found = False
             for be in BACK_ENDS:
                 if be.NAME == back_end:
@@ -100,4 +100,4 @@ class Document(object):
         return str(self)
 
     def __unicode__(self):
-        return compat.unicode(str(self))
+        return six.u(str(self))
