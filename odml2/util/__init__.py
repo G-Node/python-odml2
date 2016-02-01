@@ -9,5 +9,5 @@
 # LICENSE file in the root of the project.
 
 """
-Provides base classes for the back-end api as well as back-end implementations.
+Provides modules with utility classes and functions.
 """

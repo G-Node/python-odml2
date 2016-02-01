@@ -42,10 +42,6 @@ class DocumentTest(unittest.TestCase):
         self.assertEqual(root.uuid, self.root_uuid)
 
     def test_set_root(self):
-        def add_root():
-            self.doc.root = self.other.root
-        self.assertRaises(NotImplementedError, add_root)
-
         self.doc.root = SB("SomeType")
         self.assertIsInstance(self.doc.root, Section)
 

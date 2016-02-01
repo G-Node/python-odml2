@@ -11,8 +11,9 @@
 import six
 import abc
 import datetime
-import collections
+
 from odml2 import value_from
+from odml2.util.dict_like import DictLike
 
 """
 Provides abstract base classes for back-end implementations.
@@ -293,66 +294,7 @@ class BaseDocument(object):
         read_section(None, None, data["metadata"])
 
 
-@six.add_metaclass(abc.ABCMeta)
-class _DictLike(object):
-    """
-    Dictionary like access to related objects.
-    """
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The key of the related object.
-        :return: object
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all keys.
-        :rtype: collections.Iterable[str]
-        """
-        pass
-
-    @abc.abstractmethod
-    def remove(self, key):
-        pass
-
-    @abc.abstractmethod
-    def clear(self):
-        pass
-
-    def values(self):
-        for key in self.keys():
-            yield self[key]
-
-    def items(self):
-        for key in self.keys():
-            yield (key, self[key])
-
-    def __getitem__(self, key):
-        item = self.get(key)
-        if item is None:
-            raise KeyError(key)
-        return item
-
-    def __delitem__(self, key):
-        self.remove(key)
-
-    def __contains__(self, item):
-        return item in self.keys() or item in self.values()
-
-    def __iter__(self):
-        return self.keys()
-
-    def __len__(self):
-        return sum(1 for _ in self.keys())
-
-collections.Iterable.register(_DictLike)
-
-
-class BaseNameSpaceDict(_DictLike):
+class BaseNameSpaceDict(DictLike):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
@@ -378,7 +320,7 @@ class BaseNameSpaceDict(_DictLike):
         pass
 
 
-class BasePropertyDefDict(_DictLike):
+class BasePropertyDefDict(DictLike):
     """
     Dict like accessor for property definitions of an odML2 document.
     """
@@ -404,7 +346,7 @@ class BasePropertyDefDict(_DictLike):
         pass
 
 
-class BaseTypeDefDict(_DictLike):
+class BaseTypeDefDict(DictLike):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
@@ -431,7 +373,7 @@ class BaseTypeDefDict(_DictLike):
         pass
 
 
-class BaseSectionDict(_DictLike):
+class BaseSectionDict(DictLike):
     """
     Dict like accessor for namespaces of a odML2 document.
     """
@@ -512,7 +454,7 @@ class BaseSection(object):
         raise NotImplementedError()
 
 
-class BaseSectionPropertyDict(_DictLike):
+class BaseSectionPropertyDict(DictLike):
     """
     Dict like accessor for section properties.
     """
@@ -568,7 +510,7 @@ class SectionRef(object):
         return self.__is_link
 
 
-class BaseValuePropertyDict(_DictLike):
+class BaseValuePropertyDict(DictLike):
     """
     Dict like accessor for section properties.
     """
