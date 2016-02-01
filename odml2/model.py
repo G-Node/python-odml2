@@ -22,7 +22,7 @@ class Section(object):
     Represents an odML section entity.
     """
 
-    def __init__(self, uuid, back_end, is_link):
+    def __init__(self, uuid, back_end, is_link=False):
         self.__is_link = is_link
         self.__uuid = uuid
         self.__back_end = back_end
