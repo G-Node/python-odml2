@@ -13,8 +13,9 @@ import six
 import datetime as dt
 import numbers
 import odml2
+from odml2.util.dict_like import DictLike
 
-__all__ = ("Section", "Value", "value_from")
+__all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "value_from")
 
 
 class Section(object):
@@ -290,3 +291,145 @@ def value_from(thing):
         return thing
     else:
         raise ValueError("Can't covert '%s' to a value" % repr(thing))
+
+
+class NameSpace(object):
+
+    def __init__(self, prefix, uri):
+        self.__prefix = prefix
+        self.__uri = uri
+
+    @property
+    def prefix(self):
+        return self.__prefix
+
+    @property
+    def uri(self):
+        return self.__uri
+
+    def copy(self, prefix=None, uri=None):
+        return NameSpace(
+            str(prefix) if prefix is not None else self.__prefix,
+            str(uri) if uri is not None else self.__uri
+        )
+
+    def from_str(self, ns):
+        pass
+
+
+class NameSpaceDict(DictLike):
+
+    def add(self, prefix_or_ns, uri=None):
+        pass
+
+    def keys(self):
+        pass
+
+    def clear(self):
+        pass
+
+    def get(self, key):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def __setitem__(self, key, ns):
+        pass
+
+
+class TypeDef(object):
+
+    def __init__(self, name, definition, properties):
+        self.__name = name
+        self.__definition = definition
+        self.__properties = frozenset(properties)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def definition(self):
+        return self.__definition
+
+    @property
+    def properties(self):
+        return self.__properties
+
+    def copy(self, name=None, definition=None, properties=frozenset()):
+        return PropertyDef(
+                str(name) if name is not None else self.__name,
+                str(definition) if definition is not None else self.__definition,
+                properties if properties != frozenset() else self.__properties
+        )
+
+
+class TypeDefDict(DictLike):
+
+    def add(self, name_or_def, definition=None, types=frozenset()):
+        pass
+
+    def keys(self):
+        pass
+
+    def clear(self):
+        pass
+
+    def get(self, key):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def __setitem__(self, name, type_def):
+        pass
+
+
+class PropertyDef(object):
+
+    def __init__(self, name, definition, types):
+        self.__name = name
+        self.__definition = definition
+        self.__types = frozenset(types)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def definition(self):
+        return self.__definition
+
+    @property
+    def types(self):
+        return self.__types
+
+    def copy(self, name=None, definition=None, types=frozenset()):
+        return PropertyDef(
+                str(name) if name is not None else self.__name,
+                str(definition) if definition is not None else self.__definition,
+                types if types != frozenset() else self.__types
+        )
+
+
+class PropertyDefDict(DictLike):
+
+    def add(self, name_or_def, definition=None, types=frozenset()):
+        pass
+
+    def keys(self):
+        pass
+
+    def clear(self):
+        pass
+
+    def get(self, key):
+        pass
+
+    def remove(self, key):
+        pass
+
+    def __setitem__(self, key, property_def):
+        pass
+
