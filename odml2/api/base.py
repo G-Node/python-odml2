@@ -10,6 +10,7 @@
 
 import six
 import abc
+import datetime
 import collections
 from odml2 import value_from
 
@@ -21,26 +22,42 @@ Provides abstract base classes for back-end implementations.
 #         properties in order to distinguish more precisely between read-only
 #         and read-write attributes.
 
-# TODO evaluate use of abc
-# TODO evaluate use of docstring type hints
-
 
 @six.add_metaclass(abc.ABCMeta)
 class BaseDocument(object):
     """
-    Low level access to an odML2 document
+    Low level access to data of an odML2 document.
     """
 
     @abc.abstractmethod
     def is_attached(self):
+        """
+        Returns whether the back-end is attached or not. Attached back-ends
+        persist changes immediately.
+
+        :return: True if attached, False otherwise.
+        :rtype: bool
+        """
         pass
 
     @abc.abstractmethod
     def is_writable(self):
+        """
+        Returns whether the back-end is writable or not.
+
+        :return: True if data can be written to the back-end, False otherwise.
+        """
         pass
 
     @abc.abstractmethod
-    def get_uri(self,):
+    def get_uri(self):
+        """
+        The location where the data for this document is stored. Can be None for newly created,
+        non saved documents.
+
+        :return: The uri to the document data.
+        :rtype: str
+        """
         pass
 
     @abc.abstractmethod
@@ -49,7 +66,10 @@ class BaseDocument(object):
 
     @abc.abstractmethod
     def get_date(self):
-        pass
+        """
+        :return: The creation date of the document.
+        :rtype: datetime.datetime
+        """
 
     @abc.abstractmethod
     def set_date(self, date):
@@ -57,7 +77,12 @@ class BaseDocument(object):
 
     @abc.abstractmethod
     def get_author(self):
-        pass
+        """
+        The author of the document. Is None unless the author was specified.
+
+        :return: The name of the documents author.
+        :rtype: str
+        """
 
     @abc.abstractmethod
     def set_author(self, author):
@@ -65,7 +90,10 @@ class BaseDocument(object):
 
     @abc.abstractmethod
     def get_version(self):
-        pass
+        """
+        :return: The document version (default is 1).
+        :rtype: int
+        """
 
     @abc.abstractmethod
     def set_version(self, version):
@@ -74,10 +102,22 @@ class BaseDocument(object):
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
     def create_root(self, type, uuid, label, reference):
+        """
+        Create a new root section. If the document is not empty, all sections will be replaced.
+
+        :param type:        The type of the section.
+        :param uuid:        The uuid of the section (optional), if the uuid is None a random uuid will be chosen.
+        :param label:       The label of the section (optional)
+        :param reference:   The reference of the section (optional)
+        """
         pass
 
     @abc.abstractmethod
     def get_root(self):
+        """
+        :return: The uuid of the root section or None if the document is empty.
+        :rtype: str
+        """
         pass
 
     @property
@@ -114,18 +154,34 @@ class BaseDocument(object):
 
     @abc.abstractmethod
     def clear(self):
+        """
+        Remove all sections from the document.
+        """
         pass
 
     @abc.abstractmethod
-    def load(self, path):
+    def load(self, uri):
+        """
+        Fill the document with data from a certain location.
+
+        :param uri: The uri to load data from.
+        """
         pass
 
     @abc.abstractmethod
     def close(self):
+        """
+        Close the document
+        """
         pass
 
     @abc.abstractmethod
-    def save(self, path):
+    def save(self, uri):
+        """
+        Save the documents data to a certain location.
+
+        :param uri: The uri to save the data to.
+        """
         pass
 
     def to_dict(self):

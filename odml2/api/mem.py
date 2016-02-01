@@ -34,7 +34,7 @@ class MemDocument(base.BaseDocument):
         self.__uri = None
         self.__date = None
         self.__author = None
-        self.__version = None
+        self.__version = 1
         self.__root = None
         self.__namespaces = MemNameSpaceDict(self)
         self.__property_defs = MemPropertyDefDict(self)

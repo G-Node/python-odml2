@@ -47,7 +47,7 @@ class YamlDocumentTest(unittest.TestCase):
         self.assertEqual(self.doc.get_date(), now)
 
     def test_version(self):
-        self.assertIsNone(self.doc.get_version())
+        self.assertEqual(self.doc.get_version(), 1)
         self.doc.set_version(2)
         self.assertEqual(self.doc.get_version(), 2)
 
