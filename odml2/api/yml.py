@@ -18,7 +18,8 @@ import yaml
 
 from odml2.api import mem
 
-# TODO implement loading and saving to URI
+# TODO use a nice order of document elements for serialization to YAML
+# TODO implement loading and saving over HTTP
 
 
 class YamlDocument(mem.MemDocument):
