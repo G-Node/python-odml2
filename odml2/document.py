@@ -78,12 +78,12 @@ class Document(object):
         return odml2.Section(uuid, self.__back_end)
 
     @root.setter
-    def root(self, element):
-        if isinstance(element, odml2.SB):
-            element.build(self.__back_end)
-        elif isinstance(element, odml2.Section):
-            # TODO handle sections
-            raise NotImplementedError()
+    def root(self, thing):
+        if isinstance(thing, odml2.SB):
+            thing.build(self.__back_end)
+        elif isinstance(thing, odml2.Section):
+            # noinspection PyProtectedMember
+            thing._copy(self.__back_end)
         else:
             raise ValueError("Only Section and SB can be used as root")
 

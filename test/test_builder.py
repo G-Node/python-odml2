@@ -153,18 +153,3 @@ class TestSB(unittest.TestCase):
         self.assertEqual(stim02.get("duration"), Value(5, "ms"))
         self.assertEqual(stim02["current"], 0.8)
         self.assertEqual(stim02.get("current"), Value(0.8, "nA", 0.001))
-
-    def test_errors(self):
-        def set_sec():
-            self.doc.root = SB(
-                type="some_type",
-                something=self.other
-            )
-        self.assertRaises(NotImplementedError, set_sec)
-
-        def set_sec_list():
-            self.doc.root = SB(
-                type="some_type",
-                something=[self.other]
-            )
-        self.assertRaises(NotImplementedError, set_sec_list)

@@ -100,10 +100,7 @@ class TestSection(unittest.TestCase):
         self.assertEqual(len(self.empty), 2)
         self.assertEqual(self.empty["prop"], "some_str_value")
         self.assertEqual(self.empty.get("prop"), Value("some_str_value"))
-
-        def set_sec():
-            self.empty["sec2"] = self.sec
-        self.assertRaises(NotImplementedError, set_sec)
+        # TODO test setting of subsections
 
     def test_delitem(self):
         # TODO is flaky due to unsorted properties

@@ -113,15 +113,13 @@ class Section(object):
                 if isinstance(sub, odml2.SB):
                     sub.build(self.__back_end, self.uuid, key)
                 elif isinstance(sub, odml2.Section):
-                    # TODO implement setting a section as subsection
-                    raise NotImplementedError()
+                    sub._copy(self.__back_end, self.uuid, key, True)
                 else:
                     ValueError("Section builder expected but was %s" % type(sub))
         elif isinstance(element, odml2.SB):
             element.build(self.__back_end, self.uuid, key)
         elif isinstance(element, Section):
-            # TODO implement setting a section as subsection
-            raise NotImplementedError()
+            element._copy(self.__back_end, self.uuid, key, True)
         else:
             val = value_from(element)
             sec = self.__back_end.sections[self.uuid]
@@ -161,6 +159,34 @@ class Section(object):
 
     def __unicode__(self):
         return six.u(str(self))
+
+    #
+    # Internally used methods
+    #
+
+    def _copy(self, back_end, parent_uuid=None, parent_prop=None, copy_subsections=True):
+        if parent_uuid is None:
+            back_end.create_root(self.type, self.uuid, self.label, self.reference)
+        else:
+            if parent_prop is None:
+                raise ValueError("A property name is needed in order to append a sub section")
+            back_end.sections.add(self.type, self.uuid, self.label, self.reference, parent_uuid, parent_prop)
+
+        for p, thing in self.items():
+            if isinstance(thing, (list, tuple)):
+                for sub in thing:
+                    if isinstance(sub, odml2.Section):
+                        if copy_subsections:
+                            sub._copy(back_end, self.uuid, p, copy_subsections)
+            elif isinstance(thing, odml2.Section):
+                if copy_subsections:
+                    thing._copy(back_end, self.uuid, p, copy_subsections)
+            elif isinstance(thing, odml2.Value):
+                back_end.sections[self.uuid].value_properties.set(p, thing)
+            else:
+                # this should never happen
+                raise ValueError("Section or Value expected, but type was '%s'" % type(thing))
+
 
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
