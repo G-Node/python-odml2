@@ -381,6 +381,9 @@ class MemPropertyDefinition(base.BasePropertyDefinition):
     def get_types(self):
         return self.__types
 
+    def set_types(self, types):
+        self.__types = types
+
     # noinspection PyShadowingBuiltins
     def add_type(self, type):
         self.__types = self.__types + (type, )
@@ -408,6 +411,9 @@ class MemTypeDefinition(base.BaseTypeDefinition):
 
     def get_properties(self):
         return self.__properties
+
+    def set_properties(self, props):
+        self.__properties = props
 
     def add_property(self, prop):
         self.__properties = self.__properties + (prop, )

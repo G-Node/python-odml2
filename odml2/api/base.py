@@ -587,6 +587,10 @@ class BasePropertyDefinition(object):
     def get_types(self):
         pass
 
+    @abc.abstractmethod
+    def set_types(self, types):
+        pass
+
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
     def add_type(self, type):
@@ -618,6 +622,10 @@ class BaseTypeDefinition(object):
 
     @abc.abstractmethod
     def get_properties(self):
+        pass
+
+    @abc.abstractmethod
+    def set_properties(self, props):
         pass
 
     @abc.abstractmethod
