@@ -1,16 +1,18 @@
 odML TODO list:
 ===============
 
-  - [ ] Public API for
-    - [ ] namespaces
-    - [ ] tests for namespaces
-    - [ ] type definitions
-    - [ ] tests for type definitions
-    - [ ] property definitions
-    - [ ] tests for property definitions
+  - [x] Public API for
+    - [x] namespaces
+    - [x] tests for namespaces
+    - [x] type definitions
+    - [x] tests for type definitions
+    - [x] property definitions
+    - [x] tests for property definitions
+  - [ ] Implement `__str__` for all-front end classes 
   - [ ] Move TODOs from the code to this document (if possible)
   - [ ] Use sortedcontainers.SortedMap instead of dict in the mem back-end.
   - [ ] Remove DictLike class and inherit from collections.Mapping or collections.MutableMapping
+  - [ ] Use suffix Access or Accessor instead of Dict in the back-end
   - [ ] Make use of itertools.chain() to concatenate generators (value properties and section properties)
   - [ ] Maybe use immutable front-end classes NameSpace, TypeDef, PropertyDef also in the back-end
   - [ ] Check the input for URIs, names, type names, prefixes etc (if possible in the back-end)
