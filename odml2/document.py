@@ -34,6 +34,10 @@ class Document(object):
         else:
             raise ValueError("Not a valid back-end %s" % type(back_end))
 
+        self.__namespaces = odml2.NameSpaceMap(self.__back_end)
+        self.__property_defs = odml2.PropertyDefMap(self.__back_end)
+        self.__type_defs = odml2.TypeDefMap(self.__back_end)
+
     @property
     def is_attached(self):
         return self.__back_end.is_attached()
@@ -86,6 +90,18 @@ class Document(object):
             thing._copy(self.__back_end)
         else:
             raise ValueError("Only Section and SB can be used as root")
+
+    @property
+    def namespaces(self):
+        return self.__namespaces
+
+    @property
+    def type_definitions(self):
+        return self.__type_defs
+
+    @property
+    def property_definitions(self):
+        return self.__property_defs
 
     def save(self, destination=None):
         self.__back_end.save(destination)

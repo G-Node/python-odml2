@@ -10,12 +10,19 @@
 
 import re
 import six
-import datetime as dt
 import numbers
+import collections
+import datetime as dt
 import odml2
-from odml2.util.dict_like import DictLike
 
 __all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "value_from")
+
+PLUS_MINUS_UNICODE = u"±"
+PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
+ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
+VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
+                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
+                        u"([A-Za-zΩμ]{1,4})?$")
 
 
 class Section(object):
@@ -189,11 +196,6 @@ class Section(object):
                 raise ValueError("Section or Value expected, but type was '%s'" % type(thing))
 
 
-PLUS_MINUS_UNICODE = u"±"
-PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
-ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
-
-
 class Value(object):
     """
     An odML Value class
@@ -226,6 +228,11 @@ class Value(object):
             unit if unit is not None else self.unit,
             uncertainty if uncertainty is not None else self.uncertainty
         )
+
+    @staticmethod
+    def from_obj(thing, strict=False):
+        # TODO implement Value.from_str() and replace value_from()
+        pass
 
     def __lt__(self, other):
         return self.value < other.value
@@ -269,10 +276,6 @@ class Value(object):
     def __repr__(self):
         return str(self)
 
-VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
-                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
-                        u"([A-Za-zΩμ]{1,4})?$")
-
 
 def value_from(thing):
     if isinstance(thing, six.string_types):
@@ -313,29 +316,52 @@ class NameSpace(object):
             str(uri) if uri is not None else self.__uri
         )
 
-    def from_str(self, ns):
+    @staticmethod
+    def from_str(ns, strict=False):
+        # TODO implement NameSpace.from_str()
         pass
 
+    def __eq__(self, other):
+        if not isinstance(other, NameSpace):
+            return False
+        return self.prefix == other.prefix and self.uri == other.uri
 
-class NameSpaceDict(DictLike):
+    def __ne__(self, other):
+        return not self == other
 
-    def add(self, prefix_or_ns, uri=None):
-        pass
+    def __str__(self):
+        return "NameSpace(prefix=%s, uri=%s)" % (self.prefix, self.uri)
 
-    def keys(self):
-        pass
 
-    def clear(self):
-        pass
+class NameSpaceMap(collections.MutableMapping):
 
-    def get(self, key):
-        pass
+    def __init__(self, back_end):
+        self.__back_end = back_end
 
-    def remove(self, key):
-        pass
+    def set(self, prefix, uri):
+        self[prefix] = NameSpace(prefix, uri)
 
-    def __setitem__(self, key, ns):
-        pass
+    def __len__(self):
+        return len(self.__back_end.namespaces)
+
+    def __iter__(self):
+        return iter(self.__back_end.namespaces)
+
+    def __getitem__(self, prefix):
+        ns = self.__back_end.namespaces[prefix]
+        return NameSpace(ns.get_prefix(), ns.get_uri())
+
+    def __delitem__(self, prefix):
+        del self.__back_end.namespaces[prefix]
+
+    def __setitem__(self, prefix, ns):
+        if ns.prefix is not None and prefix != ns.prefix:
+            raise ValueError("Non matching prefixes: %s != %s" % (prefix, ns.prefix))
+
+        if prefix in self.__back_end.namespaces:
+            self.__back_end.namespaces[prefix].set_uri(ns.uri)
+        else:
+            self.__back_end.namespaces.add(prefix, ns.uri)
 
 
 class TypeDef(object):
@@ -358,32 +384,52 @@ class TypeDef(object):
         return self.__properties
 
     def copy(self, name=None, definition=None, properties=frozenset()):
-        return PropertyDef(
+        return TypeDef(
                 str(name) if name is not None else self.__name,
                 str(definition) if definition is not None else self.__definition,
                 properties if properties != frozenset() else self.__properties
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, TypeDef):
+            return False
+        return self.name == other.name
 
-class TypeDefDict(DictLike):
+    def __ne__(self, other):
+        return not self == other
 
-    def add(self, name_or_def, definition=None, types=frozenset()):
-        pass
+    def __str__(self):
+        return "TypeDef(name=%s)" % self.name
 
-    def keys(self):
-        pass
 
-    def clear(self):
-        pass
+class TypeDefMap(collections.MutableMapping):
 
-    def get(self, key):
-        pass
+    def __init__(self, back_end):
+        self.__back_end = back_end
 
-    def remove(self, key):
-        pass
+    def __len__(self):
+        return len(self.__back_end.type_defs)
 
-    def __setitem__(self, name, type_def):
-        pass
+    def __iter__(self):
+        return iter(self.__back_end.type_defs)
+
+    def __getitem__(self, name):
+        td = self.__back_end.type_defs[name]
+        return TypeDef(td.get_name(), td.get_definition(), td.get_properties())
+
+    def __delitem__(self, name):
+        del self.__back_end.type_defs[name]
+
+    def __setitem__(self, name, td):
+        if td.name is not None and name != td.name:
+            raise ValueError("Non matching type names: %s != %s" % (name, td.name))
+
+        if name in self.__back_end.type_defs:
+            type_def = self.__back_end.type_defs[name]
+            type_def.set_definition(td.definition)
+            type_def.set_properties(td.properties)
+        else:
+            self.__back_end.type_defs.add(name, td.definition, td.properties)
 
 
 class PropertyDef(object):
@@ -412,24 +458,43 @@ class PropertyDef(object):
                 types if types != frozenset() else self.__types
         )
 
+    def __eq__(self, other):
+        if not isinstance(other, PropertyDef):
+            return False
+        return self.name == other.name
 
-class PropertyDefDict(DictLike):
+    def __ne__(self, other):
+        return not self == other
 
-    def add(self, name_or_def, definition=None, types=frozenset()):
-        pass
+    def __str__(self):
+        return "PropertyDef(name=%s)" % self.name
 
-    def keys(self):
-        pass
 
-    def clear(self):
-        pass
+class PropertyDefMap(collections.MutableMapping):
 
-    def get(self, key):
-        pass
+    def __init__(self, back_end):
+        self.__back_end = back_end
 
-    def remove(self, key):
-        pass
+    def __len__(self):
+        return len(self.__back_end.property_defs)
 
-    def __setitem__(self, key, property_def):
-        pass
+    def __iter__(self):
+        return iter(self.__back_end.property_defs)
 
+    def __getitem__(self, name):
+        pd = self.__back_end.property_defs[name]
+        return PropertyDef(pd.get_name(), pd.get_definition(), pd.get_types())
+
+    def __delitem__(self, name):
+        del self.__back_end.property_defs[name]
+
+    def __setitem__(self, name, pd):
+        if pd.name is not None and name != pd.name:
+            raise ValueError("Non matching property names: %s != %s" % (name, pd.name))
+
+        if name in self.__back_end.property_defs:
+            prop_def = self.__back_end.property_defs[name]
+            prop_def.set_definition(pd.definition)
+            prop_def.set_types(pd.types)
+        else:
+            self.__back_end.property_defs.add(name, pd.definition, pd.types)

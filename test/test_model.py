@@ -13,7 +13,7 @@ import unittest
 from uuid import uuid4
 
 from odml2.api import yml
-from odml2 import Section, SB, Value, value_from
+from odml2 import *
 
 
 class TestSection(unittest.TestCase):
@@ -190,3 +190,141 @@ class ValueTest(unittest.TestCase):
             self.assertEqual(six.u(v1), u"1±0.1mV")
         else:
             self.assertEqual(str(v1), "1±0.1mV")
+
+
+class NameSpaceTest(unittest.TestCase):
+
+    def setUp(self):
+        self.doc = Document()
+
+    def test_copy_namespace(self):
+        ns = NameSpace("ns", "uri")
+        self.assertEqual(ns.prefix, "ns")
+        self.assertEqual(ns.uri, "uri")
+
+        ns = ns.copy(prefix="other_ns")
+        self.assertEqual(ns.prefix, "other_ns")
+        self.assertEqual(ns.uri, "uri")
+
+        ns = ns.copy(uri="other_uri")
+        self.assertEqual(ns.prefix, "other_ns")
+        self.assertEqual(ns.uri, "other_uri")
+
+        def assign_prefix():
+            ns.prefix = "test"
+        self.assertRaises(AttributeError, assign_prefix)
+
+        def assign_uri():
+            ns.uri = "test"
+        self.assertRaises(AttributeError, assign_uri)
+
+    def test_namespace_access(self):
+        self.assertEqual(len(self.doc.namespaces), 0)
+        self.assertFalse("ns" in self.doc.namespaces)
+
+        self.doc.namespaces["ns"] = NameSpace("ns", "http://foo/bar")
+        self.assertEqual(len(self.doc.namespaces), 1)
+        self.assertTrue("ns" in self.doc.namespaces)
+        ns = self.doc.namespaces["ns"]
+        self.assertEqual(ns.prefix, "ns")
+        self.assertEqual(ns.uri, "http://foo/bar")
+        self.doc.namespaces["ns"] = ns.copy(uri="http://example.com")
+        ns = self.doc.namespaces["ns"]
+        self.assertEqual(ns.prefix, "ns")
+        self.assertEqual(ns.uri, "http://example.com")
+
+        del self.doc.namespaces["ns"]
+        self.assertEqual(len(self.doc.namespaces), 0)
+        self.assertFalse("ns" in self.doc.namespaces)
+
+
+class TypeDefTest(unittest.TestCase):
+
+    def setUp(self):
+        self.doc = Document()
+
+    def test_copy_type_def(self):
+        td = TypeDef("TypeName", "some def", {"foo", "bar"})
+        self.assertEqual(td.name, "TypeName")
+        self.assertEqual(td.definition, "some def")
+        self.assertEqual(td.properties, {"foo", "bar"})
+
+        td = td.copy(name="OtherName")
+        self.assertEqual(td.name, "OtherName")
+        self.assertEqual(td.definition, "some def")
+        self.assertEqual(td.properties, {"foo", "bar"})
+
+        td = td.copy(definition="other def")
+        self.assertEqual(td.name, "OtherName")
+        self.assertEqual(td.definition, "other def")
+        self.assertEqual(td.properties, {"foo", "bar"})
+
+        td = td.copy(properties=td.properties - {"bar", })
+        self.assertEqual(td.name, "OtherName")
+        self.assertEqual(td.definition, "other def")
+        self.assertEqual(td.properties, {"foo", })
+
+    def test_type_def_access(self):
+        self.assertEqual(len(self.doc.type_definitions), 0)
+        self.assertFalse("SomeType" in self.doc.type_definitions)
+
+        self.doc.type_definitions["SomeType"] = TypeDef("SomeType", "some definition", {"foo", "bar"})
+        self.assertEqual(len(self.doc.type_definitions), 1)
+        self.assertTrue("SomeType" in self.doc.type_definitions)
+        td = self.doc.type_definitions["SomeType"]
+        self.assertEqual(td.name, "SomeType")
+        self.assertEqual(td.definition, "some definition")
+        self.doc.type_definitions["SomeType"] = td.copy(definition="other definition")
+        td = self.doc.type_definitions["SomeType"]
+        self.assertEqual(td.name, "SomeType")
+        self.assertEqual(td.definition, "other definition")
+
+        del self.doc.type_definitions["SomeType"]
+        self.assertEqual(len(self.doc.type_definitions), 0)
+        self.assertFalse("SomeType" in self.doc.type_definitions)
+
+
+class PropertyDefTest(unittest.TestCase):
+
+    def setUp(self):
+        self.doc = Document()
+
+    def test_copy_property_def(self):
+        pd = PropertyDef("prop_name", "some def", {"Foo", "Bar"})
+        self.assertEqual(pd.name, "prop_name")
+        self.assertEqual(pd.definition, "some def")
+        self.assertEqual(pd.types, {"Foo", "Bar"})
+
+        pd = pd.copy(name="other_name")
+        self.assertEqual(pd.name, "other_name")
+        self.assertEqual(pd.definition, "some def")
+        self.assertEqual(pd.types, {"Foo", "Bar"})
+
+        pd = pd.copy(definition="other def")
+        self.assertEqual(pd.name, "other_name")
+        self.assertEqual(pd.definition, "other def")
+        self.assertEqual(pd.types, {"Foo", "Bar"})
+
+        pd = pd.copy(types=pd.types - {"Bar", })
+        self.assertEqual(pd.name, "other_name")
+        self.assertEqual(pd.definition, "other def")
+        self.assertEqual(pd.types, {"Foo", })
+
+    def test_property_def_access(self):
+        self.assertEqual(len(self.doc.property_definitions), 0)
+        self.assertFalse("some_prop" in self.doc.property_definitions)
+
+        self.doc.property_definitions["some_prop"] = PropertyDef("some_prop", "some definition", {"Foo", "Bar"})
+        self.assertEqual(len(self.doc.property_definitions), 1)
+        self.assertTrue("some_prop" in self.doc.property_definitions)
+        pd = self.doc.property_definitions["some_prop"]
+        self.assertEqual(pd.name, "some_prop")
+        self.assertEqual(pd.definition, "some definition")
+        self.doc.property_definitions["some_prop"] = pd.copy(definition="other definition")
+        pd = self.doc.property_definitions["some_prop"]
+        self.assertEqual(pd.name, "some_prop")
+        self.assertEqual(pd.definition, "other definition")
+
+        del self.doc.property_definitions["some_prop"]
+        self.assertEqual(len(self.doc.property_definitions), 0)
+        self.assertFalse("some_prop" in self.doc.property_definitions)
