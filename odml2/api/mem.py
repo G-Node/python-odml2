@@ -23,7 +23,6 @@ Provides abstract base classes for back-end implementations.
 #         and read-write attributes.
 
 # TODO add section links
-# TODO raise errors when trying to change a read only document
 # TODO sanitize and check input (dates, name identifiers, type identifiers, prefixes, URIs)
 
 

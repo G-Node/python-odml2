@@ -228,7 +228,6 @@ class Value(object):
 
     @staticmethod
     def from_obj(thing, strict=False):
-        # TODO implement Value.from_str() and replace value_from()
         pass
 
     def __lt__(self, other):
@@ -313,7 +312,6 @@ class NameSpace(object):
 
     @staticmethod
     def from_str(ns, strict=False):
-        # TODO implement NameSpace.from_str()
         pass
 
     def __eq__(self, other):

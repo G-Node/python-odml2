@@ -9,6 +9,7 @@ odML TODO list:
     - [x] property definitions
     - [x] tests for property definitions
   - [x] Implement `__str__` for all front-end classes 
+  - [ ] Implement Value.from_obj() as replacement for value_from()
   - [ ] Move TODOs from the code to this document (if possible)
   - [ ] Use sortedcontainers.SortedMap instead of dict in the mem back-end.
   - [ ] Remove DictLike class and inherit from collections.Mapping or collections.MutableMapping
@@ -18,7 +19,11 @@ odML TODO list:
   - [ ] Check the input for URIs, names, type names, prefixes etc (if possible in the back-end)
   - [ ] Better name for SB for example: SecB, SecBuilder ...
   - [ ] Nicer yaml output (sort things by type and name)
+  - [ ] Raise errors when trying to change a read only document
+  - [ ] Load and store YAML documents over HTTP
+    - [ ] Use six.move.urllib.parse.urlparse to read paths and uris
   - [ ] Add support for namespaces
+    - [ ] Implement NameSpace.from_str()
   - [ ] Add support for links
   - [ ] Implement modes that define how the terminology is handled:
         STRICT, UNCHECKED, CREATE
