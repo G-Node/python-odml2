@@ -333,20 +333,13 @@ class NameSpaceMap(collections.MutableMapping):
         return iter(self.__back_end.namespaces)
 
     def __getitem__(self, prefix):
-        ns = self.__back_end.namespaces[prefix]
-        return NameSpace(ns.get_prefix(), ns.get_uri())
+        return self.__back_end.namespaces[prefix]
 
     def __delitem__(self, prefix):
         del self.__back_end.namespaces[prefix]
 
     def __setitem__(self, prefix, ns):
-        if ns.prefix is not None and prefix != ns.prefix:
-            raise ValueError("Non matching prefixes: %s != %s" % (prefix, ns.prefix))
-
-        if prefix in self.__back_end.namespaces:
-            self.__back_end.namespaces[prefix].set_uri(ns.uri)
-        else:
-            self.__back_end.namespaces.add(prefix, ns.uri)
+        self.__back_end.namespaces[prefix] = ns
 
     def __str__(self):
         return u"NameSpaceMap(size=%d)" % len(self)
@@ -404,22 +397,13 @@ class TypeDefMap(collections.MutableMapping):
         return iter(self.__back_end.type_defs)
 
     def __getitem__(self, name):
-        td = self.__back_end.type_defs[name]
-        return TypeDef(td.get_name(), td.get_definition(), td.get_properties())
+        return self.__back_end.type_defs[name]
 
     def __delitem__(self, name):
         del self.__back_end.type_defs[name]
 
     def __setitem__(self, name, td):
-        if td.name is not None and name != td.name:
-            raise ValueError("Non matching type names: %s != %s" % (name, td.name))
-
-        if name in self.__back_end.type_defs:
-            type_def = self.__back_end.type_defs[name]
-            type_def.set_definition(td.definition)
-            type_def.set_properties(td.properties)
-        else:
-            self.__back_end.type_defs.add(name, td.definition, td.properties)
+        self.__back_end.type_defs[name] = td
 
     def __str__(self):
         return u"TypeDefMap(size=%d)" % len(self)
@@ -477,22 +461,13 @@ class PropertyDefMap(collections.MutableMapping):
         return iter(self.__back_end.property_defs)
 
     def __getitem__(self, name):
-        pd = self.__back_end.property_defs[name]
-        return PropertyDef(pd.get_name(), pd.get_definition(), pd.get_types())
+        return self.__back_end.property_defs[name]
 
     def __delitem__(self, name):
         del self.__back_end.property_defs[name]
 
     def __setitem__(self, name, pd):
-        if pd.name is not None and name != pd.name:
-            raise ValueError("Non matching property names: %s != %s" % (name, pd.name))
-
-        if name in self.__back_end.property_defs:
-            prop_def = self.__back_end.property_defs[name]
-            prop_def.set_definition(pd.definition)
-            prop_def.set_types(pd.types)
-        else:
-            self.__back_end.property_defs.add(name, pd.definition, pd.types)
+        self.__back_end.property_defs[name] = pd
 
     def __str__(self):
         return u"PropertyDefMap(size=%d)" % len(self)

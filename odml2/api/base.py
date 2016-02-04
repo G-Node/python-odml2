@@ -198,23 +198,23 @@ class BaseDocument(object):
         def convert_ns():
             ns_dict = {}
             for ns in self.namespaces.values():
-                ns_dict[ns.get_prefix()] = ns.get_uri()
+                ns_dict[ns.prefix] = ns.uri
             return ns_dict
 
         def convert_definitions():
             defs_dict = {}
             for pd in self.property_defs.values():
-                pd_dict = {"types": pd.get_types()}
-                definition = pd.get_definition()
+                pd_dict = {"types": pd.types}
+                definition = pd.definition
                 if definition is not None:
                     pd_dict["definition"] = definition
-                defs_dict[pd.get_name()] = pd_dict
+                defs_dict[pd.name] = pd_dict
             for td in self.type_defs.values():
-                td_dict = {"properties": td.get_properties()}
-                definition = td.get_definition()
+                td_dict = {"properties": td.properties}
+                definition = td.definition
                 if definition is not None:
                     td_dict["definition"] = definition
-                defs_dict[td.get_type()] = td_dict
+                defs_dict[td.name] = td_dict
             return defs_dict
 
         def convert_ref(ref):
@@ -266,13 +266,13 @@ class BaseDocument(object):
 
         if "namespaces" in data and data["namespaces"] is not None:
             for prefix, uri in enumerate(data["namespaces"]):
-                self.namespaces.add(prefix, uri)
+                self.namespaces.set(prefix, uri)
         if "definitions" in data and data["definitions"] is not None:
             for name, def_data in enumerate(data["definitions"]):
                 if "types" in def_data:
-                    self.property_defs.add(name, def_data.get("definition"), def_data["types"])
+                    self.property_defs.set(name, def_data.get("definition"), def_data["types"])
                 elif "properties" in def_data:
-                    self.type_defs.add(name, def_data.get("definition"), def_data["properties"])
+                    self.type_defs.set(name, def_data.get("definition"), def_data["properties"])
 
         def read_section(parent_uuid, parent_prop, sec_data):
             if parent_uuid is None:
@@ -300,7 +300,7 @@ class BaseNameSpaceDict(collections.MutableMapping):
     """
 
     @abc.abstractmethod
-    def add(self, prefix, uri):
+    def set(self, prefix, uri):
         pass
 
 
@@ -310,7 +310,7 @@ class BasePropertyDefDict(collections.MutableMapping):
     """
 
     @abc.abstractmethod
-    def add(self, name, types=tuple()):
+    def set(self, name, types=tuple()):
         pass
 
 
@@ -321,7 +321,7 @@ class BaseTypeDefDict(collections.MutableMapping):
 
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
-    def add(self, type, definition=None, properties=tuple()):
+    def set(self, type, definition=None, properties=tuple()):
         pass
 
 
@@ -444,95 +444,4 @@ class BaseValuePropertyDict(collections.MutableMapping):
         :param value: The value to set.
         :type value: odml2.Value
         """
-        pass
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseNameSpace(object):
-    """
-    Low level access to the name-spaces of an odML2 document.
-    """
-
-    @abc.abstractmethod
-    def get_prefix(self):
-        pass
-
-    @abc.abstractmethod
-    def get_uri(self):
-        pass
-
-    @abc.abstractmethod
-    def set_uri(self, uri):
-        pass
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BasePropertyDefinition(object):
-    """
-    Low level access to a property definition of an odML2 document.
-    """
-
-    @abc.abstractmethod
-    def get_name(self):
-        pass
-
-    @abc.abstractmethod
-    def get_definition(self):
-        pass
-
-    @abc.abstractmethod
-    def set_definition(self, definition):
-        pass
-
-    @abc.abstractmethod
-    def get_types(self):
-        pass
-
-    @abc.abstractmethod
-    def set_types(self, types):
-        pass
-
-    # noinspection PyShadowingBuiltins
-    @abc.abstractmethod
-    def add_type(self, type):
-        pass
-
-    # noinspection PyShadowingBuiltins
-    @abc.abstractmethod
-    def remove_type(self, type):
-        pass
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseTypeDefinition(object):
-    """
-    Low-level access to a type definition of an odML2 document.
-    """
-
-    @abc.abstractmethod
-    def get_name(self):
-        pass
-
-    @abc.abstractmethod
-    def get_definition(self):
-        pass
-
-    @abc.abstractmethod
-    def set_definition(self, definition):
-        pass
-
-    @abc.abstractmethod
-    def get_properties(self):
-        pass
-
-    @abc.abstractmethod
-    def set_properties(self, props):
-        pass
-
-    @abc.abstractmethod
-    def add_property(self, prop):
-        pass
-
-    @abc.abstractmethod
-    def remove_property(self, prop):
         pass
