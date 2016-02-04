@@ -52,5 +52,5 @@ class SB(object):
                 # noinspection PyProtectedMember
                 thing._copy(back_end, self.uuid, p, True)
             else:
-                value = odml2.value_from(thing)
+                value = odml2.Value.from_obj(thing)
                 back_end.sections[self.uuid].value_properties.set(p, value)

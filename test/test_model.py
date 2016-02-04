@@ -26,7 +26,7 @@ class TestSection(unittest.TestCase):
 
         be.create_root("type", id_1, "root", "./example.dat")
         sec = be.sections[id_1]
-        sec.value_properties.set("prop_foo", value_from("foo"))
+        sec.value_properties.set("prop_foo", Value.from_obj("foo"))
 
         be.sections.add("type", id_11, None, None, id_1, "prop_11")
         be.sections.add("type", id_111, None, None, id_11, "prop_111")
@@ -153,21 +153,21 @@ class ValueTest(unittest.TestCase):
         self.assertEqual(v1.unit, "mV")
         self.assertEqual(v1.uncertainty, 0.1)
 
-    def test_value_from(self):
-        v = value_from("foo")
+    def test_value_from_obj(self):
+        v = Value.from_obj("foo")
         self.assertEqual(v.value, "foo")
         self.assertIsNone(v.unit)
         self.assertIsNone(v.uncertainty)
-        v = value_from(u"µ")
+        v = Value.from_obj(u"µ")
         self.assertEqual(v.value, u"µ")
         self.assertIsNone(v.unit)
         self.assertIsNone(v.uncertainty)
-        v = value_from(u"10±0.2e-2μΩ")
+        v = Value.from_obj(u"10±0.2e-2μΩ")
         self.assertEqual(v.value, 10)
         self.assertIsInstance(v.value, int)
         self.assertEqual(v.unit, u"μΩ")
         self.assertEqual(v.uncertainty, 0.002)
-        v = value_from(u"10.2kmol")
+        v = Value.from_obj(u"10.2kmol")
         self.assertEqual(v.value, 10.2)
         self.assertIsInstance(v.value, float)
         self.assertEqual(v.unit, u"kmol")
@@ -187,6 +187,7 @@ class ValueTest(unittest.TestCase):
 
         if six.PY2:
             self.assertEqual(str(v1), "1+-0.1mV")
+            # noinspection PyUnresolvedReferences
             self.assertEqual(unicode(v1), u"1±0.1mV")
         else:
             self.assertEqual(str(v1), "1±0.1mV")

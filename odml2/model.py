@@ -17,7 +17,7 @@ import collections
 import datetime as dt
 import odml2
 
-__all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "value_from")
+__all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "Value.from_obj")
 
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
@@ -132,7 +132,7 @@ class Section(object):
         elif isinstance(element, Section):
             element._copy(self.__back_end, self.uuid, key, True)
         else:
-            val = value_from(element)
+            val = Value.from_obj(element)
             sec = self.__back_end.sections[self.uuid]
             sec.value_properties[key] = val
 
@@ -229,10 +229,6 @@ class Value(object):
             uncertainty if uncertainty is not None else self.uncertainty
         )
 
-    @staticmethod
-    def from_obj(thing, strict=False):
-        pass
-
     def __lt__(self, other):
         return self.value < other.value
 
@@ -272,24 +268,24 @@ class Value(object):
             parts.append(self.unit)
         return u"".join(parts)
 
-
-def value_from(thing):
-    if isinstance(thing, six.string_types):
-        match = VALUE_EXPR.match(thing)
-        if match is None:
+    @staticmethod
+    def from_obj(thing):
+        if isinstance(thing, six.string_types):
+            match = VALUE_EXPR.match(thing)
+            if match is None:
+                return Value(thing)
+            else:
+                g = match.groups()
+                num, is_float, uncertainty, unit = (g[0], g[3], g[7], g[11])
+                num = float(num) if is_float is not None else int(num)
+                uncertainty = float(uncertainty) if uncertainty is not None else None
+                return Value(num, unit, uncertainty)
+        if isinstance(thing, ALLOWED_VALUE_TYPES):
             return Value(thing)
+        elif isinstance(thing, Value):
+            return thing
         else:
-            g = match.groups()
-            num, is_float, uncertainty, unit = (g[0], g[3], g[7], g[11])
-            num = float(num) if is_float is not None else int(num)
-            uncertainty = float(uncertainty) if uncertainty is not None else None
-            return Value(num, unit, uncertainty)
-    if isinstance(thing, ALLOWED_VALUE_TYPES):
-        return Value(thing)
-    elif isinstance(thing, Value):
-        return thing
-    else:
-        raise ValueError("Can't covert '%s' to a value" % repr(thing))
+            raise ValueError("Can't covert '%s' to a value" % repr(thing))
 
 
 @python_2_unicode_compatible

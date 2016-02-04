@@ -12,7 +12,7 @@ import six
 import abc
 import datetime
 
-from odml2 import value_from
+import odml2
 from odml2.util.dict_like import DictLike
 
 """
@@ -289,7 +289,7 @@ class BaseDocument(object):
                         read_section(sec_data["uuid"], prop, sub_elem)
                 else:
                     section = self.sections[sec_data["uuid"]]
-                    section.value_properties.set(prop, value_from(element))
+                    section.value_properties.set(prop, odml2.Value.from_obj(element))
 
         read_section(None, None, data["metadata"])
 

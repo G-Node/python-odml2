@@ -9,7 +9,7 @@ odML TODO list:
     - [x] property definitions
     - [x] tests for property definitions
   - [x] Implement `__str__` for all front-end classes 
-  - [ ] Implement Value.from_obj() as replacement for value_from()
+  - [x] Implement Value.from_obj() as replacement for value_from()
   - [x] Move TODOs from the code to this document (if possible)
   - [ ] Use sortedcontainers.SortedMap instead of dict in the mem back-end.
   - [ ] Remove DictLike class and inherit from collections.Mapping or collections.MutableMapping
