@@ -13,6 +13,7 @@ from future.utils import python_2_unicode_compatible
 
 import re
 import numbers
+import itertools
 import collections
 import datetime as dt
 import odml2
@@ -28,7 +29,7 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
 
 
 @python_2_unicode_compatible
-class Section(object):
+class Section(collections.MutableMapping):
     """
     Represents an odML section entity.
     """
@@ -75,21 +76,7 @@ class Section(object):
     # dict like access to sections and values
     #
 
-    def items(self):
-        sec = self.__back_end.sections[self.uuid]
-        for key in sec.value_properties:
-            yield (key, self.get(key))
-        for key in sec.section_properties:
-            yield (key, self.get(key))
-
-    def keys(self):
-        sec = self.__back_end.sections[self.uuid]
-        for key in sec.value_properties:
-            yield key
-        for key in sec.section_properties:
-            yield key
-
-    def get(self, key):
+    def get(self, key, **kwargs):
         sec = self.__back_end.sections[self.uuid]
         if key in sec.value_properties:
             return sec.value_properties[key]
@@ -98,13 +85,6 @@ class Section(object):
             return [Section(ref.uuid, self.__back_end, ref.is_link) for ref in refs]
         else:
             return None
-
-    def __len__(self):
-        sec = self.__back_end.sections[self.uuid]
-        return len(sec.value_properties) + len(sec.section_properties)
-
-    def __iter__(self):
-        return self.keys()
 
     def __getitem__(self, key):
         element = self.get(key)
@@ -145,9 +125,21 @@ class Section(object):
         else:
             raise KeyError("The section has no property with the name '%s'" % key)
 
-    def __contains__(self, key):
+    def __len__(self):
         sec = self.__back_end.sections[self.uuid]
-        return key in sec.value_properties or key in sec.section_properties
+        return len(sec.value_properties) + len(sec.section_properties)
+
+    def __iter__(self):
+        sec = self.__back_end.sections[self.uuid]
+        return itertools.chain(iter(sec.value_properties), iter(sec.section_properties))
+
+    def items(self):
+        for key in self:
+            yield (key, self.get(key))
+
+    def values(self):
+        for key in self:
+            yield self.get(key)
 
     #
     # built in methods
