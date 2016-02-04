@@ -63,8 +63,7 @@ class TestSB(unittest.TestCase):
         )
         self.assertIsInstance(self.doc.root, Section)
         root = self.doc.root
-        # TODO is flaky because of unsorted properties
-        # self.assertEqual([p for p in root], ["date", "experimenter", "stimuli"])
+        self.assertEqual([p for p in root], ["date", "experimenter", "stimuli"])
         self.assertEqual(root["date"], today)
         self.assertEqual(root.get("date"), Value(today))
 
@@ -124,8 +123,7 @@ class TestSB(unittest.TestCase):
         )
         self.assertIsInstance(self.sec["test"], Section)
         section = self.sec["test"]
-        # TODO is flaky because of unsorted properties
-        # self.assertEqual([p for p in section], ["date", "experimenter", "stimuli"])
+        self.assertEqual([p for p in section], ["date", "experimenter", "stimuli"])
         self.assertEqual(section["date"], today)
         self.assertEqual(section.get("date"), Value(today))
 

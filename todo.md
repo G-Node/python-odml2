@@ -11,7 +11,7 @@ odML TODO list:
   - [x] Implement `__str__` for all front-end classes 
   - [x] Implement Value.from_obj() as replacement for value_from()
   - [x] Move TODOs from the code to this document (if possible)
-  - [ ] Use sortedcontainers.SortedMap instead of dict in the mem back-end.
+  - [x] Use sortedcontainers.SortedMap instead of dict in the mem back-end.
   - [ ] Remove DictLike class and inherit from collections.Mapping or collections.MutableMapping
   - [ ] Use suffix Access or Accessor instead of Dict in the back-end
   - [ ] Make use of itertools.chain() to concatenate generators (value properties and section properties)

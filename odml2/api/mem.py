@@ -10,6 +10,7 @@
 
 import abc
 from uuid import UUID
+from sortedcontainers import SortedDict
 import odml2
 from odml2.api import base
 
@@ -124,7 +125,7 @@ class MemNameSpaceDict(base.BaseNameSpaceDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__namespaces = {}
+        self.__namespaces = SortedDict()
 
     def add(self, prefix, uri):
         self.__namespaces[prefix] = MemNameSpace(prefix, uri)
@@ -147,7 +148,7 @@ class MemPropertyDefDict(base.BasePropertyDefDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__property_defs = {}
+        self.__property_defs = SortedDict()
 
     def add(self, name, definition=None, types=tuple()):
         self.__property_defs[name] = MemPropertyDefinition(name, definition, types)
@@ -170,7 +171,7 @@ class MemTypeDefDict(base.BaseTypeDefDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__type_defs = {}
+        self.__type_defs = SortedDict()
 
     # noinspection PyShadowingBuiltins
     def add(self, type, definition=None, properties=tuple()):
@@ -227,13 +228,13 @@ class MemSectionDict(base.BaseSectionDict):
         if key not in self:
             raise KeyError("A section with the given uuid '%s' does not exist" % key)
 
-        def remove_with_subsections(key):
-            sec = self[key]
+        def remove_with_subsections(section_id):
+            sec = self[section_id]
             for refs in sec.section_properties.values():
                 for ref in refs:
                     if not ref.is_link:
                         remove_with_subsections(ref.uuid)
-            del self.__sections[key]
+            del self.__sections[section_id]
 
         remove_with_subsections(key)
 
@@ -301,7 +302,7 @@ class MemSectionPropertyDict(base.BaseSectionPropertyDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__section_props = {}
+        self.__section_props = SortedDict()
 
     def set(self, prop, refs):
         self.__section_props[prop] = refs
@@ -324,7 +325,7 @@ class MemValuePropertyDict(base.BaseValuePropertyDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__value_props = {}
+        self.__value_props = SortedDict()
 
     def set(self, prop, value):
         if not isinstance(value, odml2.Value):

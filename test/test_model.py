@@ -103,8 +103,7 @@ class TestSection(unittest.TestCase):
         # TODO test setting of subsections
 
     def test_delitem(self):
-        # TODO is flaky due to unsorted properties
-        # self.assertEqual([p for p in self.sec], ["prop_11", "prop_foo"])
+        self.assertEqual([p for p in self.sec], ["prop_foo", "prop_11"])
         del self.sec["prop_foo"]
         self.assertEqual([p for p in self.sec], ["prop_11"])
         del self.sec["prop_11"]

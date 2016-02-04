@@ -44,6 +44,7 @@ setup(
         "setuptools",
         "six",
         "future",
+        "sortedcontainers",
         "PyYAML>=3.10"
     ),
     tests_require=(
