@@ -8,8 +8,10 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-import re
 import six
+from future.utils import python_2_unicode_compatible
+
+import re
 import numbers
 import collections
 import datetime as dt
@@ -25,6 +27,7 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
                         u"([A-Za-zΩμ]{1,4})?$")
 
 
+@python_2_unicode_compatible
 class Section(object):
     """
     Represents an odML section entity.
@@ -160,13 +163,7 @@ class Section(object):
         return not (self == other)
 
     def __str__(self):
-        return "Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
-
-    def __repr__(self):
-        return str(self)
-
-    def __unicode__(self):
-        return six.u(str(self))
+        return u"Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
 
     #
     # Internally used methods
@@ -273,9 +270,6 @@ class Value(object):
             parts.append(self.unit)
         return six.u("").join(parts)
 
-    def __repr__(self):
-        return str(self)
-
 
 def value_from(thing):
     if isinstance(thing, six.string_types):
@@ -296,6 +290,7 @@ def value_from(thing):
         raise ValueError("Can't covert '%s' to a value" % repr(thing))
 
 
+@python_2_unicode_compatible
 class NameSpace(object):
 
     def __init__(self, prefix, uri):
@@ -330,9 +325,10 @@ class NameSpace(object):
         return not self == other
 
     def __str__(self):
-        return "NameSpace(prefix=%s, uri=%s)" % (self.prefix, self.uri)
+        return u"NameSpace(prefix=%s, uri=%s)" % (self.prefix, self.uri)
 
 
+@python_2_unicode_compatible
 class NameSpaceMap(collections.MutableMapping):
 
     def __init__(self, back_end):
@@ -363,7 +359,11 @@ class NameSpaceMap(collections.MutableMapping):
         else:
             self.__back_end.namespaces.add(prefix, ns.uri)
 
+    def __str__(self):
+        return u"NameSpaceMap(size=%d)" % len(self)
 
+
+@python_2_unicode_compatible
 class TypeDef(object):
 
     def __init__(self, name, definition, properties):
@@ -399,9 +399,10 @@ class TypeDef(object):
         return not self == other
 
     def __str__(self):
-        return "TypeDef(name=%s)" % self.name
+        return u"TypeDef(name=%s, properties=set(%s))" % (self.name, u", ".join(str(i) for i in self.properties))
 
 
+@python_2_unicode_compatible
 class TypeDefMap(collections.MutableMapping):
 
     def __init__(self, back_end):
@@ -431,7 +432,11 @@ class TypeDefMap(collections.MutableMapping):
         else:
             self.__back_end.type_defs.add(name, td.definition, td.properties)
 
+    def __str__(self):
+        return u"TypeDefMap(size=%d)" % len(self)
 
+
+@python_2_unicode_compatible
 class PropertyDef(object):
 
     def __init__(self, name, definition, types):
@@ -467,9 +472,10 @@ class PropertyDef(object):
         return not self == other
 
     def __str__(self):
-        return "PropertyDef(name=%s)" % self.name
+        return u"PropertyDef(name=%s, types=set(%s))" % (self.name, u", ".join(str(i) for i in self.types))
 
 
+@python_2_unicode_compatible
 class PropertyDefMap(collections.MutableMapping):
 
     def __init__(self, back_end):
@@ -498,3 +504,6 @@ class PropertyDefMap(collections.MutableMapping):
             prop_def.set_types(pd.types)
         else:
             self.__back_end.property_defs.add(name, pd.definition, pd.types)
+
+    def __str__(self):
+        return u"PropertyDefMap(size=%d)" % len(self)

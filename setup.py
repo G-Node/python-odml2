@@ -28,16 +28,6 @@ HOMEPAGE = re.search(r"HOMEPAGE\s*=\s*'([^']*)'", info).group(1)
 PACKAGE = re.search(r"PACKAGE\s*=\s*'([^']*)'", info).group(1)
 LICENSE = re.search(r"LICENSE\s*=\s*'([^']*)'", info).group(1)
 
-install_requires = (
-    "setuptools",
-    "six",
-    "PyYAML>=3.10",
-)
-
-tests_require = (
-    "nose",
-)
-
 setup(
     name=PACKAGE,
     url=HOMEPAGE,
@@ -50,19 +40,26 @@ setup(
 
     packages=find_packages(exclude=("test", )),
 
-    install_requires=install_requires,
-    tests_require=tests_require,
+    install_requires=(
+        "setuptools",
+        "six",
+        "future",
+        "PyYAML>=3.10"
+    ),
+    tests_require=(
+        "nose"
+    ),
     test_suite='nose.collector',
 
     classifiers=(
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.1",
         "Programming Language :: Python :: 3.2",
         "Programming Language :: Python :: 3.3",
-        "Programming Language :: Python :: 3.4"
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5"
     ),
 
     package_data={PACKAGE: [license_text, description_text]},

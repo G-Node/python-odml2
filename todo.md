@@ -8,7 +8,7 @@ odML TODO list:
     - [x] tests for type definitions
     - [x] property definitions
     - [x] tests for property definitions
-  - [ ] Implement `__str__` for all-front end classes 
+  - [x] Implement `__str__` for all front-end classes 
   - [ ] Move TODOs from the code to this document (if possible)
   - [ ] Use sortedcontainers.SortedMap instead of dict in the mem back-end.
   - [ ] Remove DictLike class and inherit from collections.Mapping or collections.MutableMapping
@@ -18,11 +18,11 @@ odML TODO list:
   - [ ] Check the input for URIs, names, type names, prefixes etc (if possible in the back-end)
   - [ ] Better name for SB for example: SecB, SecBuilder ...
   - [ ] Nicer yaml output (sort things by type and name)
+  - [ ] Add support for namespaces
+  - [ ] Add support for links
   - [ ] Implement modes that define how the terminology is handled:
         STRICT, UNCHECKED, CREATE
   - [ ] Access and manipulate property and type definitions from sections directly
-  - [ ] Add support for namespaces
-  - [ ] Add support for links
   - [ ] Better intro notebook
   - [ ] Public API documentation
   - [ ] YAML format

@@ -9,6 +9,8 @@
 # LICENSE file in the root of the project.
 
 import six
+from future.utils import python_2_unicode_compatible
+
 import odml2
 from odml2.api import yml, base
 
@@ -17,6 +19,7 @@ __all__ = ("BACK_ENDS", "Document", "load_document", "save_document")
 BACK_ENDS = (yml.YamlDocument, )
 
 
+@python_2_unicode_compatible
 class Document(object):
 
     def __init__(self, back_end="yaml"):
@@ -110,10 +113,4 @@ class Document(object):
         self.__back_end.load(source)
 
     def __str__(self):
-        return "Document(location='%s', author='%s', date=%s)" % (self.__back_end.get_uri(), self.author, self.date)
-
-    def __repr__(self):
-        return str(self)
-
-    def __unicode__(self):
-        return six.u(str(self))
+        return u"Document(location='%s', author='%s', date=%s)" % (self.__back_end.get_uri(), self.author, self.date)
