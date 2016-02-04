@@ -9,6 +9,8 @@
 # LICENSE file in the root of the project.
 
 import six
+from future.utils import python_2_unicode_compatible
+
 import odml2
 from odml2.api import yml, base
 
@@ -17,6 +19,7 @@ __all__ = ("BACK_ENDS", "Document", "load_document", "save_document")
 BACK_ENDS = (yml.YamlDocument, )
 
 
+@python_2_unicode_compatible
 class Document(object):
 
     def __init__(self, back_end="yaml"):
@@ -33,6 +36,10 @@ class Document(object):
             self.__back_end = back_end
         else:
             raise ValueError("Not a valid back-end %s" % type(back_end))
+
+        self.__namespaces = odml2.NameSpaceMap(self.__back_end)
+        self.__property_defs = odml2.PropertyDefMap(self.__back_end)
+        self.__type_defs = odml2.TypeDefMap(self.__back_end)
 
     @property
     def is_attached(self):
@@ -87,6 +94,18 @@ class Document(object):
         else:
             raise ValueError("Only Section and SB can be used as root")
 
+    @property
+    def namespaces(self):
+        return self.__namespaces
+
+    @property
+    def type_definitions(self):
+        return self.__type_defs
+
+    @property
+    def property_definitions(self):
+        return self.__property_defs
+
     def save(self, destination=None):
         self.__back_end.save(destination)
 
@@ -94,10 +113,4 @@ class Document(object):
         self.__back_end.load(source)
 
     def __str__(self):
-        return "Document(location='%s', author='%s', date=%s)" % (self.__back_end.get_uri(), self.author, self.date)
-
-    def __repr__(self):
-        return str(self)
-
-    def __unicode__(self):
-        return six.u(str(self))
+        return u"Document(location='%s', author='%s', date=%s)" % (self.__back_end.get_uri(), self.author, self.date)

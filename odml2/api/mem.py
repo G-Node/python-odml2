@@ -23,7 +23,6 @@ Provides abstract base classes for back-end implementations.
 #         and read-write attributes.
 
 # TODO add section links
-# TODO raise errors when trying to change a read only document
 # TODO sanitize and check input (dates, name identifiers, type identifiers, prefixes, URIs)
 
 
@@ -381,6 +380,9 @@ class MemPropertyDefinition(base.BasePropertyDefinition):
     def get_types(self):
         return self.__types
 
+    def set_types(self, types):
+        self.__types = types
+
     # noinspection PyShadowingBuiltins
     def add_type(self, type):
         self.__types = self.__types + (type, )
@@ -408,6 +410,9 @@ class MemTypeDefinition(base.BaseTypeDefinition):
 
     def get_properties(self):
         return self.__properties
+
+    def set_properties(self, props):
+        self.__properties = props
 
     def add_property(self, prop):
         self.__properties = self.__properties + (prop, )

@@ -8,15 +8,26 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-import re
 import six
-import datetime as dt
+from future.utils import python_2_unicode_compatible
+
+import re
 import numbers
+import collections
+import datetime as dt
 import odml2
 
-__all__ = ("Section", "Value", "value_from")
+__all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "Value.from_obj")
+
+PLUS_MINUS_UNICODE = u"±"
+PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
+ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
+VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
+                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
+                        u"([A-Za-zΩμ]{1,4})?$")
 
 
+@python_2_unicode_compatible
 class Section(object):
     """
     Represents an odML section entity.
@@ -121,7 +132,7 @@ class Section(object):
         elif isinstance(element, Section):
             element._copy(self.__back_end, self.uuid, key, True)
         else:
-            val = value_from(element)
+            val = Value.from_obj(element)
             sec = self.__back_end.sections[self.uuid]
             sec.value_properties[key] = val
 
@@ -152,13 +163,7 @@ class Section(object):
         return not (self == other)
 
     def __str__(self):
-        return "Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
-
-    def __repr__(self):
-        return str(self)
-
-    def __unicode__(self):
-        return six.u(str(self))
+        return u"Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
 
     #
     # Internally used methods
@@ -188,11 +193,6 @@ class Section(object):
                 raise ValueError("Section or Value expected, but type was '%s'" % type(thing))
 
 
-PLUS_MINUS_UNICODE = u"±"
-PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
-ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
-
-
 class Value(object):
     """
     An odML Value class
@@ -200,11 +200,14 @@ class Value(object):
 
     def __init__(self, value, unit=None, uncertainty=None):
         if not isinstance(value, ALLOWED_VALUE_TYPES):
-            raise ValueError("value must be a string, number, bool or datetime")
+            raise ValueError("Value must be a one of the following types: %s" %
+                             ", ".join(str(t) for t in ALLOWED_VALUE_TYPES))
         self.__value = value
+        if unit is not None and not isinstance(unit, six.string_types):
+            raise ValueError("Unit must be a string")
         if (unit is not None or uncertainty is not None) and not isinstance(value, numbers.Number):
-            raise ValueError("uncertainty and unit must be None if value is not a number")
-        self.__unit = six.u(unit) if unit is not None else None
+            raise ValueError("Uncertainty and unit must be None if value is not a number")
+        self.__unit = unit
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
 
     @property
@@ -263,30 +266,241 @@ class Value(object):
             parts.append(str(self.uncertainty))
         if self.unit is not None:
             parts.append(self.unit)
-        return six.u("").join(parts)
+        return u"".join(parts)
 
-    def __repr__(self):
-        return str(self)
-
-VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
-                        u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
-                        u"([A-Za-zΩμ]{1,4})?$")
-
-
-def value_from(thing):
-    if isinstance(thing, six.string_types):
-        match = VALUE_EXPR.match(thing)
-        if match is None:
+    @staticmethod
+    def from_obj(thing):
+        if isinstance(thing, six.string_types):
+            match = VALUE_EXPR.match(thing)
+            if match is None:
+                return Value(thing)
+            else:
+                g = match.groups()
+                num, is_float, uncertainty, unit = (g[0], g[3], g[7], g[11])
+                num = float(num) if is_float is not None else int(num)
+                uncertainty = float(uncertainty) if uncertainty is not None else None
+                return Value(num, unit, uncertainty)
+        if isinstance(thing, ALLOWED_VALUE_TYPES):
             return Value(thing)
+        elif isinstance(thing, Value):
+            return thing
         else:
-            g = match.groups()
-            num, is_float, uncertainty, unit = (g[0], g[3], g[7], g[11])
-            num = float(num) if is_float is not None else int(num)
-            uncertainty = float(uncertainty) if uncertainty is not None else None
-            return Value(num, unit, uncertainty)
-    if isinstance(thing, ALLOWED_VALUE_TYPES):
-        return Value(thing)
-    elif isinstance(thing, Value):
-        return thing
-    else:
-        raise ValueError("Can't covert '%s' to a value" % repr(thing))
+            raise ValueError("Can't covert '%s' to a value" % repr(thing))
+
+
+@python_2_unicode_compatible
+class NameSpace(object):
+
+    def __init__(self, prefix, uri):
+        self.__prefix = prefix
+        self.__uri = uri
+
+    @property
+    def prefix(self):
+        return self.__prefix
+
+    @property
+    def uri(self):
+        return self.__uri
+
+    def copy(self, prefix=None, uri=None):
+        return NameSpace(
+            str(prefix) if prefix is not None else self.__prefix,
+            str(uri) if uri is not None else self.__uri
+        )
+
+    @staticmethod
+    def from_str(ns, strict=False):
+        pass
+
+    def __eq__(self, other):
+        if not isinstance(other, NameSpace):
+            return False
+        return self.prefix == other.prefix and self.uri == other.uri
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __str__(self):
+        return u"NameSpace(prefix=%s, uri=%s)" % (self.prefix, self.uri)
+
+
+@python_2_unicode_compatible
+class NameSpaceMap(collections.MutableMapping):
+
+    def __init__(self, back_end):
+        self.__back_end = back_end
+
+    def set(self, prefix, uri):
+        self[prefix] = NameSpace(prefix, uri)
+
+    def __len__(self):
+        return len(self.__back_end.namespaces)
+
+    def __iter__(self):
+        return iter(self.__back_end.namespaces)
+
+    def __getitem__(self, prefix):
+        ns = self.__back_end.namespaces[prefix]
+        return NameSpace(ns.get_prefix(), ns.get_uri())
+
+    def __delitem__(self, prefix):
+        del self.__back_end.namespaces[prefix]
+
+    def __setitem__(self, prefix, ns):
+        if ns.prefix is not None and prefix != ns.prefix:
+            raise ValueError("Non matching prefixes: %s != %s" % (prefix, ns.prefix))
+
+        if prefix in self.__back_end.namespaces:
+            self.__back_end.namespaces[prefix].set_uri(ns.uri)
+        else:
+            self.__back_end.namespaces.add(prefix, ns.uri)
+
+    def __str__(self):
+        return u"NameSpaceMap(size=%d)" % len(self)
+
+
+@python_2_unicode_compatible
+class TypeDef(object):
+
+    def __init__(self, name, definition, properties):
+        self.__name = name
+        self.__definition = definition
+        self.__properties = frozenset(properties)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def definition(self):
+        return self.__definition
+
+    @property
+    def properties(self):
+        return self.__properties
+
+    def copy(self, name=None, definition=None, properties=frozenset()):
+        return TypeDef(
+                str(name) if name is not None else self.__name,
+                str(definition) if definition is not None else self.__definition,
+                properties if properties != frozenset() else self.__properties
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, TypeDef):
+            return False
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __str__(self):
+        return u"TypeDef(name=%s, properties=set(%s))" % (self.name, u", ".join(str(i) for i in self.properties))
+
+
+@python_2_unicode_compatible
+class TypeDefMap(collections.MutableMapping):
+
+    def __init__(self, back_end):
+        self.__back_end = back_end
+
+    def __len__(self):
+        return len(self.__back_end.type_defs)
+
+    def __iter__(self):
+        return iter(self.__back_end.type_defs)
+
+    def __getitem__(self, name):
+        td = self.__back_end.type_defs[name]
+        return TypeDef(td.get_name(), td.get_definition(), td.get_properties())
+
+    def __delitem__(self, name):
+        del self.__back_end.type_defs[name]
+
+    def __setitem__(self, name, td):
+        if td.name is not None and name != td.name:
+            raise ValueError("Non matching type names: %s != %s" % (name, td.name))
+
+        if name in self.__back_end.type_defs:
+            type_def = self.__back_end.type_defs[name]
+            type_def.set_definition(td.definition)
+            type_def.set_properties(td.properties)
+        else:
+            self.__back_end.type_defs.add(name, td.definition, td.properties)
+
+    def __str__(self):
+        return u"TypeDefMap(size=%d)" % len(self)
+
+
+@python_2_unicode_compatible
+class PropertyDef(object):
+
+    def __init__(self, name, definition, types):
+        self.__name = name
+        self.__definition = definition
+        self.__types = frozenset(types)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def definition(self):
+        return self.__definition
+
+    @property
+    def types(self):
+        return self.__types
+
+    def copy(self, name=None, definition=None, types=frozenset()):
+        return PropertyDef(
+                str(name) if name is not None else self.__name,
+                str(definition) if definition is not None else self.__definition,
+                types if types != frozenset() else self.__types
+        )
+
+    def __eq__(self, other):
+        if not isinstance(other, PropertyDef):
+            return False
+        return self.name == other.name
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __str__(self):
+        return u"PropertyDef(name=%s, types=set(%s))" % (self.name, u", ".join(str(i) for i in self.types))
+
+
+@python_2_unicode_compatible
+class PropertyDefMap(collections.MutableMapping):
+
+    def __init__(self, back_end):
+        self.__back_end = back_end
+
+    def __len__(self):
+        return len(self.__back_end.property_defs)
+
+    def __iter__(self):
+        return iter(self.__back_end.property_defs)
+
+    def __getitem__(self, name):
+        pd = self.__back_end.property_defs[name]
+        return PropertyDef(pd.get_name(), pd.get_definition(), pd.get_types())
+
+    def __delitem__(self, name):
+        del self.__back_end.property_defs[name]
+
+    def __setitem__(self, name, pd):
+        if pd.name is not None and name != pd.name:
+            raise ValueError("Non matching property names: %s != %s" % (name, pd.name))
+
+        if name in self.__back_end.property_defs:
+            prop_def = self.__back_end.property_defs[name]
+            prop_def.set_definition(pd.definition)
+            prop_def.set_types(pd.types)
+        else:
+            self.__back_end.property_defs.add(name, pd.definition, pd.types)
+
+    def __str__(self):
+        return u"PropertyDefMap(size=%d)" % len(self)

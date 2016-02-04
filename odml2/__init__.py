@@ -6,6 +6,6 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-from odml2.model import Section, Value, value_from
+from odml2.model import Section, Value, NameSpace, NameSpaceMap, PropertyDef, PropertyDefMap, TypeDef, TypeDefMap
 from odml2.document import Document
 from odml2.builder import SB
