@@ -187,7 +187,7 @@ class ValueTest(unittest.TestCase):
 
         if six.PY2:
             self.assertEqual(str(v1), "1+-0.1mV")
-            self.assertEqual(six.u(v1), u"1±0.1mV")
+            self.assertEqual(unicode(v1), u"1±0.1mV")
         else:
             self.assertEqual(str(v1), "1±0.1mV")
 

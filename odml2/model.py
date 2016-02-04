@@ -200,11 +200,14 @@ class Value(object):
 
     def __init__(self, value, unit=None, uncertainty=None):
         if not isinstance(value, ALLOWED_VALUE_TYPES):
-            raise ValueError("value must be a string, number, bool or datetime")
+            raise ValueError("Value must be a one of the following types: %s" %
+                             ", ".join(str(t) for t in ALLOWED_VALUE_TYPES))
         self.__value = value
+        if unit is not None and not isinstance(unit, six.string_types):
+            raise ValueError("Unit must be a string")
         if (unit is not None or uncertainty is not None) and not isinstance(value, numbers.Number):
-            raise ValueError("uncertainty and unit must be None if value is not a number")
-        self.__unit = six.u(unit) if unit is not None else None
+            raise ValueError("Uncertainty and unit must be None if value is not a number")
+        self.__unit = unit
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
 
     @property
@@ -267,7 +270,7 @@ class Value(object):
             parts.append(str(self.uncertainty))
         if self.unit is not None:
             parts.append(self.unit)
-        return six.u("").join(parts)
+        return u"".join(parts)
 
 
 def value_from(thing):
