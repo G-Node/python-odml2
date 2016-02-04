@@ -11,9 +11,9 @@
 import six
 import abc
 import datetime
+import collections
 
 import odml2
-from odml2.util.dict_like import DictLike
 
 """
 Provides abstract base classes for back-end implementations.
@@ -294,7 +294,7 @@ class BaseDocument(object):
         read_section(None, None, data["metadata"])
 
 
-class BaseNameSpaceDict(DictLike):
+class BaseNameSpaceDict(collections.MutableMapping):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
@@ -303,24 +303,8 @@ class BaseNameSpaceDict(DictLike):
     def add(self, prefix, uri):
         pass
 
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BaseNameSpace
-        """
-        pass
 
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
-        pass
-
-
-class BasePropertyDefDict(DictLike):
+class BasePropertyDefDict(collections.MutableMapping):
     """
     Dict like accessor for property definitions of an odML2 document.
     """
@@ -329,24 +313,8 @@ class BasePropertyDefDict(DictLike):
     def add(self, name, types=tuple()):
         pass
 
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BasePropertyDefinition
-        """
-        pass
 
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
-        pass
-
-
-class BaseTypeDefDict(DictLike):
+class BaseTypeDefDict(collections.MutableMapping):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
@@ -356,24 +324,8 @@ class BaseTypeDefDict(DictLike):
     def add(self, type, definition=None, properties=tuple()):
         pass
 
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BaseTypeDefinition
-        """
-        pass
 
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
-        pass
-
-
-class BaseSectionDict(DictLike):
+class BaseSectionDict(collections.MutableMapping):
     """
     Dict like accessor for namespaces of a odML2 document.
     """
@@ -381,22 +333,6 @@ class BaseSectionDict(DictLike):
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
     def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BaseSection
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
         pass
 
 
@@ -454,7 +390,7 @@ class BaseSection(object):
         raise NotImplementedError()
 
 
-class BaseSectionPropertyDict(DictLike):
+class BaseSectionPropertyDict(collections.MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -467,22 +403,6 @@ class BaseSectionPropertyDict(DictLike):
         :type prop: str
         :param refs: Tuple of references to sections.
         :type refs: tuple[SectionRef]
-        """
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: tuple[SectionRef]
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
         """
         pass
 
@@ -510,7 +430,7 @@ class SectionRef(object):
         return self.__is_link
 
 
-class BaseValuePropertyDict(DictLike):
+class BaseValuePropertyDict(collections.MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -525,25 +445,6 @@ class BaseValuePropertyDict(DictLike):
         :type value: odml2.Value
         """
         pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: tuple[odml2.Value]
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
-        pass
-
-    def __setitem__(self, key, value):
-        self.set(key, value)
 
 
 @six.add_metaclass(abc.ABCMeta)
