@@ -16,10 +16,10 @@ odML TODO list:
   - [ ] Use suffix Access or Accessor instead of Dict in the back-end
   - [x] Make use of itertools.chain() to concatenate generators (value properties and section properties)
   - [x] Maybe use immutable front-end classes NameSpace, TypeDef, PropertyDef also in the back-end
-    - [ ] Deprecate add/set methods on MutableMapping/accessor classes in the back-end (and front-end?)
+    - ~~Deprecate add/set methods on MutableMapping/accessor classes in the back-end (and front-end?)~~
   - [ ] Check the input for URIs, names, type names, prefixes etc (if possible in the back-end)
   - [ ] Better name for SB for example: SecB, SecBuilder ...
-  - [ ] Nicer yaml output (sort things by type and name)
+  - [x] Nicer yaml output (sort things by type and name)
   - [ ] Raise errors when trying to change a read only document
   - [ ] Load and store YAML documents over HTTP
     - [ ] Use six.move.urllib.parse.urlparse to read paths and uris

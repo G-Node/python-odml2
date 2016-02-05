@@ -15,6 +15,7 @@ Provides a back-and implementation for yaml using the memory back-end base class
 import io
 import six
 import yaml
+from collections import OrderedDict
 
 from odml2.api import mem
 
@@ -53,3 +54,10 @@ class YamlDocument(mem.MemDocument):
                 data = yaml.load(f)
                 self.set_uri(dest)
         self.from_dict(data)
+
+
+def __ordered_dict_representer(dumper, ordered_dict):
+    nodes = [(dumper.represent_data(k), dumper.represent_data(v)) for k, v in ordered_dict.items()]
+    return yaml.nodes.MappingNode(u'tag:yaml.org,2002:map', nodes)
+
+yaml.add_representer(OrderedDict, __ordered_dict_representer)

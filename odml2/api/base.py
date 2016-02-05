@@ -11,7 +11,7 @@
 import six
 import abc
 import datetime
-import collections
+from collections import OrderedDict, MutableMapping
 
 import odml2
 
@@ -186,8 +186,8 @@ class BaseDocument(object):
         pass
 
     def to_dict(self):
-        root = {"author": self.get_author(), "date": self.get_date(), "document_version": self.get_version(),
-                "format_version": (2, 0)}
+        root = OrderedDict(author=self.get_author(), date=self.get_date(),
+                           document_version=self.get_version(), format_version=2)
 
         def convert_value(val):
             if val.unit is not None or val.uncertainty is not None:
@@ -196,21 +196,21 @@ class BaseDocument(object):
                 return val.value
 
         def convert_ns():
-            ns_dict = {}
+            ns_dict = OrderedDict()
             for ns in self.namespaces.values():
                 ns_dict[ns.prefix] = ns.uri
             return ns_dict
 
         def convert_definitions():
-            defs_dict = {}
+            defs_dict = OrderedDict()
             for pd in self.property_defs.values():
-                pd_dict = {"types": pd.types}
+                pd_dict = OrderedDict(types=pd.types)
                 definition = pd.definition
                 if definition is not None:
                     pd_dict["definition"] = definition
                 defs_dict[pd.name] = pd_dict
             for td in self.type_defs.values():
-                td_dict = {"properties": td.properties}
+                td_dict = OrderedDict(properties=td.properties)
                 definition = td.definition
                 if definition is not None:
                     td_dict["definition"] = definition
@@ -228,7 +228,7 @@ class BaseDocument(object):
 
         def convert_section(uuid):
             sec = self.sections[uuid]
-            sec_dict = {"uuid": uuid, "type": sec.get_type()}
+            sec_dict = OrderedDict(uuid=uuid, type=sec.get_type())
             label = sec.get_label()
             if label is not None:
                 sec_dict["label"] = label
@@ -252,8 +252,8 @@ class BaseDocument(object):
         return root
 
     def from_dict(self, data):
-        if data["format_version"] != (2, 0):
-            raise RuntimeError("Format version must be 2.0")
+        if data["format_version"] != 2:
+            raise RuntimeError("Format version must be 2")
 
         self.clear()
 
@@ -294,7 +294,7 @@ class BaseDocument(object):
         read_section(None, None, data["metadata"])
 
 
-class BaseNameSpaceDict(collections.MutableMapping):
+class BaseNameSpaceDict(MutableMapping):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
@@ -304,7 +304,7 @@ class BaseNameSpaceDict(collections.MutableMapping):
         pass
 
 
-class BasePropertyDefDict(collections.MutableMapping):
+class BasePropertyDefDict(MutableMapping):
     """
     Dict like accessor for property definitions of an odML2 document.
     """
@@ -314,7 +314,7 @@ class BasePropertyDefDict(collections.MutableMapping):
         pass
 
 
-class BaseTypeDefDict(collections.MutableMapping):
+class BaseTypeDefDict(MutableMapping):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
@@ -325,7 +325,7 @@ class BaseTypeDefDict(collections.MutableMapping):
         pass
 
 
-class BaseSectionDict(collections.MutableMapping):
+class BaseSectionDict(MutableMapping):
     """
     Dict like accessor for namespaces of a odML2 document.
     """
@@ -390,7 +390,7 @@ class BaseSection(object):
         raise NotImplementedError()
 
 
-class BaseSectionPropertyDict(collections.MutableMapping):
+class BaseSectionPropertyDict(MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -430,7 +430,7 @@ class SectionRef(object):
         return self.__is_link
 
 
-class BaseValuePropertyDict(collections.MutableMapping):
+class BaseValuePropertyDict(MutableMapping):
     """
     Dict like accessor for section properties.
     """
