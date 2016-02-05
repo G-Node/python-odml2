@@ -36,10 +36,10 @@ class MemDocument(base.BaseDocument):
         self.__author = None
         self.__version = 1
         self.__root = None
-        self.__namespaces = MemNameSpaceDict(self)
-        self.__property_defs = MemPropertyDefDict(self)
-        self.__type_defs = MemTypeDefDict(self)
-        self.__sections = MemSectionDict(self)
+        self.__namespaces = MemNameSpaceMap(self)
+        self.__property_defs = MemPropertyDefMap(self)
+        self.__type_defs = MemTypeDefMap(self)
+        self.__sections = MemSectionMap(self)
 
     def is_attached(self):
         return False
@@ -121,7 +121,7 @@ class MemDocument(base.BaseDocument):
         pass
 
 
-class MemNameSpaceDict(base.BaseNameSpaceDict):
+class MemNameSpaceMap(base.BaseNameSpaceMap):
 
     def __init__(self, doc):
         self.__doc = doc
@@ -148,7 +148,7 @@ class MemNameSpaceDict(base.BaseNameSpaceDict):
         return iter(self.__namespaces)
 
 
-class MemPropertyDefDict(base.BasePropertyDefDict):
+class MemPropertyDefMap(base.BasePropertyDefMap):
 
     def __init__(self, doc):
         self.__doc = doc
@@ -175,7 +175,7 @@ class MemPropertyDefDict(base.BasePropertyDefDict):
         return iter(self.__property_defs)
 
 
-class MemTypeDefDict(base.BaseTypeDefDict):
+class MemTypeDefMap(base.BaseTypeDefMap):
 
     def __init__(self, doc):
         self.__doc = doc
@@ -202,7 +202,7 @@ class MemTypeDefDict(base.BaseTypeDefDict):
         return iter(self.__type_defs)
 
 
-class MemSectionDict(base.BaseSectionDict):
+class MemSectionMap(base.BaseSectionMap):
 
     def __init__(self, doc):
         self.__doc = doc
@@ -276,8 +276,8 @@ class MemSection(base.BaseSection):
         self.__label = label
         self.__reference = reference
         self.__is_linked = is_linked
-        self.__sections_properties = MemSectionPropertyDict(doc)
-        self.__value_properties = MemValuePropertyDict(doc)
+        self.__sections_properties = MemSectionPropertyMap(doc)
+        self.__value_properties = MemValuePropertyMap(doc)
 
     def is_linked(self):
         return self.__is_linked
@@ -313,7 +313,7 @@ class MemSection(base.BaseSection):
         return self.__value_properties
 
 
-class MemSectionPropertyDict(base.BaseSectionPropertyDict):
+class MemSectionPropertyMap(base.BaseSectionPropertyMap):
 
     def __init__(self, doc):
         self.__doc = doc
@@ -338,7 +338,7 @@ class MemSectionPropertyDict(base.BaseSectionPropertyDict):
         return iter(self.__section_props)
 
 
-class MemValuePropertyDict(base.BaseValuePropertyDict):
+class MemValuePropertyMap(base.BaseValuePropertyMap):
 
     def __init__(self, doc):
         self.__doc = doc

@@ -125,7 +125,7 @@ class BaseDocument(object):
     def namespaces(self):
         """
         Access to document namespaces.
-        :rtype: BaseNameSpaceDict
+        :rtype: BaseNameSpaceMap
         """
         raise NotImplementedError()
 
@@ -133,7 +133,7 @@ class BaseDocument(object):
     def property_defs(self):
         """
         Access to document property definitions.
-        :rtype: BasePropertyDefDict
+        :rtype: BasePropertyDefMap
         """
         raise NotImplementedError
 
@@ -141,7 +141,7 @@ class BaseDocument(object):
     def type_defs(self):
         """
         Access to document type definitions.
-        :rtype: BaseTypeDefDict
+        :rtype: BaseTypeDefMap
         """
         raise NotImplementedError()
 
@@ -149,7 +149,7 @@ class BaseDocument(object):
     def sections(self):
         """
         Access to ALL document sections.
-        :rtype: BaseSectionDict
+        :rtype: BaseSectionMap
         """
         raise NotImplementedError()
 
@@ -294,7 +294,7 @@ class BaseDocument(object):
         read_section(None, None, data["metadata"])
 
 
-class BaseNameSpaceDict(MutableMapping):
+class BaseNameSpaceMap(MutableMapping):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
@@ -304,7 +304,7 @@ class BaseNameSpaceDict(MutableMapping):
         pass
 
 
-class BasePropertyDefDict(MutableMapping):
+class BasePropertyDefMap(MutableMapping):
     """
     Dict like accessor for property definitions of an odML2 document.
     """
@@ -314,7 +314,7 @@ class BasePropertyDefDict(MutableMapping):
         pass
 
 
-class BaseTypeDefDict(MutableMapping):
+class BaseTypeDefMap(MutableMapping):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
@@ -325,7 +325,7 @@ class BaseTypeDefDict(MutableMapping):
         pass
 
 
-class BaseSectionDict(MutableMapping):
+class BaseSectionMap(MutableMapping):
     """
     Dict like accessor for namespaces of a odML2 document.
     """
@@ -378,19 +378,19 @@ class BaseSection(object):
     @property
     def section_properties(self):
         """
-        :rtype: BaseSectionPropertyDict
+        :rtype: BaseSectionPropertyMap
         """
         raise NotImplementedError()
 
     @property
     def value_properties(self):
         """
-        :rtype: BasePropertyDefDict
+        :rtype: BasePropertyDefMap
         """
         raise NotImplementedError()
 
 
-class BaseSectionPropertyDict(MutableMapping):
+class BaseSectionPropertyMap(MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -430,7 +430,7 @@ class SectionRef(object):
         return self.__is_link
 
 
-class BaseValuePropertyDict(MutableMapping):
+class BaseValuePropertyMap(MutableMapping):
     """
     Dict like accessor for section properties.
     """
