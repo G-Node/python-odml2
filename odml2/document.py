@@ -9,6 +9,7 @@
 # LICENSE file in the root of the project.
 
 import six
+import datetime as dt
 from future.utils import python_2_unicode_compatible
 
 import odml2
@@ -59,6 +60,8 @@ class Document(object):
 
     @author.setter
     def author(self, author):
+        if not isinstance(author, six.string_types):
+            raise ValueError("Author must be a string")
         self.__back_end.set_author(author)
 
     @property
@@ -67,6 +70,8 @@ class Document(object):
 
     @date.setter
     def date(self, date):
+        if not isinstance(date, dt.date):
+            raise ValueError("Date must be a date or datetime")
         self.__back_end.set_date(date)
 
     @property
@@ -75,6 +80,8 @@ class Document(object):
 
     @version.setter
     def version(self, version):
+        if not isinstance(version, int):
+            raise ValueError("The document version must be an integer")
         self.__back_end.set_version(version)
 
     @property

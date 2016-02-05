@@ -9,7 +9,9 @@
 # LICENSE file in the root of the project.
 
 from uuid import uuid4
+
 import odml2
+from odml2.checks import *
 
 __all__ = ("SB", )
 
@@ -21,8 +23,13 @@ class SB(object):
 
     # noinspection PyShadowingBuiltins
     def __init__(self, type, uuid=None, label=None, reference=None, **properties):
+        uuid = str(uuid) if uuid is not None else str(uuid4())
+        assert_name(type)
+        assert_uuid(uuid)
+        for p in properties:
+            assert_name(p)
         self.type = type
-        self.uuid = str(uuid) if uuid is not None else str(uuid4())
+        self.uuid = uuid
         self.label = label
         self.reference = reference
         self.properties = properties

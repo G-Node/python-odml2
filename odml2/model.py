@@ -16,7 +16,9 @@ import numbers
 import itertools
 import collections
 import datetime as dt
+
 import odml2
+from odml2.checks import *
 
 __all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "Value.from_obj")
 
@@ -50,6 +52,7 @@ class Section(collections.MutableMapping):
     # noinspection PyShadowingBuiltins
     @type.setter
     def type(self, type):
+        assert_prefixed_name(type)
         self.__back_end.sections[self.uuid].set_type(type)
 
     @property
@@ -58,6 +61,8 @@ class Section(collections.MutableMapping):
 
     @label.setter
     def label(self, label):
+        if label is not None and not isinstance(label, six.string_types):
+            raise ValueError("Label must be a string")
         self.__back_end.sections[self.uuid].set_label(label)
 
     @property
@@ -66,6 +71,8 @@ class Section(collections.MutableMapping):
 
     @reference.setter
     def reference(self, reference):
+        if reference is not None and not isinstance(reference, six.string_types):
+            raise ValueError("Reference must be a string")
         self.__back_end.sections[self.uuid].set_reference(reference)
 
     @property
@@ -97,6 +104,7 @@ class Section(collections.MutableMapping):
         return element
 
     def __setitem__(self, key, element):
+        assert_prefixed_name(key)
         if key in self:
             del self[key]
         if isinstance(element, list):
@@ -290,6 +298,7 @@ class Value(object):
 class NameSpace(object):
 
     def __init__(self, prefix, uri):
+        assert_prefix(prefix)
         self.__prefix = prefix
         self.__uri = uri
 
@@ -360,7 +369,10 @@ class NameSpaceMap(collections.MutableMapping):
 @python_2_unicode_compatible
 class TypeDef(object):
 
-    def __init__(self, name, definition, properties):
+    def __init__(self, name, definition=None, properties=frozenset()):
+        assert_name(name)
+        for p in properties:
+            assert_name(p)
         self.__name = name
         self.__definition = definition
         self.__properties = frozenset(properties)
@@ -430,7 +442,10 @@ class TypeDefMap(collections.MutableMapping):
 @python_2_unicode_compatible
 class PropertyDef(object):
 
-    def __init__(self, name, definition, types):
+    def __init__(self, name, definition=None, types=frozenset()):
+        assert_name(name)
+        for t in types:
+            assert_name(t)
         self.__name = name
         self.__definition = definition
         self.__types = frozenset(types)
