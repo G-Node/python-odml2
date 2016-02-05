@@ -13,7 +13,7 @@ from datetime import datetime
 from uuid import uuid4
 
 from odml2 import Value
-from odml2.api.base import BaseNameSpace, BasePropertyDefinition, BaseTypeDefinition, BaseSection
+from odml2.api.base import BaseSection
 from odml2.api.yml import YamlDocument
 
 
@@ -61,7 +61,7 @@ class YamlDocumentTest(unittest.TestCase):
         self.assertEqual(len(self.doc.namespaces), 0)
         self.assertFalse("ex" in self.doc.namespaces)
 
-        self.doc.namespaces.add("ex", "http://example.com/terms.yml")
+        self.doc.namespaces.set("ex", "http://example.com/terms.yml")
         self.assertEqual(len(self.doc.namespaces), 1)
         self.assertTrue("ex" in self.doc.namespaces)
 
@@ -73,7 +73,7 @@ class YamlDocumentTest(unittest.TestCase):
         self.assertEqual((len(self.doc.property_defs)), 0)
         self.assertFalse("prop" in self.doc.property_defs)
 
-        self.doc.property_defs.add("prop", "Some numerical property", ("int", "float"))
+        self.doc.property_defs.set("prop", "Some numerical property", ("int", "float"))
         self.assertEqual(len(self.doc.property_defs), 1)
         self.assertTrue("prop" in self.doc.property_defs)
 
@@ -85,7 +85,7 @@ class YamlDocumentTest(unittest.TestCase):
         self.assertEqual((len(self.doc.type_defs)), 0)
         self.assertFalse("SomeType" in self.doc.type_defs)
 
-        self.doc.type_defs.add("SomeType", "Some section type", ("prop", ))
+        self.doc.type_defs.set("SomeType", "Some section type", ("prop", ))
         self.assertEqual(len(self.doc.type_defs), 1)
         self.assertTrue("SomeType" in self.doc.type_defs)
 
@@ -115,104 +115,6 @@ class YamlDocumentTest(unittest.TestCase):
     def test_to_fom_dict(self):
         # TODO test serialization
         pass
-
-
-class YamlNameSpaceTest(unittest.TestCase):
-
-    def setUp(self):
-        self.doc = YamlDocument()
-        self.doc.namespaces.add("ex", "http://example.com/terms.yml")
-        self.doc.namespaces.add("gnode", "http://g-node.org/terms.yml")
-
-    def test_get(self):
-        ns = self.doc.namespaces["ex"]
-        self.assertIsInstance(ns, BaseNameSpace)
-        ns = self.doc.namespaces["gnode"]
-        self.assertIsInstance(ns, BaseNameSpace)
-
-        self.assertRaises(KeyError, lambda: self.doc.namespaces["not_exists"])
-        self.assertIsNone(self.doc.namespaces.get("not_exists"))
-
-    def test_prefix(self):
-        ns = self.doc.namespaces["ex"]
-        self.assertEqual(ns.get_prefix(), "ex")
-
-    def test_uri(self):
-        ns = self.doc.namespaces["ex"]
-        self.assertEqual(ns.get_uri(), "http://example.com/terms.yml")
-        ns.set_uri("http://other.com")
-        self.assertEqual(ns.get_uri(), "http://other.com")
-        # TODO check exception for malformed uri
-
-
-class YamlPropertyDefinitionTest(unittest.TestCase):
-
-    def setUp(self):
-        self.doc = YamlDocument()
-        self.doc.property_defs.add("int_prop", "Some integer", ("int", ))
-        self.doc.property_defs.add("num_prop", "Some number", ("int", "float"))
-
-    def test_get(self):
-        prop = self.doc.property_defs["int_prop"]
-        self.assertIsInstance(prop, BasePropertyDefinition)
-        prop = self.doc.property_defs["num_prop"]
-        self.assertIsInstance(prop, BasePropertyDefinition)
-
-        self.assertRaises(KeyError, lambda: self.doc.property_defs["not_exists"])
-        self.assertIsNone(self.doc.property_defs.get("not_exists"))
-
-    def test_name(self):
-        prop = self.doc.property_defs["int_prop"]
-        self.assertEqual(prop.get_name(), "int_prop")
-
-    def test_definition(self):
-        prop = self.doc.property_defs["int_prop"]
-        self.assertEqual(prop.get_definition(), "Some integer")
-        prop.set_definition("Other definition")
-        self.assertEqual(prop.get_definition(), "Other definition")
-
-    def test_types(self):
-        prop = self.doc.property_defs["num_prop"]
-        self.assertEqual(prop.get_types(), ("int", "float"))
-        prop.add_type("double")
-        self.assertEqual(prop.get_types(), ("int", "float", "double"))
-        prop.remove_type("float")
-        self.assertEqual(prop.get_types(), ("int", "double"))
-
-
-class YamlTypeDefinitionTest(unittest.TestCase):
-
-    def setUp(self):
-        self.doc = YamlDocument()
-        self.doc.type_defs.add("SomeType", "Some section type", ("prop1", "prop2"))
-        self.doc.type_defs.add("OtherType", "Another section type", ("prop3", ))
-
-    def test_get(self):
-        td = self.doc.type_defs["SomeType"]
-        self.assertIsInstance(td, BaseTypeDefinition)
-        td = self.doc.type_defs["OtherType"]
-        self.assertIsInstance(td, BaseTypeDefinition)
-
-        self.assertRaises(KeyError, lambda: self.doc.type_defs["NoType"])
-        self.assertIsNone(self.doc.type_defs.get("NoType"))
-
-    def test_name(self):
-        td = self.doc.type_defs["SomeType"]
-        self.assertEqual(td.get_name(), "SomeType")
-
-    def test_definition(self):
-        td = self.doc.type_defs["SomeType"]
-        self.assertEqual(td.get_definition(), "Some section type")
-        td.set_definition("Another definition")
-        self.assertEqual(td.get_definition(), "Another definition")
-
-    def test_properties(self):
-        td = self.doc.type_defs["SomeType"]
-        self.assertEqual(td.get_properties(), ("prop1", "prop2"))
-        td.add_property("prop3")
-        self.assertEqual(td.get_properties(), ("prop1", "prop2", "prop3"))
-        td.remove_property("prop2")
-        self.assertEqual(td.get_properties(), ("prop1", "prop3"))
 
 
 class YamlSectionTest(unittest.TestCase):

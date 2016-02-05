@@ -10,6 +10,7 @@
 
 import abc
 from uuid import UUID
+from sortedcontainers import SortedDict
 import odml2
 from odml2.api import base
 
@@ -124,70 +125,81 @@ class MemNameSpaceDict(base.BaseNameSpaceDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__namespaces = {}
+        self.__namespaces = SortedDict()
 
-    def add(self, prefix, uri):
-        self.__namespaces[prefix] = MemNameSpace(prefix, uri)
+    def set(self, prefix, uri):
+        self.__namespaces[prefix] = odml2.NameSpace(prefix, uri)
 
-    def remove(self, key):
-        del self.__namespaces[key]
+    def __setitem__(self, prefix, ns):
+        if prefix != ns.prefix:
+            raise KeyError("NameSpace prefix mismatch: %s != %s" % (prefix, ns.prefix))
+        self.set(prefix, ns.uri)
 
-    def clear(self):
-        self.__namespaces.clear()
+    def __getitem__(self, prefix):
+        return self.__namespaces[prefix]
 
-    def get(self, key):
-        return self.__namespaces.get(key)
+    def __delitem__(self, prefix):
+        del self.__namespaces[prefix]
 
-    def keys(self):
-        for key in self.__namespaces:
-            yield key
+    def __len__(self):
+        return len(self.__namespaces)
+
+    def __iter__(self):
+        return iter(self.__namespaces)
 
 
 class MemPropertyDefDict(base.BasePropertyDefDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__property_defs = {}
+        self.__property_defs = SortedDict()
 
-    def add(self, name, definition=None, types=tuple()):
-        self.__property_defs[name] = MemPropertyDefinition(name, definition, types)
+    def set(self, name, definition=None, types=frozenset()):
+        self.__property_defs[name] = odml2.PropertyDef(name, definition, types)
 
-    def remove(self, key):
-        del self.__property_defs[key]
+    def __setitem__(self, name, pd):
+        if name != pd.name:
+            raise KeyError("Property name mismatch: %s != %s" % (name, pd.name))
+        self.set(name, pd.definition, pd.types)
 
-    def clear(self):
-        self.__property_defs.clear()
+    def __getitem__(self, name):
+        return self.__property_defs[name]
 
-    def get(self, key):
-        return self.__property_defs.get(key)
+    def __delitem__(self, name):
+        del self.__property_defs[name]
 
-    def keys(self):
-        for key in self.__property_defs:
-            yield key
+    def __len__(self):
+        return len(self.__property_defs)
+
+    def __iter__(self):
+        return iter(self.__property_defs)
 
 
 class MemTypeDefDict(base.BaseTypeDefDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__type_defs = {}
+        self.__type_defs = SortedDict()
 
-    # noinspection PyShadowingBuiltins
-    def add(self, type, definition=None, properties=tuple()):
-        self.__type_defs[type] = MemTypeDefinition(type, definition, properties)
+    def set(self, name, definition=None, properties=frozenset()):
+        self.__type_defs[name] = odml2.TypeDef(name, definition, properties)
 
-    def remove(self, key):
-        del self.__type_defs[key]
+    def __setitem__(self, name, td):
+        if name != td.name:
+            raise KeyError("Name mismatch: %s != %s" % (name, td.name))
+        self.set(name, td.definition, td.properties)
 
-    def clear(self):
-        self.__type_defs.clear()
+    def __getitem__(self, name):
+        return self.__type_defs[name]
 
-    def get(self, key):
-        return self.__type_defs.get(key)
+    def __delitem__(self, name):
+        del self.__type_defs[name]
 
-    def keys(self):
-        for key in self.__type_defs:
-            yield key
+    def __len__(self):
+        return len(self.__type_defs)
+
+    def __iter__(self):
+        return iter(self.__type_defs)
 
 
 class MemSectionDict(base.BaseSectionDict):
@@ -223,37 +235,40 @@ class MemSectionDict(base.BaseSectionDict):
         else:
             raise RuntimeError("Parent uuid and prop must be either both None or both not None!")
 
-    def remove(self, key):
-        if key not in self:
-            raise KeyError("A section with the given uuid '%s' does not exist" % key)
+    def __setitem__(self, uuid, value):
+        # TODO maybe implement later (but is not needed at the moment)
+        raise NotImplementedError()
 
-        def remove_with_subsections(key):
-            sec = self[key]
+    def __getitem__(self, uuid):
+        return self.__sections[uuid]
+
+    def __delitem__(self, uuid):
+        if uuid not in self:
+            raise KeyError("A section with the given uuid '%s' does not exist" % uuid)
+
+        def remove_with_subsections(section_id):
+            sec = self[section_id]
             for refs in sec.section_properties.values():
                 for ref in refs:
                     if not ref.is_link:
                         remove_with_subsections(ref.uuid)
-            del self.__sections[key]
+            del self.__sections[section_id]
 
-        remove_with_subsections(key)
+        remove_with_subsections(uuid)
 
         if len(self.__sections) == 0:
             self.__doc.set_root(None)
 
-    def clear(self):
-        self.__sections.clear()
+    def __len__(self):
+        return len(self.__sections)
 
-    def get(self, key):
-        return self.__sections.get(key)
-
-    def keys(self):
-        for key in self.__sections:
-            yield key
+    def __iter__(self):
+        return iter(self.__sections)
 
 
-# noinspection PyShadowingBuiltins
 class MemSection(base.BaseSection):
 
+    # noinspection PyShadowingBuiltins
     def __init__(self, doc, type, uuid, label, reference, is_linked):
         self.__doc = doc
         self.__type = type
@@ -273,6 +288,7 @@ class MemSection(base.BaseSection):
     def get_type(self):
         return self.__type
 
+    # noinspection PyShadowingBuiltins
     def set_type(self, type, check=False):
         self.__type = type
 
@@ -301,121 +317,49 @@ class MemSectionPropertyDict(base.BaseSectionPropertyDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__section_props = {}
+        self.__section_props = SortedDict()
 
     def set(self, prop, refs):
         self.__section_props[prop] = refs
 
-    def remove(self, key):
-        del self.__section_props[key]
+    def __setitem__(self, prop, refs):
+        self.__section_props[prop] = refs
 
-    def clear(self):
-        self.__section_props.clear()
+    def __getitem__(self, prop):
+        return self.__section_props[prop]
 
-    def get(self, key):
-        return self.__section_props.get(key)
+    def __delitem__(self, prop):
+        del self.__section_props[prop]
 
-    def keys(self):
-        for key in self.__section_props:
-            yield key
+    def __len__(self):
+        return len(self.__section_props)
+
+    def __iter__(self):
+        return iter(self.__section_props)
 
 
 class MemValuePropertyDict(base.BaseValuePropertyDict):
 
     def __init__(self, doc):
         self.__doc = doc
-        self.__value_props = {}
+        self.__value_props = SortedDict()
 
     def set(self, prop, value):
         if not isinstance(value, odml2.Value):
             raise ValueError("Type odml2.Value expected, but was %s" % type(value))
         self.__value_props[prop] = value
 
-    def remove(self, key):
-        del self.__value_props[key]
+    def __setitem__(self, prop, value):
+        self.set(prop, value)
 
-    def clear(self):
-        self.__value_props.clear()
+    def __getitem__(self, key):
+        return self.__value_props[key]
 
-    def get(self, key):
-        return self.__value_props.get(key)
+    def __delitem__(self, prop):
+        del self.__value_props[prop]
 
-    def keys(self):
-        for key in self.__value_props:
-            yield key
+    def __len__(self):
+        return len(self.__value_props)
 
-
-class MemNameSpace(base.BaseNameSpace):
-
-    def __init__(self, prefix, uri):
-        self.__prefix = prefix
-        self.__uri = uri
-
-    def get_prefix(self):
-        return self.__prefix
-
-    def get_uri(self):
-        return self.__uri
-
-    def set_uri(self, uri):
-        self.__uri = uri
-
-
-class MemPropertyDefinition(base.BasePropertyDefinition):
-
-    def __init__(self, name, definition, types):
-        self.__name = name
-        self.__definition = definition
-        self.__types = types
-
-    def get_name(self):
-        return self.__name
-
-    def get_definition(self):
-        return self.__definition
-
-    def set_definition(self, definition):
-        self.__definition = definition
-
-    def get_types(self):
-        return self.__types
-
-    def set_types(self, types):
-        self.__types = types
-
-    # noinspection PyShadowingBuiltins
-    def add_type(self, type):
-        self.__types = self.__types + (type, )
-
-    # noinspection PyShadowingBuiltins
-    def remove_type(self, type):
-        self.__types = tuple(t for t in self.__types if t != type)
-
-
-class MemTypeDefinition(base.BaseTypeDefinition):
-
-    def __init__(self, name, definition, properties):
-        self.__name = name
-        self.__definition = definition
-        self.__properties = properties
-
-    def get_name(self):
-        return self.__name
-
-    def get_definition(self):
-        return self.__definition
-
-    def set_definition(self, definition):
-        self.__definition = definition
-
-    def get_properties(self):
-        return self.__properties
-
-    def set_properties(self, props):
-        self.__properties = props
-
-    def add_property(self, prop):
-        self.__properties = self.__properties + (prop, )
-
-    def remove_property(self, prop):
-        self.__properties = tuple(p for p in self.__properties if p != prop)
+    def __iter__(self):
+        return iter(self.__value_props)

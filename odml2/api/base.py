@@ -11,9 +11,9 @@
 import six
 import abc
 import datetime
+from collections import OrderedDict, MutableMapping
 
 import odml2
-from odml2.util.dict_like import DictLike
 
 """
 Provides abstract base classes for back-end implementations.
@@ -186,8 +186,8 @@ class BaseDocument(object):
         pass
 
     def to_dict(self):
-        root = {"author": self.get_author(), "date": self.get_date(), "document_version": self.get_version(),
-                "format_version": (2, 0)}
+        root = OrderedDict(author=self.get_author(), date=self.get_date(),
+                           document_version=self.get_version(), format_version=2)
 
         def convert_value(val):
             if val.unit is not None or val.uncertainty is not None:
@@ -196,25 +196,25 @@ class BaseDocument(object):
                 return val.value
 
         def convert_ns():
-            ns_dict = {}
+            ns_dict = OrderedDict()
             for ns in self.namespaces.values():
-                ns_dict[ns.get_prefix()] = ns.get_uri()
+                ns_dict[ns.prefix] = ns.uri
             return ns_dict
 
         def convert_definitions():
-            defs_dict = {}
+            defs_dict = OrderedDict()
             for pd in self.property_defs.values():
-                pd_dict = {"types": pd.get_types()}
-                definition = pd.get_definition()
+                pd_dict = OrderedDict(types=pd.types)
+                definition = pd.definition
                 if definition is not None:
                     pd_dict["definition"] = definition
-                defs_dict[pd.get_name()] = pd_dict
+                defs_dict[pd.name] = pd_dict
             for td in self.type_defs.values():
-                td_dict = {"properties": td.get_properties()}
-                definition = td.get_definition()
+                td_dict = OrderedDict(properties=td.properties)
+                definition = td.definition
                 if definition is not None:
                     td_dict["definition"] = definition
-                defs_dict[td.get_type()] = td_dict
+                defs_dict[td.name] = td_dict
             return defs_dict
 
         def convert_ref(ref):
@@ -228,7 +228,7 @@ class BaseDocument(object):
 
         def convert_section(uuid):
             sec = self.sections[uuid]
-            sec_dict = {"uuid": uuid, "type": sec.get_type()}
+            sec_dict = OrderedDict(uuid=uuid, type=sec.get_type())
             label = sec.get_label()
             if label is not None:
                 sec_dict["label"] = label
@@ -252,8 +252,8 @@ class BaseDocument(object):
         return root
 
     def from_dict(self, data):
-        if data["format_version"] != (2, 0):
-            raise RuntimeError("Format version must be 2.0")
+        if data["format_version"] != 2:
+            raise RuntimeError("Format version must be 2")
 
         self.clear()
 
@@ -266,13 +266,13 @@ class BaseDocument(object):
 
         if "namespaces" in data and data["namespaces"] is not None:
             for prefix, uri in enumerate(data["namespaces"]):
-                self.namespaces.add(prefix, uri)
+                self.namespaces.set(prefix, uri)
         if "definitions" in data and data["definitions"] is not None:
             for name, def_data in enumerate(data["definitions"]):
                 if "types" in def_data:
-                    self.property_defs.add(name, def_data.get("definition"), def_data["types"])
+                    self.property_defs.set(name, def_data.get("definition"), def_data["types"])
                 elif "properties" in def_data:
-                    self.type_defs.add(name, def_data.get("definition"), def_data["properties"])
+                    self.type_defs.set(name, def_data.get("definition"), def_data["properties"])
 
         def read_section(parent_uuid, parent_prop, sec_data):
             if parent_uuid is None:
@@ -294,86 +294,38 @@ class BaseDocument(object):
         read_section(None, None, data["metadata"])
 
 
-class BaseNameSpaceDict(DictLike):
+class BaseNameSpaceDict(MutableMapping):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
 
     @abc.abstractmethod
-    def add(self, prefix, uri):
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BaseNameSpace
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
+    def set(self, prefix, uri):
         pass
 
 
-class BasePropertyDefDict(DictLike):
+class BasePropertyDefDict(MutableMapping):
     """
     Dict like accessor for property definitions of an odML2 document.
     """
 
     @abc.abstractmethod
-    def add(self, name, types=tuple()):
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BasePropertyDefinition
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
+    def set(self, name, types=tuple()):
         pass
 
 
-class BaseTypeDefDict(DictLike):
+class BaseTypeDefDict(MutableMapping):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
 
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
-    def add(self, type, definition=None, properties=tuple()):
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BaseTypeDefinition
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
+    def set(self, type, definition=None, properties=tuple()):
         pass
 
 
-class BaseSectionDict(DictLike):
+class BaseSectionDict(MutableMapping):
     """
     Dict like accessor for namespaces of a odML2 document.
     """
@@ -381,22 +333,6 @@ class BaseSectionDict(DictLike):
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
     def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: BaseSection
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
         pass
 
 
@@ -454,7 +390,7 @@ class BaseSection(object):
         raise NotImplementedError()
 
 
-class BaseSectionPropertyDict(DictLike):
+class BaseSectionPropertyDict(MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -467,22 +403,6 @@ class BaseSectionPropertyDict(DictLike):
         :type prop: str
         :param refs: Tuple of references to sections.
         :type refs: tuple[SectionRef]
-        """
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: tuple[SectionRef]
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
         """
         pass
 
@@ -510,7 +430,7 @@ class SectionRef(object):
         return self.__is_link
 
 
-class BaseValuePropertyDict(DictLike):
+class BaseValuePropertyDict(MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -524,114 +444,4 @@ class BaseValuePropertyDict(DictLike):
         :param value: The value to set.
         :type value: odml2.Value
         """
-        pass
-
-    @abc.abstractmethod
-    def get(self, key):
-        """
-        :param key: The namespaces name.
-        :return: tuple[odml2.Value]
-        """
-        pass
-
-    @abc.abstractmethod
-    def keys(self):
-        """
-        Iterable containing all namespaces of a document.
-        :rtype: collections.Iterable[str]
-        """
-        pass
-
-    def __setitem__(self, key, value):
-        self.set(key, value)
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseNameSpace(object):
-    """
-    Low level access to the name-spaces of an odML2 document.
-    """
-
-    @abc.abstractmethod
-    def get_prefix(self):
-        pass
-
-    @abc.abstractmethod
-    def get_uri(self):
-        pass
-
-    @abc.abstractmethod
-    def set_uri(self, uri):
-        pass
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BasePropertyDefinition(object):
-    """
-    Low level access to a property definition of an odML2 document.
-    """
-
-    @abc.abstractmethod
-    def get_name(self):
-        pass
-
-    @abc.abstractmethod
-    def get_definition(self):
-        pass
-
-    @abc.abstractmethod
-    def set_definition(self, definition):
-        pass
-
-    @abc.abstractmethod
-    def get_types(self):
-        pass
-
-    @abc.abstractmethod
-    def set_types(self, types):
-        pass
-
-    # noinspection PyShadowingBuiltins
-    @abc.abstractmethod
-    def add_type(self, type):
-        pass
-
-    # noinspection PyShadowingBuiltins
-    @abc.abstractmethod
-    def remove_type(self, type):
-        pass
-
-
-@six.add_metaclass(abc.ABCMeta)
-class BaseTypeDefinition(object):
-    """
-    Low-level access to a type definition of an odML2 document.
-    """
-
-    @abc.abstractmethod
-    def get_name(self):
-        pass
-
-    @abc.abstractmethod
-    def get_definition(self):
-        pass
-
-    @abc.abstractmethod
-    def set_definition(self, definition):
-        pass
-
-    @abc.abstractmethod
-    def get_properties(self):
-        pass
-
-    @abc.abstractmethod
-    def set_properties(self, props):
-        pass
-
-    @abc.abstractmethod
-    def add_property(self, prop):
-        pass
-
-    @abc.abstractmethod
-    def remove_property(self, prop):
         pass

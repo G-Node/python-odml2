@@ -13,6 +13,7 @@ from future.utils import python_2_unicode_compatible
 
 import re
 import numbers
+import itertools
 import collections
 import datetime as dt
 import odml2
@@ -28,7 +29,7 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
 
 
 @python_2_unicode_compatible
-class Section(object):
+class Section(collections.MutableMapping):
     """
     Represents an odML section entity.
     """
@@ -75,21 +76,7 @@ class Section(object):
     # dict like access to sections and values
     #
 
-    def items(self):
-        sec = self.__back_end.sections[self.uuid]
-        for key in sec.value_properties:
-            yield (key, self.get(key))
-        for key in sec.section_properties:
-            yield (key, self.get(key))
-
-    def keys(self):
-        sec = self.__back_end.sections[self.uuid]
-        for key in sec.value_properties:
-            yield key
-        for key in sec.section_properties:
-            yield key
-
-    def get(self, key):
+    def get(self, key, **kwargs):
         sec = self.__back_end.sections[self.uuid]
         if key in sec.value_properties:
             return sec.value_properties[key]
@@ -98,13 +85,6 @@ class Section(object):
             return [Section(ref.uuid, self.__back_end, ref.is_link) for ref in refs]
         else:
             return None
-
-    def __len__(self):
-        sec = self.__back_end.sections[self.uuid]
-        return len(sec.value_properties) + len(sec.section_properties)
-
-    def __iter__(self):
-        return self.keys()
 
     def __getitem__(self, key):
         element = self.get(key)
@@ -145,9 +125,21 @@ class Section(object):
         else:
             raise KeyError("The section has no property with the name '%s'" % key)
 
-    def __contains__(self, key):
+    def __len__(self):
         sec = self.__back_end.sections[self.uuid]
-        return key in sec.value_properties or key in sec.section_properties
+        return len(sec.value_properties) + len(sec.section_properties)
+
+    def __iter__(self):
+        sec = self.__back_end.sections[self.uuid]
+        return itertools.chain(iter(sec.value_properties), iter(sec.section_properties))
+
+    def items(self):
+        for key in self:
+            yield (key, self.get(key))
+
+    def values(self):
+        for key in self:
+            yield self.get(key)
 
     #
     # built in methods
@@ -341,20 +333,13 @@ class NameSpaceMap(collections.MutableMapping):
         return iter(self.__back_end.namespaces)
 
     def __getitem__(self, prefix):
-        ns = self.__back_end.namespaces[prefix]
-        return NameSpace(ns.get_prefix(), ns.get_uri())
+        return self.__back_end.namespaces[prefix]
 
     def __delitem__(self, prefix):
         del self.__back_end.namespaces[prefix]
 
     def __setitem__(self, prefix, ns):
-        if ns.prefix is not None and prefix != ns.prefix:
-            raise ValueError("Non matching prefixes: %s != %s" % (prefix, ns.prefix))
-
-        if prefix in self.__back_end.namespaces:
-            self.__back_end.namespaces[prefix].set_uri(ns.uri)
-        else:
-            self.__back_end.namespaces.add(prefix, ns.uri)
+        self.__back_end.namespaces[prefix] = ns
 
     def __str__(self):
         return u"NameSpaceMap(size=%d)" % len(self)
@@ -412,22 +397,13 @@ class TypeDefMap(collections.MutableMapping):
         return iter(self.__back_end.type_defs)
 
     def __getitem__(self, name):
-        td = self.__back_end.type_defs[name]
-        return TypeDef(td.get_name(), td.get_definition(), td.get_properties())
+        return self.__back_end.type_defs[name]
 
     def __delitem__(self, name):
         del self.__back_end.type_defs[name]
 
     def __setitem__(self, name, td):
-        if td.name is not None and name != td.name:
-            raise ValueError("Non matching type names: %s != %s" % (name, td.name))
-
-        if name in self.__back_end.type_defs:
-            type_def = self.__back_end.type_defs[name]
-            type_def.set_definition(td.definition)
-            type_def.set_properties(td.properties)
-        else:
-            self.__back_end.type_defs.add(name, td.definition, td.properties)
+        self.__back_end.type_defs[name] = td
 
     def __str__(self):
         return u"TypeDefMap(size=%d)" % len(self)
@@ -485,22 +461,13 @@ class PropertyDefMap(collections.MutableMapping):
         return iter(self.__back_end.property_defs)
 
     def __getitem__(self, name):
-        pd = self.__back_end.property_defs[name]
-        return PropertyDef(pd.get_name(), pd.get_definition(), pd.get_types())
+        return self.__back_end.property_defs[name]
 
     def __delitem__(self, name):
         del self.__back_end.property_defs[name]
 
     def __setitem__(self, name, pd):
-        if pd.name is not None and name != pd.name:
-            raise ValueError("Non matching property names: %s != %s" % (name, pd.name))
-
-        if name in self.__back_end.property_defs:
-            prop_def = self.__back_end.property_defs[name]
-            prop_def.set_definition(pd.definition)
-            prop_def.set_types(pd.types)
-        else:
-            self.__back_end.property_defs.add(name, pd.definition, pd.types)
+        self.__back_end.property_defs[name] = pd
 
     def __str__(self):
         return u"PropertyDefMap(size=%d)" % len(self)
