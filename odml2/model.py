@@ -157,6 +157,9 @@ class Section(collections.MutableMapping):
     def __str__(self):
         return u"Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
 
+    def __repr__(self):
+        return str(self)
+
     #
     # Internally used methods
     #
@@ -260,6 +263,9 @@ class Value(object):
             parts.append(self.unit)
         return u"".join(parts)
 
+    def __repr__(self):
+        return str(self)
+
     @staticmethod
     def from_obj(thing):
         if isinstance(thing, six.string_types):
@@ -316,6 +322,9 @@ class NameSpace(object):
     def __str__(self):
         return u"NameSpace(prefix=%s, uri=%s)" % (self.prefix, self.uri)
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class NameSpaceMap(collections.MutableMapping):
@@ -343,6 +352,9 @@ class NameSpaceMap(collections.MutableMapping):
 
     def __str__(self):
         return u"NameSpaceMap(size=%d)" % len(self)
+
+    def __repr__(self):
+        return str(self)
 
 
 @python_2_unicode_compatible
@@ -383,6 +395,9 @@ class TypeDef(object):
     def __str__(self):
         return u"TypeDef(name=%s, properties=set(%s))" % (self.name, u", ".join(str(i) for i in self.properties))
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class TypeDefMap(collections.MutableMapping):
@@ -407,6 +422,9 @@ class TypeDefMap(collections.MutableMapping):
 
     def __str__(self):
         return u"TypeDefMap(size=%d)" % len(self)
+
+    def __repr__(self):
+        return str(self)
 
 
 @python_2_unicode_compatible
@@ -447,6 +465,9 @@ class PropertyDef(object):
     def __str__(self):
         return u"PropertyDef(name=%s, types=set(%s))" % (self.name, u", ".join(str(i) for i in self.types))
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class PropertyDefMap(collections.MutableMapping):
@@ -471,3 +492,6 @@ class PropertyDefMap(collections.MutableMapping):
 
     def __str__(self):
         return u"PropertyDefMap(size=%d)" % len(self)
+
+    def __repr__(self):
+        return str(self)

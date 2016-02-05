@@ -114,3 +114,6 @@ class Document(object):
 
     def __str__(self):
         return u"Document(location='%s', author='%s', date=%s)" % (self.__back_end.get_uri(), self.author, self.date)
+
+    def __repr__(self):
+        return str(self)
