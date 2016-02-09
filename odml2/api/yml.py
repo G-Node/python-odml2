@@ -12,7 +12,6 @@
 Provides a back-and implementation for yaml using the memory back-end base classes.
 """
 
-import io
 import six
 import yaml
 from collections import OrderedDict
@@ -23,39 +22,34 @@ from odml2.api import mem
 class YamlDocument(mem.MemDocument):
 
     NAME = "yaml"
-    FEXT = ("yml", "yaml")
+    FEXT = (".yml", ".yaml")
     MIME = ("text/yaml", "text/x-yaml", "application/yaml", "application/x-yaml")
 
     def __init__(self, is_writable=True):
         super(YamlDocument, self).__init__(is_writable)
 
-    def close(self):
-        raise NotImplementedError()
+    def load(self, io, uri=None):
+        writable = self.is_writable()
+        try:
+            data = yaml.load(io)
+            self._set_writable(True)
+            self.from_dict(data)
+            self.set_uri(uri)
+        finally:
+            self._set_writable(writable)
 
-    def save(self, source):
-        data = self.to_dict()
-        if hasattr(source, "write"):
+    def save(self, io, uri=None):
+        writable = self.is_writable()
+        try:
+            self._set_writable(True)
+            data = self.to_dict()
             yaml_str = yaml.dump(data, default_flow_style=False, allow_unicode=True)
             if six.PY2:
                 yaml_str = yaml_str.decode("utf-8")
-            source.write(yaml_str)
-            if hasattr(source, "name"):
-                self.set_uri(source.name)
-        else:
-            with io.open(source, "w", encoding="utf-8") as f:
-                yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
-                self.set_uri(source)
-
-    def load(self, dest):
-        if hasattr(dest, "read"):
-            data = yaml.load(dest)
-            if hasattr(dest, "name"):
-                self.set_uri(dest.name)
-        else:
-            with io.open(dest, "r", encoding="utf-8") as f:
-                data = yaml.load(f)
-                self.set_uri(dest)
-        self.from_dict(data)
+            io.write(yaml_str)
+            self.set_uri(uri)
+        finally:
+            self._set_writable(writable)
 
 
 def __ordered_dict_representer(dumper, ordered_dict):

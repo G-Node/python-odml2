@@ -45,11 +45,14 @@ setup(
         "six",
         "future",
         "sortedcontainers",
+        "requests",
         "PyYAML>=3.10"
     ),
+
     tests_require=(
         "nose"
     ),
+
     test_suite='nose.collector',
 
     classifiers=(

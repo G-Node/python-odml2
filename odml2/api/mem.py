@@ -118,15 +118,11 @@ class MemDocument(base.BaseDocument):
         self.__sections.clear()
 
     @abc.abstractmethod
-    def load(self, path):
+    def load(self, io, uri=None):
         pass
 
     @abc.abstractmethod
-    def close(self):
-        pass
-
-    @abc.abstractmethod
-    def save(self, path):
+    def save(self, io, uri=None):
         pass
 
 

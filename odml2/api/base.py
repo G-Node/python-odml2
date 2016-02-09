@@ -165,27 +165,22 @@ class BaseDocument(object):
         pass
 
     @abc.abstractmethod
-    def load(self, uri):
+    def load(self, io, uri=None):
         """
         Fill the document with data from a certain location.
 
-        :param uri: The uri to load data from.
+        :param io:  An I/O (StingIO,FileIO) to read the data from.
+        :param uri: The uri of the document.
         """
         pass
 
     @abc.abstractmethod
-    def close(self):
-        """
-        Close the document
-        """
-        pass
-
-    @abc.abstractmethod
-    def save(self, uri):
+    def save(self, io, uri=None):
         """
         Save the documents data to a certain location.
 
-        :param uri: The uri to save the data to.
+        :param io: The I/O to write the data to.
+        :param uri: The uri of the document.
         """
         pass
 
