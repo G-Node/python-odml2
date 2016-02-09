@@ -50,6 +50,10 @@ class BaseDocument(object):
         """
         pass
 
+    def assert_writable(self):
+        if not self.is_writable():
+            raise RuntimeError("The document is not writable!")
+
     @abc.abstractmethod
     def get_uri(self):
         """
