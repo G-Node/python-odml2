@@ -8,17 +8,15 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
-import io
-import os
 import six
-import enum
-import requests
-
 # noinspection PyUnresolvedReferences
 from six.moves import StringIO
 # noinspection PyUnresolvedReferences
 from six.moves.urllib.parse import urlparse
 
+import io
+import os
+import requests
 import datetime as dt
 from future.utils import python_2_unicode_compatible
 
@@ -27,20 +25,14 @@ from odml2.api import yml, base
 
 __all__ = ("BACK_ENDS", "Document", "TerminologyMode")
 
+
 BACK_ENDS = (yml.YamlDocument, )
-
-
-class TerminologyMode(enum.Enum):
-    Ignore = 0,
-    Create = 1,
-    Loose = 2,
-    Strict = 3
 
 
 @python_2_unicode_compatible
 class Document(object):
 
-    def __init__(self, back_end="yaml"):
+    def __init__(self, back_end="yaml", strategy=odml2.TerminologyStrategy.Ignore):
         if isinstance(back_end, six.string_types):
             found = False
             for be in BACK_ENDS:
@@ -55,6 +47,7 @@ class Document(object):
         else:
             raise ValueError("Not a valid back-end %s" % type(back_end))
 
+        self.__strategy = strategy
         self.__namespaces = odml2.NameSpaceMap(self.__back_end)
         self.__property_defs = odml2.PropertyDefMap(self.__back_end)
         self.__type_defs = odml2.TypeDefMap(self.__back_end)
@@ -119,7 +112,7 @@ class Document(object):
 
     # noinspection PyShadowingBuiltins
     def create_root(self, type, uuid, label=None, reference=None):
-        # TODO handle type
+        self.terminology_strategy.handle_type(self, type)
         self.back_end.create_root(type, uuid, label, reference)
         return odml2.Section(uuid, self)
 
@@ -147,6 +140,14 @@ class Document(object):
     @property
     def back_end(self):
         return self.__back_end
+
+    @property
+    def terminology_strategy(self):
+        return self.__strategy
+
+    @terminology_strategy.setter
+    def terminology_strategy(self, strategy):
+        self.__strategy = strategy
 
     def save(self, destination=None):
         if not hasattr(destination, "write"):

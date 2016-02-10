@@ -108,8 +108,6 @@ class Section(collections.MutableMapping):
         return element
 
     def __setitem__(self, key, element):
-        # TODO handle property
-        assert_prefixed_name(key)
         if key in self:
             del self[key]
         if isinstance(element, list):
@@ -126,6 +124,8 @@ class Section(collections.MutableMapping):
             element.copy_section(self.document, self.uuid, key)
         else:
             sec = self.document.back_end.sections[self.uuid]
+            val = Value.from_obj(element)
+            self.document.terminology_strategy.handle_triple(self.document, self.type, key, type(val.value))
             sec.value_properties[key] = Value.from_obj(element)
 
     def __delitem__(self, key):
@@ -178,7 +178,7 @@ class Section(collections.MutableMapping):
 
     # noinspection PyShadowingBuiltins
     def create_subsection(self, prop, type, uuid, label, reference):
-        # TODO handle type
+        self.document.terminology_strategy.handle_triple(self.document, self.type, prop, type)
         self.document.back_end.sections.add(type, uuid, label, reference, self.uuid, prop)
         return Section(uuid, self.document)
 

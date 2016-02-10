@@ -23,7 +23,6 @@ class SB(object):
     # noinspection PyShadowingBuiltins
     def __init__(self, type, uuid=None, label=None, reference=None, **properties):
         uuid = str(uuid) if uuid is not None else str(uuid4())
-        assert_name(type)
         assert_uuid(uuid)
         for p in properties:
             assert_name(p)
