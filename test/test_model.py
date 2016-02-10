@@ -32,13 +32,13 @@ class TestSection(unittest.TestCase):
         be.sections.add("type", id_111, None, None, id_11, "prop_111")
         be.sections.add("type", id_112, None, None, id_11, "prop_112")
         self.sec_id = id_1
-        self.sec = Section(id_1, be)
+        self.sec = Section(id_1, Document(be))
 
         # populate a back end to provide an empty section
         self.empty_id = str(uuid4())
         be = yml.YamlDocument()
         be.create_root("type", self.empty_id, "root", "./example.dat")
-        self.empty = Section(self.empty_id, be)
+        self.empty = Section(self.empty_id, Document(be))
 
     def test_uuid(self):
         self.assertEqual(self.empty.uuid, self.empty_id)

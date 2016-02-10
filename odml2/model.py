@@ -36,10 +36,10 @@ class Section(collections.MutableMapping):
     Represents an odML section entity.
     """
 
-    def __init__(self, uuid, back_end, is_link=False):
+    def __init__(self, uuid, document, is_link=False):
         self.__is_link = is_link
         self.__uuid = uuid
-        self.__back_end = back_end
+        self.__document = document
 
     @property
     def uuid(self):
@@ -47,49 +47,53 @@ class Section(collections.MutableMapping):
 
     @property
     def type(self):
-        return self.__back_end.sections[self.uuid].get_type()
+        return self.document.back_end.sections[self.uuid].get_type()
 
     # noinspection PyShadowingBuiltins
     @type.setter
     def type(self, type):
         assert_prefixed_name(type)
-        self.__back_end.sections[self.uuid].set_type(type)
+        self.document.back_end.sections[self.uuid].set_type(type)
 
     @property
     def label(self):
-        return self.__back_end.sections[self.uuid].get_label()
+        return self.document.back_end.sections[self.uuid].get_label()
 
     @label.setter
     def label(self, label):
         if label is not None and not isinstance(label, six.string_types):
             raise ValueError("Label must be a string")
-        self.__back_end.sections[self.uuid].set_label(label)
+        self.document.back_end.sections[self.uuid].set_label(label)
 
     @property
     def reference(self):
-        return self.__back_end.sections[self.uuid].get_reference()
+        return self.document.back_end.sections[self.uuid].get_reference()
 
     @reference.setter
     def reference(self, reference):
         if reference is not None and not isinstance(reference, six.string_types):
             raise ValueError("Reference must be a string")
-        self.__back_end.sections[self.uuid].set_reference(reference)
+        self.document.back_end.sections[self.uuid].set_reference(reference)
 
     @property
     def is_link(self):
         return self.__is_link
+
+    @property
+    def document(self):
+        return self.__document
 
     #
     # dict like access to sections and values
     #
 
     def get(self, key, **kwargs):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             return sec.value_properties[key]
         elif key in sec.section_properties:
             refs = sec.section_properties[key]
-            return [Section(ref.uuid, self.__back_end, ref.is_link) for ref in refs]
+            return [Section(ref.uuid, self.document, ref.is_link) for ref in refs]
         else:
             return None
 
@@ -104,28 +108,28 @@ class Section(collections.MutableMapping):
         return element
 
     def __setitem__(self, key, element):
+        # TODO handle property
         assert_prefixed_name(key)
         if key in self:
             del self[key]
         if isinstance(element, list):
             for sub in element:
                 if isinstance(sub, odml2.SB):
-                    sub.build(self.__back_end, self.uuid, key)
+                    sub.build(self.document, self.uuid, key)
                 elif isinstance(sub, odml2.Section):
-                    sub._copy(self.__back_end, self.uuid, key, True)
+                    sub.copy_section(self.document, self.uuid, key)
                 else:
                     ValueError("Section builder expected but was %s" % type(sub))
         elif isinstance(element, odml2.SB):
-            element.build(self.__back_end, self.uuid, key)
+            element.build(self.document, self.uuid, key)
         elif isinstance(element, Section):
-            element._copy(self.__back_end, self.uuid, key, True)
+            element.copy_section(self.document, self.uuid, key)
         else:
-            val = Value.from_obj(element)
-            sec = self.__back_end.sections[self.uuid]
-            sec.value_properties[key] = val
+            sec = self.document.back_end.sections[self.uuid]
+            sec.value_properties[key] = Value.from_obj(element)
 
     def __delitem__(self, key):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             del sec.value_properties[key]
         elif key in sec.section_properties:
@@ -134,11 +138,11 @@ class Section(collections.MutableMapping):
             raise KeyError("The section has no property with the name '%s'" % key)
 
     def __len__(self):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         return len(sec.value_properties) + len(sec.section_properties)
 
     def __iter__(self):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         return itertools.chain(iter(sec.value_properties), iter(sec.section_properties))
 
     def items(self):
@@ -172,28 +176,23 @@ class Section(collections.MutableMapping):
     # Internally used methods
     #
 
-    def _copy(self, back_end, parent_uuid=None, parent_prop=None, copy_subsections=True):
+    # noinspection PyShadowingBuiltins
+    def create_subsection(self, prop, type, uuid, label, reference):
+        # TODO handle type
+        self.document.back_end.sections.add(type, uuid, label, reference, self.uuid, prop)
+        return Section(uuid, self.document)
+
+    def copy_section(self, document, parent_uuid=None, parent_prop=None):
         if parent_uuid is None:
-            back_end.create_root(self.type, self.uuid, self.label, self.reference)
+            section = document.create_root(self.type, self.uuid, self.label, self.reference)
         else:
             if parent_prop is None:
                 raise ValueError("A property name is needed in order to append a sub section")
-            back_end.sections.add(self.type, self.uuid, self.label, self.reference, parent_uuid, parent_prop)
+            parent = document.find_section(parent_uuid)
+            section = parent.create_subsection(parent_prop, self.type, self.uuid, self.reference)
 
         for p, thing in self.items():
-            if isinstance(thing, (list, tuple)):
-                for sub in thing:
-                    if isinstance(sub, odml2.Section):
-                        if copy_subsections:
-                            sub._copy(back_end, self.uuid, p, copy_subsections)
-            elif isinstance(thing, odml2.Section):
-                if copy_subsections:
-                    thing._copy(back_end, self.uuid, p, copy_subsections)
-            elif isinstance(thing, odml2.Value):
-                back_end.sections[self.uuid].value_properties.set(p, thing)
-            else:
-                # this should never happen
-                raise ValueError("Section or Value expected, but type was '%s'" % type(thing))
+            section[p] = thing
 
 
 class Value(object):

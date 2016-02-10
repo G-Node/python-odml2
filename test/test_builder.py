@@ -23,11 +23,11 @@ class TestSB(unittest.TestCase):
         self.sec_id = str(uuid4())
         be = yml.YamlDocument()
         be.create_root("type", self.sec_id, "root", "./example.dat")
-        self.sec = Section(be.get_root(), be)
+        self.sec = Section(be.get_root(), Document(be))
 
         be = yml.YamlDocument()
         be.create_root("some_type", str(uuid4()), None, None)
-        self.other = Section(be.get_root(), be)
+        self.other = Section(be.get_root(), Document(be))
 
         # create an empty document
         self.doc = Document()
