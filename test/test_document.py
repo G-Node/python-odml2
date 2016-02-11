@@ -13,7 +13,7 @@ import unittest
 import datetime as dt
 from uuid import uuid4
 
-from odml2 import Document, Section, SB, Value
+from odml2 import Document, TypeDef, PropertyDef, NameSpace, Section, SB, Value
 
 
 class DocumentTest(unittest.TestCase):
@@ -50,6 +50,7 @@ class DocumentTest(unittest.TestCase):
         doc = Document()
         doc.author = "John Doe"
         doc.date = dt.date.today()
+        doc.type_definitions["Experiment"] = TypeDef("Experiment", properties=("date", ))
         root_builder = SB(
             type="RecordingSession",
             label="session one",
