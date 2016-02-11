@@ -198,7 +198,7 @@ class BaseDocument(object):
             ns_dict = OrderedDict()
             for ns in self.namespaces.values():
                 ns_dict[ns.prefix] = ns.uri
-            return ns_dict
+            return ns_dict if len(ns_dict) > 0 else None
 
         def convert_definitions():
             defs_dict = OrderedDict()
@@ -214,7 +214,7 @@ class BaseDocument(object):
                 if definition is not None:
                     td_dict["definition"] = definition
                 defs_dict[td.name] = td_dict
-            return defs_dict
+            return defs_dict if len(defs_dict) > 0 else None
 
         def convert_ref(ref):
             if ref.is_link:
@@ -247,7 +247,10 @@ class BaseDocument(object):
 
         root["namespaces"] = convert_ns()
         root["definitions"] = convert_definitions()
-        root["metadata"] = convert_section(self.get_root())
+        if self.get_root() is not None:
+            root["metadata"] = convert_section(self.get_root())
+        else:
+            root["metadata"] = None
         return root
 
     def from_dict(self, data):
@@ -264,10 +267,10 @@ class BaseDocument(object):
             self.set_version(data["document_version"])
 
         if "namespaces" in data and data["namespaces"] is not None:
-            for prefix, uri in enumerate(data["namespaces"]):
+            for prefix, uri in data["namespaces"].items():
                 self.namespaces.set(prefix, uri)
         if "definitions" in data and data["definitions"] is not None:
-            for name, def_data in enumerate(data["definitions"]):
+            for name, def_data in data["definitions"].items():
                 if "types" in def_data:
                     self.property_defs.set(name, def_data.get("definition"), def_data["types"])
                 elif "properties" in def_data:
@@ -290,7 +293,8 @@ class BaseDocument(object):
                     section = self.sections[sec_data["uuid"]]
                     section.value_properties.set(prop, odml2.Value.from_obj(element))
 
-        read_section(None, None, data["metadata"])
+        if "metadata" in data and data["metadata"] is not None:
+            read_section(None, None, data["metadata"])
 
 
 class BaseNameSpaceMap(MutableMapping):
