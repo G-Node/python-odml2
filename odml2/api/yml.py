@@ -52,8 +52,14 @@ class YamlDocument(mem.MemDocument):
             self._set_writable(writable)
 
 
-def __ordered_dict_representer(dumper, ordered_dict):
-    nodes = [(dumper.represent_data(k), dumper.represent_data(v)) for k, v in ordered_dict.items()]
+def __ordered_dict_representer(dumper, od):
+    nodes = [(dumper.represent_data(k), dumper.represent_data(v)) for k, v in od.items()]
     return yaml.nodes.MappingNode(u'tag:yaml.org,2002:map', nodes)
 
+
+def __frozenset_representer(dumper, fs):
+    nodes = [dumper.represent_data(v) for v in fs]
+    return yaml.nodes.SequenceNode(u'tag:yaml.org,2002:seq', nodes)
+
 yaml.add_representer(OrderedDict, __ordered_dict_representer)
+yaml.add_representer(frozenset, __frozenset_representer)
