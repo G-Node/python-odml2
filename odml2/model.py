@@ -25,6 +25,8 @@ __all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "Value.fro
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
 ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
+VALUE_TYPE_MAP = {bool: "bool", int: "int", numbers.Number: "float", dt.datetime: "datetime",
+                  dt.time: "time", dt.date: "date", six.string_types: "string"}
 VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
                         u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
                         u"([A-Za-zΩμ]{1,4})?$")
@@ -52,6 +54,7 @@ class Section(collections.MutableMapping):
     # noinspection PyShadowingBuiltins
     @type.setter
     def type(self, type):
+        # TODO handle type or remove
         assert_prefixed_name(type)
         self.document.back_end.sections[self.uuid].set_type(type)
 
@@ -125,7 +128,7 @@ class Section(collections.MutableMapping):
         else:
             sec = self.document.back_end.sections[self.uuid]
             val = Value.from_obj(element)
-            self.document.terminology_strategy.handle_triple(self.document, self.type, key, type(val.value))
+            self.document.terminology_strategy.handle_triple(self.document, self.type, key, val.type)
             sec.value_properties[key] = Value.from_obj(element)
 
     def __delitem__(self, key):
@@ -211,6 +214,7 @@ class Value(object):
             raise ValueError("Uncertainty and unit must be None if value is not a number")
         self.__unit = unit
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
+        self.__type = None
 
     @property
     def value(self):
@@ -223,6 +227,14 @@ class Value(object):
     @property
     def uncertainty(self):
         return self.__uncertainty
+
+    @property
+    def type(self):
+        if self.__type is None:
+            for t, s in VALUE_TYPE_MAP.items():
+                if isinstance(self.value, t):
+                    self.__type = s
+        return self.__type
 
     def copy(self, value=None, unit=None, uncertainty=None):
         return Value(
@@ -300,6 +312,7 @@ class NameSpace(object):
         assert_prefix(prefix)
         self.__prefix = prefix
         self.__uri = uri
+        self.__doc = None
 
     @property
     def prefix(self):
@@ -309,15 +322,18 @@ class NameSpace(object):
     def uri(self):
         return self.__uri
 
+    def get_document(self):
+        if self.__doc is None:
+            doc = odml2.Document()
+            doc.load(self.uri, is_writable=False)
+            self.__doc = doc
+        return self.__doc
+
     def copy(self, prefix=None, uri=None):
         return NameSpace(
             str(prefix) if prefix is not None else self.__prefix,
             str(uri) if uri is not None else self.__uri
         )
-
-    @staticmethod
-    def from_str(ns, strict=False):
-        pass
 
     def __eq__(self, other):
         if not isinstance(other, NameSpace):
