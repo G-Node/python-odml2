@@ -15,7 +15,8 @@ This module contains some sanity checks for certain inputs.
 import re
 
 __all__ = ("is_name", "assert_name", "is_prefix", "assert_prefix", "is_prefixed_name", "assert_prefixed_name",
-           "is_uuid", "assert_uuid", "is_prefixed_uuid", "assert_prefixed_uuid")
+           "is_uuid", "assert_uuid", "is_prefixed_uuid", "assert_prefixed_uuid", "split_prefixed_name",
+           "join_prefixed_name")
 
 NAME_PART = "[\d\w\-_]{1,256}"
 UUID_PART = "[0-9a-fA-F\-]{36}"
@@ -26,6 +27,18 @@ PREFIX_EXP = re.compile("^%s$" % PREFIX_PART)
 PREFIX_NAME_EXP = re.compile("^(%s:)?%s$" % (PREFIX_PART, NAME_PART))
 UUID_EXP = re.compile("^%s$" % UUID_PART)
 PREFIX_UUID_EXP = re.compile("^(%s:)?%s$" % (PREFIX_PART, UUID_PART))
+
+
+def split_prefixed_name(name):
+    parts = name.split(":", 1)
+    if len(parts) == 1:
+        return None, parts[0]
+    else:
+        return parts
+
+
+def join_prefixed_name(prefix, name):
+    return "%s:%s" % (prefix, name) if prefix is not None else name
 
 
 def is_name(name):

@@ -91,12 +91,21 @@ class Section(collections.MutableMapping):
     #
 
     def get(self, key, **kwargs):
+
+        def mk_section(ref):
+            prefix, uuid = split_prefixed_name(ref.uuid)
+            if prefix is None:
+                doc = self.document
+            else:
+                doc = self.document.namespaces[prefix].get_documen()
+            return Section(uuid, doc, ref.is_link)
+
         sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             return sec.value_properties[key]
         elif key in sec.section_properties:
             refs = sec.section_properties[key]
-            return [Section(ref.uuid, self.document, ref.is_link) for ref in refs]
+            return [mk_section(ref) for ref in refs]
         else:
             return None
 
@@ -118,13 +127,13 @@ class Section(collections.MutableMapping):
                 if isinstance(sub, odml2.SB):
                     sub.build(self.document, self.uuid, key)
                 elif isinstance(sub, odml2.Section):
-                    sub.copy_section(self.document, self.uuid, key)
+                    sub._copy_section(self.document, self.uuid, key)
                 else:
                     ValueError("Section builder expected but was %s" % type(sub))
         elif isinstance(element, odml2.SB):
             element.build(self.document, self.uuid, key)
         elif isinstance(element, Section):
-            element.copy_section(self.document, self.uuid, key)
+            element._copy_section(self.document, self.uuid, key)
         else:
             sec = self.document.back_end.sections[self.uuid]
             val = Value.from_obj(element)
@@ -180,22 +189,37 @@ class Section(collections.MutableMapping):
     #
 
     # noinspection PyShadowingBuiltins
-    def create_subsection(self, prop, type, uuid, label, reference):
+    def _create_subsection(self, prop, type, uuid, label, reference):
         self.document.terminology_strategy.handle_triple(self.document, self.type, prop, type)
         self.document.back_end.sections.add(type, uuid, label, reference, self.uuid, prop)
         return Section(uuid, self.document)
 
-    def copy_section(self, document, parent_uuid=None, parent_prop=None):
+    # noinspection PyShadowingBuiltins
+    def _create_subsection_link(self, prop, type, uuid, prefix):
+        self.document.terminology_strategy.handle_triple(self.document, self.type, prop, type)
+        self.document.back_end.sections.add_link(uuid, prefix, self.uuid, prop)
+
+    # noinspection PyProtectedMember
+    def _copy_section(self, document, parent_uuid=None, parent_prop=None):
         if parent_uuid is None:
             section = document.create_root(self.type, self.uuid, self.label, self.reference)
+            for p, thing in self.items():
+                section[p] = thing
         else:
             if parent_prop is None:
                 raise ValueError("A property name is needed in order to append a sub section")
-            parent = document.find_section(parent_uuid)
-            section = parent.create_subsection(parent_prop, self.type, self.uuid, self.reference)
 
-        for p, thing in self.items():
-            section[p] = thing
+            parent = document.find_section(parent_uuid)
+            if parent is None:
+                raise ValueError("Parent section with uuid '%s' does not exist" % parent_uuid)
+
+            section, prefix = document.find_section_and_prefix(self.uuid, search_namespaces=True)
+            if section is not None:
+                parent._create_subsection_link(parent_prop, self.type, self.uuid, prefix)
+            else:
+                section = parent._create_subsection(parent_prop, self.type, self.uuid, self.reference)
+                for p, thing in self.items():
+                    section[p] = thing
 
 
 class Value(object):

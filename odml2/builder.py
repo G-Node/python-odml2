@@ -32,6 +32,7 @@ class SB(object):
         self.reference = reference
         self.properties = properties
 
+    # noinspection PyProtectedMember
     def build(self, document, parent_uuid=None, parent_prop=None):
         if parent_uuid is None:
             section = document.create_root(self.type, self.uuid, self.label, self.reference)
@@ -39,7 +40,7 @@ class SB(object):
             if parent_prop is None:
                 raise ValueError("A property name is needed in order to append a sub section")
             parent = document.find_section(parent_uuid)
-            section = parent.create_subsection(parent_prop, self.type, self.uuid, self.label, self.reference)
+            section = parent._create_subsection(parent_prop, self.type, self.uuid, self.label, self.reference)
 
         for p, thing in self.properties.items():
             section[p] = thing

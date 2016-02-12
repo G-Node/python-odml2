@@ -21,6 +21,7 @@ import datetime as dt
 from future.utils import python_2_unicode_compatible
 
 import odml2
+from odml2.checks import split_prefixed_name, join_prefixed_name
 from odml2.api import yml, base
 
 __all__ = ("BACK_ENDS", "Document", "TerminologyMode")
@@ -106,7 +107,7 @@ class Document(object):
         if isinstance(thing, odml2.SB):
             thing.build(self)
         elif isinstance(thing, odml2.Section):
-            thing.copy_section(self)
+            thing._copy_section(self)
         else:
             raise ValueError("Only Section and SB can be used as root")
 
@@ -116,10 +117,32 @@ class Document(object):
         self.back_end.create_root(type, uuid, label, reference)
         return odml2.Section(uuid, self)
 
-    def find_section(self, uuid):
-        if uuid not in self.back_end.sections:
-            raise KeyError("Section with uuid '%s' does not exist" % uuid)
-        return odml2.Section(uuid, self)
+    def find_section_and_prefix(self, uuid, search_namespaces=False):
+        document, prefix, is_link = None, None, False
+
+        if uuid in self.back_end.sections:
+            document = self
+        elif search_namespaces:
+            p, uuid = split_prefixed_name(uuid)
+            if p is None:
+                for ns in self.namespaces.values():
+                    tmp = ns.get_document()
+                    if uuid in tmp.back_end.sections:
+                        document, prefix, is_link = tmp, ns.prefix, True
+                        break
+            if p in self.namespaces:
+                tmp = self.namespaces[p].get_document()
+                if uuid in tmp.back_end.sections:
+                    document, prefix, is_link = tmp, p, True
+
+        if document is not None:
+            return odml2.Section(uuid, document), prefix
+        else:
+            return None, None
+
+    def find_section(self, uuid, search_namespaces=False):
+        section, prefix = self.find_section_and_prefix(uuid, search_namespaces)
+        return section
 
     def iter_sections(self):
         for uuid in self.back_end.sections:
