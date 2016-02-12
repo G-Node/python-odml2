@@ -93,12 +93,11 @@ class Section(collections.MutableMapping):
     def get(self, key, **kwargs):
 
         def mk_section(ref):
-            prefix, uuid = split_prefixed_name(ref.uuid)
-            if prefix is None:
+            if ref.namespace is None:
                 doc = self.document
             else:
-                doc = self.document.namespaces[prefix].get_documen()
-            return Section(uuid, doc, ref.is_link)
+                doc = self.document.namespaces[ref.namespace].get_document()
+            return Section(ref.uuid, doc, ref.is_link)
 
         sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
@@ -217,7 +216,7 @@ class Section(collections.MutableMapping):
             if section is not None:
                 parent._create_subsection_link(parent_prop, self.type, self.uuid, prefix)
             else:
-                section = parent._create_subsection(parent_prop, self.type, self.uuid, self.reference)
+                section = parent._create_subsection(parent_prop, self.type, self.uuid, self.label, self.reference)
                 for p, thing in self.items():
                     section[p] = thing
 

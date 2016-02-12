@@ -73,6 +73,9 @@ class TestCreateStrategy(unittest.TestCase):
         self.doc = doc
         self.doc.terminology_strategy = TerminologyStrategy.Create
 
+    def tearDown(self):
+        os.remove("terms.yml")
+
     def test_handle_type(self):
         ts = self.doc.terminology_strategy
 

@@ -8,6 +8,7 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+import os
 import io
 import unittest
 import datetime as dt
@@ -95,4 +96,90 @@ class TestDocument(unittest.TestCase):
 
 
 class TestDocumentLinks(unittest.TestCase):
-    pass
+
+    def setUp(self):
+        self.parent = Document()
+        self.parent.root = SB(
+                "Experiment",
+                label="Experiment 01",
+                subjects=[
+                    SB("Subject", name="subject one"),
+                    SB("Subject", name="subject two")
+                ]
+        )
+        self.parent.save("parent.yml")
+
+        self.doc = Document()
+        self.doc.root = SB(
+                "RecordingSession",
+                label="session one",
+                stimuli=[
+                    SB("PulseStimulus", label="low pulse"),
+                    SB("PulseStimulus", label="high pulse")
+                ],
+                trials=[
+                    SB("Trial", label="trial 01"),
+                    SB("Trial", label="trial 02")
+                ]
+        )
+
+    def tearDown(self):
+        os.remove("parent.yml")
+
+    def test_in_document_links(self):
+        s1 = self.doc.root["stimuli"][0]
+        t1 = self.doc.root["trials"][0]
+
+        self.assertFalse(s1.is_link)
+        self.assertFalse("width" in s1)
+        self.assertFalse("stimulus" in t1)
+
+        t1["stimulus"] = s1
+
+        self.assertTrue("stimulus" in t1)
+
+        link = t1["stimulus"]
+        self.assertEqual(s1.uuid, link.uuid)
+        self.assertTrue(link.is_link)
+
+        link["width"] = 1
+        self.assertTrue("width" in s1)
+        self.assertTrue("width" in link)
+
+    def test_inter_document_copy(self):
+        sub1 = self.parent.root["subjects"][0]
+        t1 = self.doc.root["trials"][0]
+
+        self.assertFalse("age" in sub1)
+        self.assertFalse("subject" in t1)
+
+        t1["subject"] = sub1
+        self.assertTrue("subject" in t1)
+
+        copy = t1["subject"]
+        self.assertEqual(sub1.uuid, copy.uuid)
+        self.assertFalse(copy.is_link)
+
+        copy["age"] = 1
+        self.assertFalse("age" in sub1)
+        self.assertTrue("age" in copy)
+
+    def test_inter_document_link(self):
+        self.doc.namespaces.set("p", "parent.yml")
+
+        sub1 = self.parent.root["subjects"][0]
+        t1 = self.doc.root["trials"][0]
+
+        self.assertFalse("age" in sub1)
+        self.assertFalse("subject" in t1)
+
+        t1["subject"] = sub1
+        self.assertTrue("subject" in t1)
+
+        link = t1["subject"]
+        self.assertEqual(sub1.uuid, link.uuid)
+        self.assertTrue(link.is_link)
+
+        def set_age():
+            link["age"] = 1
+        self.assertRaises(RuntimeError, set_age)
