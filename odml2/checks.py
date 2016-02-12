@@ -82,7 +82,7 @@ def is_prefixed_uuid(uuid):
     return PREFIX_UUID_EXP.match(uuid) is not None
 
 
-def assert_prefixed_uuid(uuid, msg="A uuid string must contain only the following characters: 0-9, A-F, a-f and '-' \n" +
-                                   "the optional prefix is separated by a ':' character"):
+def assert_prefixed_uuid(uuid, msg="A uuid string must contain only the following characters: " +
+                                   "0-9, A-F, a-f and '-' \n the optional prefix is separated by a ':' character"):
     if not is_prefixed_uuid(uuid):
         raise ValueError(msg)

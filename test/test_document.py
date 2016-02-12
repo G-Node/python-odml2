@@ -13,7 +13,7 @@ import unittest
 import datetime as dt
 from uuid import uuid4
 
-from odml2 import Document, TypeDef, PropertyDef, NameSpace, Section, SB, Value
+from odml2 import *
 
 
 class DocumentTest(unittest.TestCase):

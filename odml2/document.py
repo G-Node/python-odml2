@@ -21,7 +21,7 @@ import datetime as dt
 from future.utils import python_2_unicode_compatible
 
 import odml2
-from odml2.checks import split_prefixed_name, join_prefixed_name
+from odml2.checks import split_prefixed_name
 from odml2.api import yml, base
 
 __all__ = ("BACK_ENDS", "Document", "TerminologyMode")
@@ -102,6 +102,7 @@ class Document(object):
             return None
         return odml2.Section(uuid, self)
 
+    # noinspection PyProtectedMember
     @root.setter
     def root(self, thing):
         if isinstance(thing, odml2.SB):
