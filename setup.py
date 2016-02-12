@@ -40,25 +40,29 @@ setup(
 
     packages=find_packages(exclude=("test", )),
 
-    install_requires=(
+    install_requires=[
+        "enum34",
         "setuptools",
         "six",
         "future",
         "sortedcontainers",
-        "PyYAML>=3.10"
-    ),
-    tests_require=(
+        "requests",
+        "PyYAML"
+    ],
+
+    tests_require=[
         "nose"
-    ),
+    ],
+
     test_suite='nose.collector',
 
-    classifiers=(
+    classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5"
-    ),
+    ],
 
     package_data={PACKAGE: [license_text, description_text]},
     include_package_data=True,

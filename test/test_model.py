@@ -32,13 +32,13 @@ class TestSection(unittest.TestCase):
         be.sections.add("type", id_111, None, None, id_11, "prop_111")
         be.sections.add("type", id_112, None, None, id_11, "prop_112")
         self.sec_id = id_1
-        self.sec = Section(id_1, be)
+        self.sec = Section(id_1, Document(be))
 
         # populate a back end to provide an empty section
         self.empty_id = str(uuid4())
         be = yml.YamlDocument()
         be.create_root("type", self.empty_id, "root", "./example.dat")
-        self.empty = Section(self.empty_id, be)
+        self.empty = Section(self.empty_id, Document(be))
 
     def test_uuid(self):
         self.assertEqual(self.empty.uuid, self.empty_id)
@@ -118,7 +118,7 @@ class TestSection(unittest.TestCase):
         self.assertTrue(self.sec != "not_a_section")
 
 
-class ValueTest(unittest.TestCase):
+class TestValue(unittest.TestCase):
 
     def test_init(self):
         v1 = Value("hello")
@@ -192,7 +192,7 @@ class ValueTest(unittest.TestCase):
             self.assertEqual(str(v1), "1±0.1mV")
 
 
-class NameSpaceTest(unittest.TestCase):
+class TestNameSpace(unittest.TestCase):
 
     def setUp(self):
         self.doc = Document()
@@ -238,7 +238,7 @@ class NameSpaceTest(unittest.TestCase):
         self.assertFalse("ns" in self.doc.namespaces)
 
 
-class TypeDefTest(unittest.TestCase):
+class TestTypeDef(unittest.TestCase):
 
     def setUp(self):
         self.doc = Document()
@@ -284,7 +284,7 @@ class TypeDefTest(unittest.TestCase):
         self.assertFalse("SomeType" in self.doc.type_definitions)
 
 
-class PropertyDefTest(unittest.TestCase):
+class TestPropertyDef(unittest.TestCase):
 
     def setUp(self):
         self.doc = Document()

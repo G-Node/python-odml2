@@ -17,7 +17,7 @@ from odml2.api.base import BaseSection
 from odml2.api.yml import YamlDocument
 
 
-class YamlDocumentTest(unittest.TestCase):
+class TestYamlDocument(unittest.TestCase):
 
     def setUp(self):
         self.doc = YamlDocument()
@@ -117,7 +117,7 @@ class YamlDocumentTest(unittest.TestCase):
         pass
 
 
-class YamlSectionTest(unittest.TestCase):
+class TestYamlSection(unittest.TestCase):
 
     def setUp(self):
         self.doc = YamlDocument()

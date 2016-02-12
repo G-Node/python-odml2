@@ -16,13 +16,17 @@ import numbers
 import itertools
 import collections
 import datetime as dt
+
 import odml2
+from odml2.checks import *
 
 __all__ = ("Section", "Value", "NameSpace", "PropertyDef", "TypeDef", "Value.from_obj")
 
 PLUS_MINUS_UNICODE = u"±"
 PLUS_MINUS = PLUS_MINUS_UNICODE if six.PY3 else "+-"
 ALLOWED_VALUE_TYPES = (bool, numbers.Number, dt.date, dt.time, dt.datetime) + six.string_types
+VALUE_TYPE_MAP = {bool: "bool", int: "int", numbers.Number: "float", dt.datetime: "datetime",
+                  dt.time: "time", dt.date: "date", six.string_types: "string"}
 VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\s?" +
                         u"((\+-|\\xb1)(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))?\s?" +
                         u"([A-Za-zΩμ]{1,4})?$")
@@ -34,10 +38,10 @@ class Section(collections.MutableMapping):
     Represents an odML section entity.
     """
 
-    def __init__(self, uuid, back_end, is_link=False):
+    def __init__(self, uuid, document, is_link=False):
         self.__is_link = is_link
         self.__uuid = uuid
-        self.__back_end = back_end
+        self.__document = document
 
     @property
     def uuid(self):
@@ -45,44 +49,62 @@ class Section(collections.MutableMapping):
 
     @property
     def type(self):
-        return self.__back_end.sections[self.uuid].get_type()
+        return self.document.back_end.sections[self.uuid].get_type()
 
     # noinspection PyShadowingBuiltins
     @type.setter
     def type(self, type):
-        self.__back_end.sections[self.uuid].set_type(type)
+        # TODO handle type or remove
+        assert_prefixed_name(type)
+        self.document.back_end.sections[self.uuid].set_type(type)
 
     @property
     def label(self):
-        return self.__back_end.sections[self.uuid].get_label()
+        return self.document.back_end.sections[self.uuid].get_label()
 
     @label.setter
     def label(self, label):
-        self.__back_end.sections[self.uuid].set_label(label)
+        if label is not None and not isinstance(label, six.string_types):
+            raise ValueError("Label must be a string")
+        self.document.back_end.sections[self.uuid].set_label(label)
 
     @property
     def reference(self):
-        return self.__back_end.sections[self.uuid].get_reference()
+        return self.document.back_end.sections[self.uuid].get_reference()
 
     @reference.setter
     def reference(self, reference):
-        self.__back_end.sections[self.uuid].set_reference(reference)
+        if reference is not None and not isinstance(reference, six.string_types):
+            raise ValueError("Reference must be a string")
+        self.document.back_end.sections[self.uuid].set_reference(reference)
 
     @property
     def is_link(self):
         return self.__is_link
+
+    @property
+    def document(self):
+        return self.__document
 
     #
     # dict like access to sections and values
     #
 
     def get(self, key, **kwargs):
-        sec = self.__back_end.sections[self.uuid]
+
+        def mk_section(ref):
+            if ref.namespace is None:
+                doc = self.document
+            else:
+                doc = self.document.namespaces[ref.namespace].get_document()
+            return Section(ref.uuid, doc, ref.is_link)
+
+        sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             return sec.value_properties[key]
         elif key in sec.section_properties:
             refs = sec.section_properties[key]
-            return [Section(ref.uuid, self.__back_end, ref.is_link) for ref in refs]
+            return [mk_section(ref) for ref in refs]
         else:
             return None
 
@@ -102,22 +124,23 @@ class Section(collections.MutableMapping):
         if isinstance(element, list):
             for sub in element:
                 if isinstance(sub, odml2.SB):
-                    sub.build(self.__back_end, self.uuid, key)
+                    sub.build(self.document, self.uuid, key)
                 elif isinstance(sub, odml2.Section):
-                    sub._copy(self.__back_end, self.uuid, key, True)
+                    sub._copy_section(self.document, self.uuid, key)
                 else:
                     ValueError("Section builder expected but was %s" % type(sub))
         elif isinstance(element, odml2.SB):
-            element.build(self.__back_end, self.uuid, key)
+            element.build(self.document, self.uuid, key)
         elif isinstance(element, Section):
-            element._copy(self.__back_end, self.uuid, key, True)
+            element._copy_section(self.document, self.uuid, key)
         else:
+            sec = self.document.back_end.sections[self.uuid]
             val = Value.from_obj(element)
-            sec = self.__back_end.sections[self.uuid]
-            sec.value_properties[key] = val
+            self.document.terminology_strategy.handle_triple(self.document, self.type, key, val.type)
+            sec.value_properties[key] = Value.from_obj(element)
 
     def __delitem__(self, key):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             del sec.value_properties[key]
         elif key in sec.section_properties:
@@ -126,11 +149,11 @@ class Section(collections.MutableMapping):
             raise KeyError("The section has no property with the name '%s'" % key)
 
     def __len__(self):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         return len(sec.value_properties) + len(sec.section_properties)
 
     def __iter__(self):
-        sec = self.__back_end.sections[self.uuid]
+        sec = self.document.back_end.sections[self.uuid]
         return itertools.chain(iter(sec.value_properties), iter(sec.section_properties))
 
     def items(self):
@@ -157,32 +180,45 @@ class Section(collections.MutableMapping):
     def __str__(self):
         return u"Section(type=%s, uuid=%s, label=%s)" % (self.type, self.uuid, self.label)
 
+    def __repr__(self):
+        return str(self)
+
     #
     # Internally used methods
     #
 
-    def _copy(self, back_end, parent_uuid=None, parent_prop=None, copy_subsections=True):
+    # noinspection PyShadowingBuiltins
+    def _create_subsection(self, prop, type, uuid, label, reference):
+        self.document.terminology_strategy.handle_triple(self.document, self.type, prop, type)
+        self.document.back_end.sections.add(type, uuid, label, reference, self.uuid, prop)
+        return Section(uuid, self.document)
+
+    # noinspection PyShadowingBuiltins
+    def _create_subsection_link(self, prop, type, uuid, prefix):
+        self.document.terminology_strategy.handle_triple(self.document, self.type, prop, type)
+        self.document.back_end.sections.add_link(uuid, prefix, self.uuid, prop)
+
+    # noinspection PyProtectedMember
+    def _copy_section(self, document, parent_uuid=None, parent_prop=None):
         if parent_uuid is None:
-            back_end.create_root(self.type, self.uuid, self.label, self.reference)
+            section = document.create_root(self.type, self.uuid, self.label, self.reference)
+            for p, thing in self.items():
+                section[p] = thing
         else:
             if parent_prop is None:
                 raise ValueError("A property name is needed in order to append a sub section")
-            back_end.sections.add(self.type, self.uuid, self.label, self.reference, parent_uuid, parent_prop)
 
-        for p, thing in self.items():
-            if isinstance(thing, (list, tuple)):
-                for sub in thing:
-                    if isinstance(sub, odml2.Section):
-                        if copy_subsections:
-                            sub._copy(back_end, self.uuid, p, copy_subsections)
-            elif isinstance(thing, odml2.Section):
-                if copy_subsections:
-                    thing._copy(back_end, self.uuid, p, copy_subsections)
-            elif isinstance(thing, odml2.Value):
-                back_end.sections[self.uuid].value_properties.set(p, thing)
+            parent = document.find_section(parent_uuid)
+            if parent is None:
+                raise ValueError("Parent section with uuid '%s' does not exist" % parent_uuid)
+
+            section, prefix = document.find_section_and_prefix(self.uuid, search_namespaces=True)
+            if section is not None:
+                parent._create_subsection_link(parent_prop, self.type, self.uuid, prefix)
             else:
-                # this should never happen
-                raise ValueError("Section or Value expected, but type was '%s'" % type(thing))
+                section = parent._create_subsection(parent_prop, self.type, self.uuid, self.label, self.reference)
+                for p, thing in self.items():
+                    section[p] = thing
 
 
 class Value(object):
@@ -201,6 +237,7 @@ class Value(object):
             raise ValueError("Uncertainty and unit must be None if value is not a number")
         self.__unit = unit
         self.__uncertainty = float(uncertainty) if uncertainty is not None else None
+        self.__type = None
 
     @property
     def value(self):
@@ -213,6 +250,14 @@ class Value(object):
     @property
     def uncertainty(self):
         return self.__uncertainty
+
+    @property
+    def type(self):
+        if self.__type is None:
+            for t, s in VALUE_TYPE_MAP.items():
+                if isinstance(self.value, t):
+                    self.__type = s
+        return self.__type
 
     def copy(self, value=None, unit=None, uncertainty=None):
         return Value(
@@ -260,6 +305,9 @@ class Value(object):
             parts.append(self.unit)
         return u"".join(parts)
 
+    def __repr__(self):
+        return str(self)
+
     @staticmethod
     def from_obj(thing):
         if isinstance(thing, six.string_types):
@@ -284,8 +332,10 @@ class Value(object):
 class NameSpace(object):
 
     def __init__(self, prefix, uri):
+        assert_prefix(prefix)
         self.__prefix = prefix
         self.__uri = uri
+        self.__doc = None
 
     @property
     def prefix(self):
@@ -295,15 +345,18 @@ class NameSpace(object):
     def uri(self):
         return self.__uri
 
+    def get_document(self):
+        if self.__doc is None:
+            doc = odml2.Document()
+            doc.load(self.uri, is_writable=False)
+            self.__doc = doc
+        return self.__doc
+
     def copy(self, prefix=None, uri=None):
         return NameSpace(
             str(prefix) if prefix is not None else self.__prefix,
             str(uri) if uri is not None else self.__uri
         )
-
-    @staticmethod
-    def from_str(ns, strict=False):
-        pass
 
     def __eq__(self, other):
         if not isinstance(other, NameSpace):
@@ -315,6 +368,9 @@ class NameSpace(object):
 
     def __str__(self):
         return u"NameSpace(prefix=%s, uri=%s)" % (self.prefix, self.uri)
+
+    def __repr__(self):
+        return str(self)
 
 
 @python_2_unicode_compatible
@@ -344,11 +400,17 @@ class NameSpaceMap(collections.MutableMapping):
     def __str__(self):
         return u"NameSpaceMap(size=%d)" % len(self)
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class TypeDef(object):
 
-    def __init__(self, name, definition, properties):
+    def __init__(self, name, definition=None, properties=frozenset()):
+        assert_name(name)
+        for p in properties:
+            assert_name(p)
         self.__name = name
         self.__definition = definition
         self.__properties = frozenset(properties)
@@ -383,6 +445,9 @@ class TypeDef(object):
     def __str__(self):
         return u"TypeDef(name=%s, properties=set(%s))" % (self.name, u", ".join(str(i) for i in self.properties))
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class TypeDefMap(collections.MutableMapping):
@@ -408,11 +473,17 @@ class TypeDefMap(collections.MutableMapping):
     def __str__(self):
         return u"TypeDefMap(size=%d)" % len(self)
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class PropertyDef(object):
 
-    def __init__(self, name, definition, types):
+    def __init__(self, name, definition=None, types=frozenset()):
+        assert_name(name)
+        for t in types:
+            assert_name(t)
         self.__name = name
         self.__definition = definition
         self.__types = frozenset(types)
@@ -447,6 +518,9 @@ class PropertyDef(object):
     def __str__(self):
         return u"PropertyDef(name=%s, types=set(%s))" % (self.name, u", ".join(str(i) for i in self.types))
 
+    def __repr__(self):
+        return str(self)
+
 
 @python_2_unicode_compatible
 class PropertyDefMap(collections.MutableMapping):
@@ -471,3 +545,6 @@ class PropertyDefMap(collections.MutableMapping):
 
     def __str__(self):
         return u"PropertyDefMap(size=%d)" % len(self)
+
+    def __repr__(self):
+        return str(self)

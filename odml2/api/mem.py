@@ -36,10 +36,10 @@ class MemDocument(base.BaseDocument):
         self.__author = None
         self.__version = 1
         self.__root = None
-        self.__namespaces = MemNameSpaceDict(self)
-        self.__property_defs = MemPropertyDefDict(self)
-        self.__type_defs = MemTypeDefDict(self)
-        self.__sections = MemSectionDict(self)
+        self.__namespaces = MemNameSpaceMap(self)
+        self.__property_defs = MemPropertyDefMap(self)
+        self.__type_defs = MemTypeDefMap(self)
+        self.__sections = MemSectionMap(self)
 
     def is_attached(self):
         return False
@@ -47,28 +47,35 @@ class MemDocument(base.BaseDocument):
     def is_writable(self):
         return self.__is_writable
 
+    def _set_writable(self, writable):
+        self.__is_writable = writable
+
     def get_uri(self,):
         return self.__uri
 
     def set_uri(self, uri):
+        self.assert_writable()
         self.__uri = uri
 
     def get_date(self):
         return self.__date
 
     def set_date(self, date):
+        self.assert_writable()
         self.__date = date
 
     def get_author(self):
         return self.__author
 
     def set_author(self, author):
+        self.assert_writable()
         self.__author = author
 
     def get_version(self):
         return self.__version
 
     def set_version(self, version):
+        self.assert_writable()
         self.__version = version
 
     # noinspection PyShadowingBuiltins
@@ -79,6 +86,7 @@ class MemDocument(base.BaseDocument):
         return self.__root
 
     def set_root(self, uuid):
+        self.assert_writable()
         self.__root = uuid
 
     @property
@@ -98,6 +106,7 @@ class MemDocument(base.BaseDocument):
         return self.__sections
 
     def clear(self):
+        self.assert_writable()
         self.__uri = None
         self.__date = None
         self.__author = None
@@ -109,28 +118,26 @@ class MemDocument(base.BaseDocument):
         self.__sections.clear()
 
     @abc.abstractmethod
-    def load(self, path):
+    def load(self, io, uri=None):
         pass
 
     @abc.abstractmethod
-    def close(self):
-        pass
-
-    @abc.abstractmethod
-    def save(self, path):
+    def save(self, io, uri=None):
         pass
 
 
-class MemNameSpaceDict(base.BaseNameSpaceDict):
+class MemNameSpaceMap(base.BaseNameSpaceMap):
 
     def __init__(self, doc):
         self.__doc = doc
         self.__namespaces = SortedDict()
 
     def set(self, prefix, uri):
+        self.__doc.assert_writable()
         self.__namespaces[prefix] = odml2.NameSpace(prefix, uri)
 
     def __setitem__(self, prefix, ns):
+        self.__doc.assert_writable()
         if prefix != ns.prefix:
             raise KeyError("NameSpace prefix mismatch: %s != %s" % (prefix, ns.prefix))
         self.set(prefix, ns.uri)
@@ -139,6 +146,7 @@ class MemNameSpaceDict(base.BaseNameSpaceDict):
         return self.__namespaces[prefix]
 
     def __delitem__(self, prefix):
+        self.__doc.assert_writable()
         del self.__namespaces[prefix]
 
     def __len__(self):
@@ -148,16 +156,18 @@ class MemNameSpaceDict(base.BaseNameSpaceDict):
         return iter(self.__namespaces)
 
 
-class MemPropertyDefDict(base.BasePropertyDefDict):
+class MemPropertyDefMap(base.BasePropertyDefMap):
 
     def __init__(self, doc):
         self.__doc = doc
         self.__property_defs = SortedDict()
 
     def set(self, name, definition=None, types=frozenset()):
+        self.__doc.assert_writable()
         self.__property_defs[name] = odml2.PropertyDef(name, definition, types)
 
     def __setitem__(self, name, pd):
+        self.__doc.assert_writable()
         if name != pd.name:
             raise KeyError("Property name mismatch: %s != %s" % (name, pd.name))
         self.set(name, pd.definition, pd.types)
@@ -166,6 +176,7 @@ class MemPropertyDefDict(base.BasePropertyDefDict):
         return self.__property_defs[name]
 
     def __delitem__(self, name):
+        self.__doc.assert_writable()
         del self.__property_defs[name]
 
     def __len__(self):
@@ -175,16 +186,18 @@ class MemPropertyDefDict(base.BasePropertyDefDict):
         return iter(self.__property_defs)
 
 
-class MemTypeDefDict(base.BaseTypeDefDict):
+class MemTypeDefMap(base.BaseTypeDefMap):
 
     def __init__(self, doc):
         self.__doc = doc
         self.__type_defs = SortedDict()
 
     def set(self, name, definition=None, properties=frozenset()):
+        self.__doc.assert_writable()
         self.__type_defs[name] = odml2.TypeDef(name, definition, properties)
 
     def __setitem__(self, name, td):
+        self.__doc.assert_writable()
         if name != td.name:
             raise KeyError("Name mismatch: %s != %s" % (name, td.name))
         self.set(name, td.definition, td.properties)
@@ -193,6 +206,7 @@ class MemTypeDefDict(base.BaseTypeDefDict):
         return self.__type_defs[name]
 
     def __delitem__(self, name):
+        self.__doc.assert_writable()
         del self.__type_defs[name]
 
     def __len__(self):
@@ -202,7 +216,7 @@ class MemTypeDefDict(base.BaseTypeDefDict):
         return iter(self.__type_defs)
 
 
-class MemSectionDict(base.BaseSectionDict):
+class MemSectionMap(base.BaseSectionMap):
 
     def __init__(self, doc):
         self.__doc = doc
@@ -210,6 +224,7 @@ class MemSectionDict(base.BaseSectionDict):
 
     # noinspection PyShadowingBuiltins
     def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
+        self.__doc.assert_writable()
         if isinstance(uuid, UUID):
             uuid = str(uuid)
         if parent_uuid is None and parent_prop is None:
@@ -227,6 +242,9 @@ class MemSectionDict(base.BaseSectionDict):
             if parent is None:
                 raise ValueError("Parent section with uuid '%s' does not exist" % parent_uuid)
 
+            if parent_prop in parent.value_properties:
+                del parent.value_properties[parent_prop]
+
             refs = (base.SectionRef(uuid, None, False), )
             if parent_prop in parent.section_properties:
                 refs = parent.section_properties[parent_prop] + refs
@@ -235,7 +253,20 @@ class MemSectionDict(base.BaseSectionDict):
         else:
             raise RuntimeError("Parent uuid and prop must be either both None or both not None!")
 
+    def add_link(self, uuid, prefix, parent_uuid, parent_prop):
+        parent = self[parent_uuid]
+
+        if parent_prop in parent.value_properties:
+            del parent.value_properties[parent_prop]
+
+        refs = (base.SectionRef(uuid, prefix, True), )
+        if parent_prop in parent.section_properties:
+            refs = parent.section_properties[parent_prop] + refs
+
+        parent.section_properties.set(parent_prop, refs)
+
     def __setitem__(self, uuid, value):
+        self.__doc.assert_writable()
         # TODO maybe implement later (but is not needed at the moment)
         raise NotImplementedError()
 
@@ -243,6 +274,7 @@ class MemSectionDict(base.BaseSectionDict):
         return self.__sections[uuid]
 
     def __delitem__(self, uuid):
+        self.__doc.assert_writable()
         if uuid not in self:
             raise KeyError("A section with the given uuid '%s' does not exist" % uuid)
 
@@ -276,8 +308,8 @@ class MemSection(base.BaseSection):
         self.__label = label
         self.__reference = reference
         self.__is_linked = is_linked
-        self.__sections_properties = MemSectionPropertyDict(doc)
-        self.__value_properties = MemValuePropertyDict(doc)
+        self.__sections_properties = MemSectionPropertyMap(doc)
+        self.__value_properties = MemValuePropertyMap(doc)
 
     def is_linked(self):
         return self.__is_linked
@@ -290,18 +322,21 @@ class MemSection(base.BaseSection):
 
     # noinspection PyShadowingBuiltins
     def set_type(self, type, check=False):
+        self.__doc.assert_writable()
         self.__type = type
 
     def get_label(self):
         return self.__label
 
     def set_label(self, label):
+        self.__doc.assert_writable()
         self.__label = label
 
     def get_reference(self):
         return self.__reference
 
     def set_reference(self, reference):
+        self.__doc.assert_writable()
         self.__reference = reference
 
     @property
@@ -313,22 +348,25 @@ class MemSection(base.BaseSection):
         return self.__value_properties
 
 
-class MemSectionPropertyDict(base.BaseSectionPropertyDict):
+class MemSectionPropertyMap(base.BaseSectionPropertyMap):
 
     def __init__(self, doc):
         self.__doc = doc
         self.__section_props = SortedDict()
 
     def set(self, prop, refs):
+        self.__doc.assert_writable()
         self.__section_props[prop] = refs
 
     def __setitem__(self, prop, refs):
+        self.__doc.assert_writable()
         self.__section_props[prop] = refs
 
     def __getitem__(self, prop):
         return self.__section_props[prop]
 
     def __delitem__(self, prop):
+        self.__doc.assert_writable()
         del self.__section_props[prop]
 
     def __len__(self):
@@ -338,24 +376,27 @@ class MemSectionPropertyDict(base.BaseSectionPropertyDict):
         return iter(self.__section_props)
 
 
-class MemValuePropertyDict(base.BaseValuePropertyDict):
+class MemValuePropertyMap(base.BaseValuePropertyMap):
 
     def __init__(self, doc):
         self.__doc = doc
         self.__value_props = SortedDict()
 
     def set(self, prop, value):
+        self.__doc.assert_writable()
         if not isinstance(value, odml2.Value):
             raise ValueError("Type odml2.Value expected, but was %s" % type(value))
         self.__value_props[prop] = value
 
     def __setitem__(self, prop, value):
+        self.__doc.assert_writable()
         self.set(prop, value)
 
     def __getitem__(self, key):
         return self.__value_props[key]
 
     def __delitem__(self, prop):
+        self.__doc.assert_writable()
         del self.__value_props[prop]
 
     def __len__(self):

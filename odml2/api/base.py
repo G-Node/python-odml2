@@ -50,6 +50,10 @@ class BaseDocument(object):
         """
         pass
 
+    def assert_writable(self):
+        if not self.is_writable():
+            raise RuntimeError("The document is not writable!")
+
     @abc.abstractmethod
     def get_uri(self):
         """
@@ -125,7 +129,7 @@ class BaseDocument(object):
     def namespaces(self):
         """
         Access to document namespaces.
-        :rtype: BaseNameSpaceDict
+        :rtype: BaseNameSpaceMap
         """
         raise NotImplementedError()
 
@@ -133,7 +137,7 @@ class BaseDocument(object):
     def property_defs(self):
         """
         Access to document property definitions.
-        :rtype: BasePropertyDefDict
+        :rtype: BasePropertyDefMap
         """
         raise NotImplementedError
 
@@ -141,7 +145,7 @@ class BaseDocument(object):
     def type_defs(self):
         """
         Access to document type definitions.
-        :rtype: BaseTypeDefDict
+        :rtype: BaseTypeDefMap
         """
         raise NotImplementedError()
 
@@ -149,7 +153,7 @@ class BaseDocument(object):
     def sections(self):
         """
         Access to ALL document sections.
-        :rtype: BaseSectionDict
+        :rtype: BaseSectionMap
         """
         raise NotImplementedError()
 
@@ -161,27 +165,22 @@ class BaseDocument(object):
         pass
 
     @abc.abstractmethod
-    def load(self, uri):
+    def load(self, io, uri=None):
         """
         Fill the document with data from a certain location.
 
-        :param uri: The uri to load data from.
+        :param io:  An I/O (StingIO,FileIO) to read the data from.
+        :param uri: The uri of the document.
         """
         pass
 
     @abc.abstractmethod
-    def close(self):
-        """
-        Close the document
-        """
-        pass
-
-    @abc.abstractmethod
-    def save(self, uri):
+    def save(self, io, uri=None):
         """
         Save the documents data to a certain location.
 
-        :param uri: The uri to save the data to.
+        :param io: The I/O to write the data to.
+        :param uri: The uri of the document.
         """
         pass
 
@@ -199,7 +198,7 @@ class BaseDocument(object):
             ns_dict = OrderedDict()
             for ns in self.namespaces.values():
                 ns_dict[ns.prefix] = ns.uri
-            return ns_dict
+            return ns_dict if len(ns_dict) > 0 else None
 
         def convert_definitions():
             defs_dict = OrderedDict()
@@ -215,7 +214,7 @@ class BaseDocument(object):
                 if definition is not None:
                     td_dict["definition"] = definition
                 defs_dict[td.name] = td_dict
-            return defs_dict
+            return defs_dict if len(defs_dict) > 0 else None
 
         def convert_ref(ref):
             if ref.is_link:
@@ -248,7 +247,10 @@ class BaseDocument(object):
 
         root["namespaces"] = convert_ns()
         root["definitions"] = convert_definitions()
-        root["metadata"] = convert_section(self.get_root())
+        if self.get_root() is not None:
+            root["metadata"] = convert_section(self.get_root())
+        else:
+            root["metadata"] = None
         return root
 
     def from_dict(self, data):
@@ -265,10 +267,10 @@ class BaseDocument(object):
             self.set_version(data["document_version"])
 
         if "namespaces" in data and data["namespaces"] is not None:
-            for prefix, uri in enumerate(data["namespaces"]):
+            for prefix, uri in data["namespaces"].items():
                 self.namespaces.set(prefix, uri)
         if "definitions" in data and data["definitions"] is not None:
-            for name, def_data in enumerate(data["definitions"]):
+            for name, def_data in data["definitions"].items():
                 if "types" in def_data:
                     self.property_defs.set(name, def_data.get("definition"), def_data["types"])
                 elif "properties" in def_data:
@@ -291,10 +293,11 @@ class BaseDocument(object):
                     section = self.sections[sec_data["uuid"]]
                     section.value_properties.set(prop, odml2.Value.from_obj(element))
 
-        read_section(None, None, data["metadata"])
+        if "metadata" in data and data["metadata"] is not None:
+            read_section(None, None, data["metadata"])
 
 
-class BaseNameSpaceDict(MutableMapping):
+class BaseNameSpaceMap(MutableMapping):
     """
     Dict like accessor for namespaces of an odML2 document.
     """
@@ -304,7 +307,7 @@ class BaseNameSpaceDict(MutableMapping):
         pass
 
 
-class BasePropertyDefDict(MutableMapping):
+class BasePropertyDefMap(MutableMapping):
     """
     Dict like accessor for property definitions of an odML2 document.
     """
@@ -314,7 +317,7 @@ class BasePropertyDefDict(MutableMapping):
         pass
 
 
-class BaseTypeDefDict(MutableMapping):
+class BaseTypeDefMap(MutableMapping):
     """
     Dict like accessor for type definitions of an odML2 document.
     """
@@ -325,7 +328,7 @@ class BaseTypeDefDict(MutableMapping):
         pass
 
 
-class BaseSectionDict(MutableMapping):
+class BaseSectionMap(MutableMapping):
     """
     Dict like accessor for namespaces of a odML2 document.
     """
@@ -333,6 +336,10 @@ class BaseSectionDict(MutableMapping):
     # noinspection PyShadowingBuiltins
     @abc.abstractmethod
     def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
+        pass
+
+    @abc.abstractmethod
+    def add_link(self, uuid, prefix, parent_uuid, parent_prop):
         pass
 
 
@@ -378,19 +385,19 @@ class BaseSection(object):
     @property
     def section_properties(self):
         """
-        :rtype: BaseSectionPropertyDict
+        :rtype: BaseSectionPropertyMap
         """
         raise NotImplementedError()
 
     @property
     def value_properties(self):
         """
-        :rtype: BasePropertyDefDict
+        :rtype: BasePropertyDefMap
         """
         raise NotImplementedError()
 
 
-class BaseSectionPropertyDict(MutableMapping):
+class BaseSectionPropertyMap(MutableMapping):
     """
     Dict like accessor for section properties.
     """
@@ -430,7 +437,7 @@ class SectionRef(object):
         return self.__is_link
 
 
-class BaseValuePropertyDict(MutableMapping):
+class BaseValuePropertyMap(MutableMapping):
     """
     Dict like accessor for section properties.
     """
