@@ -26,27 +26,13 @@ odML TODO list:
     - [x] Use six.move.urllib.parse.urlparse to read paths and uris
     - [x] Choose back-end based on file extension
     - [x] Choose back-end based on mime type
-  - [ ] Add support for namespaces
-    - [ ] Implement NameSpace.from_str()
-    - [ ] NameSpace can have documents (in back-end only?)
-  - [ ] Add support for links
-  - [ ] Implement modes that define how the terminology is handled:
+  - [x] Implement modes that define how the terminology is handled:
         STRICT, UNCHECKED, CREATE
+  - [x] Add support for namespaces
+    - [x] NameSpace can have documents (in back-end only?)
+  - [x] Add support for links
   - [ ] Access and manipulate property and type definitions from sections directly
   - [ ] Better intro notebook
   - [ ] Public API documentation
-  - [ ] YAML format
-
-```
-            terms:
-                <prefix>:
-                    properties:
-                        p1:
-                        p2:
-                    types:
-                        t1:
-                        t2:
-```
-
   - [ ] JSON back-end
   - [ ] RDF back-end
