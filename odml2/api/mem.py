@@ -242,6 +242,9 @@ class MemSectionMap(base.BaseSectionMap):
             if parent is None:
                 raise ValueError("Parent section with uuid '%s' does not exist" % parent_uuid)
 
+            if parent_prop in parent.value_properties:
+                del parent.value_properties[parent_prop]
+
             refs = (base.SectionRef(uuid, None, False), )
             if parent_prop in parent.section_properties:
                 refs = parent.section_properties[parent_prop] + refs
@@ -249,6 +252,18 @@ class MemSectionMap(base.BaseSectionMap):
             self.__sections[uuid] = MemSection(self.__doc, type, uuid, label, reference, is_linked=False)
         else:
             raise RuntimeError("Parent uuid and prop must be either both None or both not None!")
+
+    def add_link(self, uuid, prefix, parent_uuid, parent_prop):
+        parent = self[parent_uuid]
+
+        if parent_prop in parent.value_properties:
+            del parent.value_properties[parent_prop]
+
+        refs = (base.SectionRef(uuid, prefix, True), )
+        if parent_prop in parent.section_properties:
+            refs = parent.section_properties[parent_prop] + refs
+
+        parent.section_properties.set(parent_prop, refs)
 
     def __setitem__(self, uuid, value):
         self.__doc.assert_writable()

@@ -338,6 +338,10 @@ class BaseSectionMap(MutableMapping):
     def add(self, type, uuid, label, reference, parent_uuid, parent_prop):
         pass
 
+    @abc.abstractmethod
+    def add_link(self, uuid, prefix, parent_uuid, parent_prop):
+        pass
+
 
 @six.add_metaclass(abc.ABCMeta)
 class BaseSection(object):
