@@ -118,7 +118,7 @@ class TestSection(unittest.TestCase):
         self.assertTrue(self.sec != "not_a_section")
 
 
-class ValueTest(unittest.TestCase):
+class TestValue(unittest.TestCase):
 
     def test_init(self):
         v1 = Value("hello")
@@ -192,7 +192,7 @@ class ValueTest(unittest.TestCase):
             self.assertEqual(str(v1), "1±0.1mV")
 
 
-class NameSpaceTest(unittest.TestCase):
+class TestNameSpace(unittest.TestCase):
 
     def setUp(self):
         self.doc = Document()
@@ -238,7 +238,7 @@ class NameSpaceTest(unittest.TestCase):
         self.assertFalse("ns" in self.doc.namespaces)
 
 
-class TypeDefTest(unittest.TestCase):
+class TestTypeDef(unittest.TestCase):
 
     def setUp(self):
         self.doc = Document()
@@ -284,7 +284,7 @@ class TypeDefTest(unittest.TestCase):
         self.assertFalse("SomeType" in self.doc.type_definitions)
 
 
-class PropertyDefTest(unittest.TestCase):
+class TestPropertyDef(unittest.TestCase):
 
     def setUp(self):
         self.doc = Document()

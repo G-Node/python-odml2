@@ -16,7 +16,7 @@ from uuid import uuid4
 from odml2 import *
 
 
-class DocumentTest(unittest.TestCase):
+class TestDocument(unittest.TestCase):
 
     def setUp(self):
         self.root_uuid = str(uuid4())
@@ -92,3 +92,7 @@ class DocumentTest(unittest.TestCase):
         doc.save(f1)
         self.assertEqual(yaml_str, f1.getvalue())
         f1.close()
+
+
+class TestDocumentLinks(unittest.TestCase):
+    pass
