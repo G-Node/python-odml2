@@ -1,11 +1,11 @@
-=================
 API Documentation
 =================
 
-Document
-========
+.. toctree::
+    :maxdepth: 1
 
-.. autoclass:: odml2.Document
-    :members:
-    :undoc-members:
-
+    api_document
+    api_section
+    api_value
+    api_name_space
+    api_terms

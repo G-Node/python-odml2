@@ -34,5 +34,6 @@ odML TODO list:
   - [ ] Access and manipulate property and type definitions from sections directly
   - [ ] Better intro notebook
   - [ ] Public API documentation
+  - [ ] Update readme
   - [ ] JSON back-end
   - [ ] RDF back-end

@@ -8,6 +8,7 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+from future.utils import python_2_unicode_compatible
 import enum
 
 import odml2
@@ -145,6 +146,7 @@ class StrictStrategy(BasicStrategy):
         _get_type_definition(document, prefix, type)
 
 
+@python_2_unicode_compatible
 class TerminologyStrategy(BasicStrategy, enum.Enum):
     Ignore = BasicStrategy()
     Create = CreateStrategy()
@@ -156,3 +158,9 @@ class TerminologyStrategy(BasicStrategy, enum.Enum):
     # noinspection PyShadowingBuiltins
     def handle_type(self, document, type):
         self.value.handle_type(document, type)
+
+    def __str__(self):
+        return "TerminologyStrategy.%s" % self.name
+
+    def __repr__(self):
+        return str(self)
