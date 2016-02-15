@@ -1,7 +1,8 @@
-Python odML library
-===================
+Python odML 2 prototype
+=======================
 
-A library for writing and reading of odML metadata files.
+Python odML 2 is a prototype for a future version of the odML metadata format and library.
+The prototype serves as a testing ground for new ideas and concepts for storing and handling experimental metadata.
 
 Using the library
 -----------------
@@ -52,11 +53,13 @@ There is a simple ipython notebook [intro.ipynb](https://github.com/G-Node/pytho
 * Value parsing
 * Back-end API design and front-end back-end interaction
 * Serialization and deserialization to Yaml
+* Terminologies and property and section type definitions
+* Terminology handling strategies
+* Links between sections
+* Iteration and filtering of documents
 
 #### List of unimplemented features
 
-* Everything related to terminologies such as property and section type definitions
-* Links between sections (see link and include in the odML paper)
-* Iteration and filtering of documents
-* Probably many other convenient functions
+* Serialization to/from other formats
+* Probably many convenient functions
 
