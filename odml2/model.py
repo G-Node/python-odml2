@@ -333,7 +333,17 @@ class Section(collections.MutableMapping):
 
 class Value(object):
     """
-    An odML Value class
+    Create a new value.
+
+    If the values value is not a :class:`numbers.Number` unit and
+    uncertainty are expected to be None.
+
+    :param value:           The actual value of the value :-)
+    :type value:            bool | float | int | str | datetime | time
+    :param unit:            The SI unit of the value.
+    :type unit:             str
+    :param uncertainty:     The uncertainty of the value.
+    :type uncertainty:      float
     """
 
     def __init__(self, value, unit=None, uncertainty=None):
@@ -351,18 +361,30 @@ class Value(object):
 
     @property
     def value(self):
+        """
+        :type:      bool | float | int | str | datetime | time
+        """
         return self.__value
 
     @property
     def unit(self):
+        """
+        :type:      str
+        """
         return self.__unit
 
     @property
     def uncertainty(self):
+        """
+        :type:      float
+        """
         return self.__uncertainty
 
     @property
     def type(self):
+        """
+        The name of the values data type.
+        """
         if self.__type is None:
             for t, s in VALUE_TYPE_MAP.items():
                 if isinstance(self.value, t):
@@ -370,6 +392,26 @@ class Value(object):
         return self.__type
 
     def copy(self, value=None, unit=None, uncertainty=None):
+        """
+        Since values should be treated as immutable objects, the :meth:`~.Value.copy` method can be used as a
+        replacement.
+
+        Instead of changing for example the unit of a value object, just assign a modified copy:
+
+        .. code-block:: python
+
+            v = Value(10, unit="V")
+            v = v.copy(unit="mV")
+
+        :param value:           The actual value of the value (optional)
+        :type value:            bool | float | int | str | datetime | time
+        :param unit:            The SI unit of the value (optional)
+        :type unit:             str
+        :param uncertainty:     The uncertainty of the value (optional)
+        :type uncertainty:      float
+
+        :return:    A (modified) copy of the value.
+        """
         return Value(
             value if value is not None else self.value,
             unit if unit is not None else self.unit,
@@ -420,6 +462,18 @@ class Value(object):
 
     @staticmethod
     def from_obj(thing):
+        """
+        Creates a value from all sorts of types of objects.
+
+        If the value is a sting like '10 +-0.001 mV' it will be parsed to an equivalent of ``Value(10, 'mV', 0.001)``
+
+        :param thing:   The object to create a value from.
+
+        :return:        The created value object.
+        :rtype:         :class:`~.Value`
+
+        :raises:        ValueError if the object can't be converted to a value.
+        """
         if isinstance(thing, six.string_types):
             match = VALUE_EXPR.match(thing)
             if match is None:
