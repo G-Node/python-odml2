@@ -34,11 +34,11 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
 
 @python_2_unicode_compatible
 class Section(collections.MutableMapping):
+    """
+    *NOTICE*: Section initialization is usually done by the API
+    """
 
     def __init__(self, uuid, document, is_link=False):
-        """
-        *NOTICE*: Section initialization is usually done by the API
-        """
         self.__is_link = is_link
         self.__uuid = uuid
         self.__document = document
@@ -393,10 +393,10 @@ class Value(object):
 
     def copy(self, value=None, unit=None, uncertainty=None):
         """
-        Since values should be treated as immutable objects, the :meth:`~.Value.copy` method can be used as a
-        replacement.
+        Since values should be treated as immutable objects, the :meth:`~.Value.copy` method
+        can be used instead of setting the attributes of the value.
 
-        Instead of changing for example the unit of a value object, just assign a modified copy:
+        Just assign a modified copy:
 
         .. code-block:: python
 
@@ -494,6 +494,14 @@ class Value(object):
 
 @python_2_unicode_compatible
 class NameSpace(object):
+    """
+    Create a new namespace object.
+
+    :param prefix:      The prefix used to reference the linked document.
+    :type prefix:       str
+    :param uri:         The URI or path to the linked document.
+    :type uri:          str
+    """
 
     def __init__(self, prefix, uri):
         assert_prefix(prefix)
@@ -503,13 +511,29 @@ class NameSpace(object):
 
     @property
     def prefix(self):
+        """
+        The prefix used to reference the linked document.
+
+        :type:      str
+        """
         return self.__prefix
 
     @property
     def uri(self):
+        """
+        The uri to the linked document.
+
+        :type:      str
+        """
         return self.__uri
 
     def get_document(self):
+        """
+        Try to open the document the uri of the name space points to.
+
+        :return:    The odML document the uri points to.
+        :rtype:     :class:`~.Document`
+        """
         if self.__doc is None:
             doc = odml2.Document()
             doc.load(self.uri, is_writable=False)
@@ -517,6 +541,25 @@ class NameSpace(object):
         return self.__doc
 
     def copy(self, prefix=None, uri=None):
+        """
+        Since instances of :class:`~.NameSpace` should be treated as immutable objects
+        the :meth:`~.NameSpace.copy` method can be used as an alternative to change the
+        objects attributes.
+
+        Just reassign a modified copy:
+
+        .. code-block:: python
+
+            ns = doc.namespaces["gnode"]
+            doc.namespaces["gnode"] = ns.copy(uri="gnode-terms.yml")
+
+        :param prefix:      The prefix used to reference the linked document.
+        :type prefix:       str
+        :param uri:         The URI or path to the linked document.
+        :type uri:          str
+
+        :return:            A (modified) copy of the name space.
+        """
         return NameSpace(
             str(prefix) if prefix is not None else self.__prefix,
             str(uri) if uri is not None else self.__uri
@@ -570,7 +613,16 @@ class NameSpaceMap(collections.MutableMapping):
 
 @python_2_unicode_compatible
 class TypeDef(object):
+    """
+    Creates a new type definition.
 
+    :param name:        The name of the type.
+    :type name:         str
+    :param definition:  The verbal definition of the type.
+    :type definition:   str
+    :param properties:  A set of property names.
+    :type properties:   frozenset[str]
+    """
     def __init__(self, name, definition=None, properties=frozenset()):
         assert_name(name)
         for p in properties:
@@ -619,6 +671,9 @@ class TypeDefMap(collections.MutableMapping):
     def __init__(self, back_end):
         self.__back_end = back_end
 
+    def set(self, name, definition=None, properties=frozenset()):
+        self[name] = TypeDef(name, definition, properties)
+
     def __len__(self):
         return len(self.__back_end.type_defs)
 
@@ -643,6 +698,17 @@ class TypeDefMap(collections.MutableMapping):
 
 @python_2_unicode_compatible
 class PropertyDef(object):
+    """
+    Crates a new property definition.
+
+    :param name:        The name of the property.
+    :type name:         str
+    :param definition:  A verbal definition of the property.
+    :type definition:   str
+    :param types:       A set of type names (names of types that can be used as
+                        target / 'rvalue') of the property.
+    :type types:        frozenset[str]
+    """
 
     def __init__(self, name, definition=None, types=frozenset()):
         assert_name(name)
@@ -691,6 +757,9 @@ class PropertyDefMap(collections.MutableMapping):
 
     def __init__(self, back_end):
         self.__back_end = back_end
+
+    def set(self, name, definition=None, types=frozenset()):
+        self[name] = PropertyDef(name, definition, types)
 
     def __len__(self):
         return len(self.__back_end.property_defs)
