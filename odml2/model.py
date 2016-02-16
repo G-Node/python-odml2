@@ -34,21 +34,31 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
 
 @python_2_unicode_compatible
 class Section(collections.MutableMapping):
-    """
-    Represents an odML section entity.
-    """
 
     def __init__(self, uuid, document, is_link=False):
+        """
+        *NOTICE*: Section initialization is usually done by the API
+        """
         self.__is_link = is_link
         self.__uuid = uuid
         self.__document = document
 
     @property
     def uuid(self):
+        """
+        The uuid of the section. This is a read only property.
+
+        :type:      str
+        """
         return self.__uuid
 
     @property
     def type(self):
+        """
+        The type of the section. The type names the kind of thing the section represents.
+
+        :type:      str
+        """
         return self.document.back_end.sections[self.uuid].get_type()
 
     # noinspection PyShadowingBuiltins
@@ -60,6 +70,12 @@ class Section(collections.MutableMapping):
 
     @property
     def label(self):
+        """
+        The label of the section. The label is an optional, human readable identifier of
+        a section.
+
+        :type:      str
+        """
         return self.document.back_end.sections[self.uuid].get_label()
 
     @label.setter
@@ -70,6 +86,11 @@ class Section(collections.MutableMapping):
 
     @property
     def reference(self):
+        """
+        An URI or path to other data related to this specific section.
+
+        :type:      str
+        """
         return self.document.back_end.sections[self.uuid].get_reference()
 
     @reference.setter
@@ -80,17 +101,41 @@ class Section(collections.MutableMapping):
 
     @property
     def is_link(self):
+        """
+        Whether or not the section is a link. Depending on the parent from which the section
+        was accessed the same section can be a link or not a link.
+
+        :type:      bool
+        """
         return self.__is_link
 
     @property
     def document(self):
+        """
+        Reference to the document the section belongs to.
+
+        :type:      :class:`~.Document`
+        """
         return self.__document
 
     #
     # dict like access to sections and values
     #
 
-    def get(self, key, **kwargs):
+    def get(self, key, default=None):
+        """
+        Access the target object of a certain property.
+
+        If the property is a section property the result is a list of :class:`~.Section` objects.
+
+        If the property is a value property the result is a single :class:`~.Value`.
+
+        :param key:     The name of the accessed property.
+        :type key:      str
+        :param default: The default value if the property does not exist.
+
+        :return:        A list of sections or a value
+        """
 
         def mk_section(ref):
             if ref.namespace is None:
@@ -106,9 +151,24 @@ class Section(collections.MutableMapping):
             refs = sec.section_properties[key]
             return [mk_section(ref) for ref in refs]
         else:
-            return None
+            return default
 
     def __getitem__(self, key):
+        """
+        Access the target of certain property.
+
+        If the property is a section property with a single section the result is a
+        :class:`~.Section` object for other section properties the result is a list of sections.
+
+        If the property points to an odml :class:`~.Value` the result is the values
+        :attr:`~.Value.value`.
+
+        :param key:     The name of the accessed property.
+        :type key:      str
+
+        :return:        Depending of the target a single section, a list of sections or
+                        the value of the targeted value object.
+        """
         element = self.get(key)
         if element is None:
             raise KeyError("Key '%s' not in section with uuid '%s'" % (key, self.uuid))
@@ -119,6 +179,26 @@ class Section(collections.MutableMapping):
         return element
 
     def __setitem__(self, key, element):
+        """
+        Set the target for a certain property. The target element can be either a
+        :class:`~.Section`, :class:`~.SB`, :class:`~.Value` or any allowed value
+        type.
+
+        If the element is a :class:`~.Section` the section is linked to this property if the
+        parent if it already exists in the document. Otherwise the section is copied.
+
+        If the element is a :class:`~.SB` object an analogous section will be created in
+        the document.
+
+        If the element is a :class:`~.Value` the value is used as target for the property. In
+        all other cases a :class:`~.Value` object will be constructed from the element if this
+        is supported for the elements type.
+
+        :param key:         The name of the property.
+        :type key:          str
+        :param element:     The target element for the given property.
+        :type element:      any
+        """
         if key in self:
             del self[key]
         if isinstance(element, list):
@@ -140,6 +220,13 @@ class Section(collections.MutableMapping):
             sec.value_properties[key] = Value.from_obj(element)
 
     def __delitem__(self, key):
+        """
+        Remove a property from the section. If the property is a section property the whole
+        subtree of the document is removed.
+
+        :param key:     The name of the property to remove.
+        :type key:      str
+        """
         sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             del sec.value_properties[key]
@@ -149,18 +236,41 @@ class Section(collections.MutableMapping):
             raise KeyError("The section has no property with the name '%s'" % key)
 
     def __len__(self):
+        """
+        The number of properties in the section.
+
+        :rtype:         int
+        """
         sec = self.document.back_end.sections[self.uuid]
         return len(sec.value_properties) + len(sec.section_properties)
 
     def __iter__(self):
+        """
+        Iterate over all targets of all properties of the section. Depending on the property
+        the target is either a list of :class:`~.Section` objects or a :class:`~.Value`.
+
+        :return:        A generator over all property targets
+        """
         sec = self.document.back_end.sections[self.uuid]
         return itertools.chain(iter(sec.value_properties), iter(sec.section_properties))
 
     def items(self):
+        """
+        Iterate over all property, property target pairs of the section. Depending on the property
+        the target is either a list of :class:`~.Section` objects or a :class:`~.Value`.
+
+        :return:        A generator over all property, property target pairs
+        """
         for key in self:
             yield (key, self.get(key))
 
     def values(self):
+        """
+        Iterate over all targets of all properties of the section. Depending on the property
+        the target is either a list of :class:`~.Section` objects or a :class:`~.Value`.
+
+        :return:        A generator over all property targets
+        """
         for key in self:
             yield self.get(key)
 
