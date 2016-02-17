@@ -1,11 +1,12 @@
 Python odML 2 prototype
 =======================
 
-Python odML 2 is a prototype for a future version of the odML metadata format and library.
+*Python odML 2* is a prototype for a future version of the odML metadata format and library.
 The prototype serves as a testing ground for new ideas and concepts for storing and handling experimental metadata.
+As a prototype *Python odML 2* is not recommended for production use-cases.
 
-Using the library
------------------
+Installing the library
+----------------------
 
 The first step is to clone the repository and `cd` into the directory:
 
@@ -40,12 +41,19 @@ sudo python3 setup.py develop
 Since all classes of `python-odml2` reside in the `odml2` package, the library does not interfere with 
 with installations of the old `python-odml` library.
 
+Documentation
+-------------
+
+The functionality of the prototype is described in a
+[basic tutorial with API documentation](https://g-node.github.io/python-odml2).
+The code examples from the tutorials are also available as
+[ipython notebooks](https://github.com/G-Node/python-odml2/blob/master/docs/notebooks/).
+
 Current development state
 -------------------------
 
-The prototype is still in an early development phase and many features are currently not implemented. 
-However some aspects of the library can already be tested. 
-There is a simple ipython notebook [intro.ipynb](https://github.com/G-Node/python-odml2/blob/master/intro.ipynb) that shows the basic usage.
+The prototype is still in an early development phase and some features are currently not implemented.
+However most aspects of the library can already be tested.
 
 #### Implemented features
 
