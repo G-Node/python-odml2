@@ -30,3 +30,5 @@ htmlcov
 # playground file
 playground.py
 
+docs/*.yml
+docs/notebooks/*.yml

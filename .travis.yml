@@ -1,19 +1,26 @@
-nguage: python
-python:
-  - "2.6"
-  - "2.7"
-  - "3.2"
-  - "3.3"
+sudo: false
 
-virtualenv:
-  system_site_packages: true
+language: python
+
+matrix:
+  include:
+    - python: "2.7_with_system_site_packages"
+      env: COVERALLS=1
+    - python: "3.4"
+      env: COVERALLS=0
 
 install:
-  - sudo pip2 install coveralls
+  - pip install coveralls enum34 setuptools six future sortedcontainers requests PyYAML nose
 
 script:
-  - coverage run --source=odml2 setup.py test
-  - coverage report -m
+  - python setup.py build
+  - if [ $COVERALLS = 1 ]; then
+      coverage run --source=odml2 setup.py test && coverage report -m;
+    else
+      python setup.py test;
+    fi;
 
 after_success:
-  - coveralls
+  - if [ $COVERALLS = 1 ]; then
+      coveralls;
+    fi;

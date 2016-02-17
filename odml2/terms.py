@@ -8,6 +8,7 @@
 # modification, are permitted under the terms of the BSD License. See
 # LICENSE file in the root of the project.
 
+from future.utils import python_2_unicode_compatible
 import enum
 
 import odml2
@@ -134,6 +135,7 @@ class StrictStrategy(BasicStrategy):
                              (prop, join_prefixed_name(source_prefix, source_type)))
 
         property_def = _get_prop_definition(document, property_prefix, prop)
+        target_prefix, target_type = split_prefixed_name(target_type)
         if target_type not in property_def.types:
             raise ValueError("The type '%s' is not defined for property '%s'" %
                              (target_type, join_prefixed_name(property_prefix, prop)))
@@ -145,6 +147,7 @@ class StrictStrategy(BasicStrategy):
         _get_type_definition(document, prefix, type)
 
 
+@python_2_unicode_compatible
 class TerminologyStrategy(BasicStrategy, enum.Enum):
     Ignore = BasicStrategy()
     Create = CreateStrategy()
@@ -156,3 +159,9 @@ class TerminologyStrategy(BasicStrategy, enum.Enum):
     # noinspection PyShadowingBuiltins
     def handle_type(self, document, type):
         self.value.handle_type(document, type)
+
+    def __str__(self):
+        return "TerminologyStrategy.%s" % self.name
+
+    def __repr__(self):
+        return str(self)

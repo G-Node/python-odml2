@@ -35,7 +35,7 @@ VALUE_EXPR = re.compile(u"^([-+]?(([0-9]+)|([0-9]*\.[0-9]+([eE][-+]?[0-9]+)?)))\
 @python_2_unicode_compatible
 class Section(collections.MutableMapping):
     """
-    Represents an odML section entity.
+    *NOTICE*: Section initialization is usually done by the API
     """
 
     def __init__(self, uuid, document, is_link=False):
@@ -45,10 +45,20 @@ class Section(collections.MutableMapping):
 
     @property
     def uuid(self):
+        """
+        The uuid of the section. This is a read only property.
+
+        :type:      str
+        """
         return self.__uuid
 
     @property
     def type(self):
+        """
+        The type of the section. The type names the kind of thing the section represents.
+
+        :type:      str
+        """
         return self.document.back_end.sections[self.uuid].get_type()
 
     # noinspection PyShadowingBuiltins
@@ -60,6 +70,12 @@ class Section(collections.MutableMapping):
 
     @property
     def label(self):
+        """
+        The label of the section. The label is an optional, human readable identifier of
+        a section.
+
+        :type:      str
+        """
         return self.document.back_end.sections[self.uuid].get_label()
 
     @label.setter
@@ -70,6 +86,11 @@ class Section(collections.MutableMapping):
 
     @property
     def reference(self):
+        """
+        An URI or path to other data related to this specific section.
+
+        :type:      str
+        """
         return self.document.back_end.sections[self.uuid].get_reference()
 
     @reference.setter
@@ -80,17 +101,41 @@ class Section(collections.MutableMapping):
 
     @property
     def is_link(self):
+        """
+        Whether or not the section is a link. Depending on the parent from which the section
+        was accessed the same section can be a link or not a link.
+
+        :type:      bool
+        """
         return self.__is_link
 
     @property
     def document(self):
+        """
+        Reference to the document the section belongs to.
+
+        :type:      :class:`~.Document`
+        """
         return self.__document
 
     #
     # dict like access to sections and values
     #
 
-    def get(self, key, **kwargs):
+    def get(self, key, default=None):
+        """
+        Access the target object of a certain property.
+
+        If the property is a section property the result is a list of :class:`~.Section` objects.
+
+        If the property is a value property the result is a single :class:`~.Value`.
+
+        :param key:     The name of the accessed property.
+        :type key:      str
+        :param default: The default value if the property does not exist.
+
+        :return:        A list of sections or a value
+        """
 
         def mk_section(ref):
             if ref.namespace is None:
@@ -106,9 +151,24 @@ class Section(collections.MutableMapping):
             refs = sec.section_properties[key]
             return [mk_section(ref) for ref in refs]
         else:
-            return None
+            return default
 
     def __getitem__(self, key):
+        """
+        Access the target of certain property.
+
+        If the property is a section property with a single section the result is a
+        :class:`~.Section` object for other section properties the result is a list of sections.
+
+        If the property points to an odml :class:`~.Value` the result is the values
+        :attr:`~.Value.value`.
+
+        :param key:     The name of the accessed property.
+        :type key:      str
+
+        :return:        Depending of the target a single section, a list of sections or
+                        the value of the targeted value object.
+        """
         element = self.get(key)
         if element is None:
             raise KeyError("Key '%s' not in section with uuid '%s'" % (key, self.uuid))
@@ -119,6 +179,26 @@ class Section(collections.MutableMapping):
         return element
 
     def __setitem__(self, key, element):
+        """
+        Set the target for a certain property. The target element can be either a
+        :class:`~.Section`, :class:`~.SB`, :class:`~.Value` or any allowed value
+        type.
+
+        If the element is a :class:`~.Section` the section is linked to this property if the
+        parent if it already exists in the document. Otherwise the section is copied.
+
+        If the element is a :class:`~.SB` object an analogous section will be created in
+        the document.
+
+        If the element is a :class:`~.Value` the value is used as target for the property. In
+        all other cases a :class:`~.Value` object will be constructed from the element if this
+        is supported for the elements type.
+
+        :param key:         The name of the property.
+        :type key:          str
+        :param element:     The target element for the given property.
+        :type element:      any
+        """
         if key in self:
             del self[key]
         if isinstance(element, list):
@@ -140,6 +220,13 @@ class Section(collections.MutableMapping):
             sec.value_properties[key] = Value.from_obj(element)
 
     def __delitem__(self, key):
+        """
+        Remove a property from the section. If the property is a section property the whole
+        subtree of the document is removed.
+
+        :param key:     The name of the property to remove.
+        :type key:      str
+        """
         sec = self.document.back_end.sections[self.uuid]
         if key in sec.value_properties:
             del sec.value_properties[key]
@@ -149,18 +236,41 @@ class Section(collections.MutableMapping):
             raise KeyError("The section has no property with the name '%s'" % key)
 
     def __len__(self):
+        """
+        The number of properties in the section.
+
+        :rtype:         int
+        """
         sec = self.document.back_end.sections[self.uuid]
         return len(sec.value_properties) + len(sec.section_properties)
 
     def __iter__(self):
+        """
+        Iterate over all targets of all properties of the section. Depending on the property
+        the target is either a list of :class:`~.Section` objects or a :class:`~.Value`.
+
+        :return:        A generator over all property targets
+        """
         sec = self.document.back_end.sections[self.uuid]
         return itertools.chain(iter(sec.value_properties), iter(sec.section_properties))
 
     def items(self):
+        """
+        Iterate over all property, property target pairs of the section. Depending on the property
+        the target is either a list of :class:`~.Section` objects or a :class:`~.Value`.
+
+        :return:        A generator over all property, property target pairs
+        """
         for key in self:
             yield (key, self.get(key))
 
     def values(self):
+        """
+        Iterate over all targets of all properties of the section. Depending on the property
+        the target is either a list of :class:`~.Section` objects or a :class:`~.Value`.
+
+        :return:        A generator over all property targets
+        """
         for key in self:
             yield self.get(key)
 
@@ -223,7 +333,17 @@ class Section(collections.MutableMapping):
 
 class Value(object):
     """
-    An odML Value class
+    Create a new value.
+
+    If the values value is not a :class:`numbers.Number` unit and
+    uncertainty are expected to be None.
+
+    :param value:           The actual value of the value :-)
+    :type value:            bool | float | int | str | datetime | time
+    :param unit:            The SI unit of the value.
+    :type unit:             str
+    :param uncertainty:     The uncertainty of the value.
+    :type uncertainty:      float
     """
 
     def __init__(self, value, unit=None, uncertainty=None):
@@ -241,18 +361,30 @@ class Value(object):
 
     @property
     def value(self):
+        """
+        :type:      bool | float | int | str | datetime | time
+        """
         return self.__value
 
     @property
     def unit(self):
+        """
+        :type:      str
+        """
         return self.__unit
 
     @property
     def uncertainty(self):
+        """
+        :type:      float
+        """
         return self.__uncertainty
 
     @property
     def type(self):
+        """
+        The name of the values data type.
+        """
         if self.__type is None:
             for t, s in VALUE_TYPE_MAP.items():
                 if isinstance(self.value, t):
@@ -260,6 +392,26 @@ class Value(object):
         return self.__type
 
     def copy(self, value=None, unit=None, uncertainty=None):
+        """
+        Since values should be treated as immutable objects, the :meth:`~.Value.copy` method
+        can be used instead of setting the attributes of the value.
+
+        Just assign a modified copy:
+
+        .. code-block:: python
+
+            v = Value(10, unit="V")
+            v = v.copy(unit="mV")
+
+        :param value:           The actual value of the value (optional)
+        :type value:            bool | float | int | str | datetime | time
+        :param unit:            The SI unit of the value (optional)
+        :type unit:             str
+        :param uncertainty:     The uncertainty of the value (optional)
+        :type uncertainty:      float
+
+        :return:    A (modified) copy of the value.
+        """
         return Value(
             value if value is not None else self.value,
             unit if unit is not None else self.unit,
@@ -306,10 +458,22 @@ class Value(object):
         return u"".join(parts)
 
     def __repr__(self):
-        return str(self)
+        return "Value(value=%s, unit=%s, uncertainty=%s)" % (self.value, self.unit, self.uncertainty)
 
     @staticmethod
     def from_obj(thing):
+        """
+        Creates a value from all sorts of types of objects.
+
+        If the value is a sting like '10 +-0.001 mV' it will be parsed to an equivalent of ``Value(10, 'mV', 0.001)``
+
+        :param thing:   The object to create a value from.
+
+        :return:        The created value object.
+        :rtype:         :class:`~.Value`
+
+        :raises:        ValueError if the object can't be converted to a value.
+        """
         if isinstance(thing, six.string_types):
             match = VALUE_EXPR.match(thing)
             if match is None:
@@ -330,6 +494,14 @@ class Value(object):
 
 @python_2_unicode_compatible
 class NameSpace(object):
+    """
+    Create a new namespace object.
+
+    :param prefix:      The prefix used to reference the linked document.
+    :type prefix:       str
+    :param uri:         The URI or path to the linked document.
+    :type uri:          str
+    """
 
     def __init__(self, prefix, uri):
         assert_prefix(prefix)
@@ -339,13 +511,29 @@ class NameSpace(object):
 
     @property
     def prefix(self):
+        """
+        The prefix used to reference the linked document.
+
+        :type:      str
+        """
         return self.__prefix
 
     @property
     def uri(self):
+        """
+        The uri to the linked document.
+
+        :type:      str
+        """
         return self.__uri
 
     def get_document(self):
+        """
+        Try to open the document the uri of the name space points to.
+
+        :return:    The odML document the uri points to.
+        :rtype:     :class:`~.Document`
+        """
         if self.__doc is None:
             doc = odml2.Document()
             doc.load(self.uri, is_writable=False)
@@ -353,6 +541,25 @@ class NameSpace(object):
         return self.__doc
 
     def copy(self, prefix=None, uri=None):
+        """
+        Since instances of :class:`~.NameSpace` should be treated as immutable objects
+        the :meth:`~.NameSpace.copy` method can be used as an alternative to change the
+        objects attributes.
+
+        Just reassign a modified copy:
+
+        .. code-block:: python
+
+            ns = doc.namespaces["gnode"]
+            doc.namespaces["gnode"] = ns.copy(uri="gnode-terms.yml")
+
+        :param prefix:      The prefix used to reference the linked document.
+        :type prefix:       str
+        :param uri:         The URI or path to the linked document.
+        :type uri:          str
+
+        :return:            A (modified) copy of the name space.
+        """
         return NameSpace(
             str(prefix) if prefix is not None else self.__prefix,
             str(uri) if uri is not None else self.__uri
@@ -406,7 +613,16 @@ class NameSpaceMap(collections.MutableMapping):
 
 @python_2_unicode_compatible
 class TypeDef(object):
+    """
+    Creates a new type definition.
 
+    :param name:        The name of the type.
+    :type name:         str
+    :param definition:  The verbal definition of the type.
+    :type definition:   str
+    :param properties:  A set of property names.
+    :type properties:   frozenset[str]
+    """
     def __init__(self, name, definition=None, properties=frozenset()):
         assert_name(name)
         for p in properties:
@@ -455,6 +671,9 @@ class TypeDefMap(collections.MutableMapping):
     def __init__(self, back_end):
         self.__back_end = back_end
 
+    def set(self, name, definition=None, properties=frozenset()):
+        self[name] = TypeDef(name, definition, properties)
+
     def __len__(self):
         return len(self.__back_end.type_defs)
 
@@ -479,6 +698,17 @@ class TypeDefMap(collections.MutableMapping):
 
 @python_2_unicode_compatible
 class PropertyDef(object):
+    """
+    Crates a new property definition.
+
+    :param name:        The name of the property.
+    :type name:         str
+    :param definition:  A verbal definition of the property.
+    :type definition:   str
+    :param types:       A set of type names (names of types that can be used as
+                        target / 'rvalue') of the property.
+    :type types:        frozenset[str]
+    """
 
     def __init__(self, name, definition=None, types=frozenset()):
         assert_name(name)
@@ -527,6 +757,9 @@ class PropertyDefMap(collections.MutableMapping):
 
     def __init__(self, back_end):
         self.__back_end = back_end
+
+    def set(self, name, definition=None, types=frozenset()):
+        self[name] = PropertyDef(name, definition, types)
 
     def __len__(self):
         return len(self.__back_end.property_defs)
