@@ -4,4 +4,4 @@ Tutorial
 .. toctree::
    :maxdepth: 1
 
-   tut_document
+   tut_intro
