@@ -135,6 +135,7 @@ class StrictStrategy(BasicStrategy):
                              (prop, join_prefixed_name(source_prefix, source_type)))
 
         property_def = _get_prop_definition(document, property_prefix, prop)
+        target_prefix, target_type = split_prefixed_name(target_type)
         if target_type not in property_def.types:
             raise ValueError("The type '%s' is not defined for property '%s'" %
                              (target_type, join_prefixed_name(property_prefix, prop)))

@@ -13,7 +13,7 @@ import datetime as dt
 from uuid import uuid4
 
 from odml2.api import yml
-from odml2 import Document, Section, SB, Value
+from odml2 import Document, Section, SB, Value, TerminologyStrategy
 
 
 class TestSB(unittest.TestCase):
@@ -151,3 +151,23 @@ class TestSB(unittest.TestCase):
         self.assertEqual(stim02.get("duration"), Value(5, "ms"))
         self.assertEqual(stim02["current"], 0.8)
         self.assertEqual(stim02.get("current"), Value(0.8, "nA", 0.001))
+
+    def test_properties(self):
+        session = Document(strategy=TerminologyStrategy.Ignore)
+        session.namespaces.set("terms", "terms.yml")
+
+        session.root = SB(
+                "terms:RecordingSession",
+                **{
+                    "terms:session_nr": 42,
+                    "terms:recording_date": dt.date.today(),
+                    "terms:subject": SB(
+                            "terms:Animal",
+                            **{
+                                "terms:subject_id": 12,
+                                "terms:date_of_birth": dt.date(2015, 11, 25),
+                                "terms:species": "Mus musculus"
+                            }
+                    )
+                }
+        )

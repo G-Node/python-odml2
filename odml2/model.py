@@ -458,7 +458,7 @@ class Value(object):
         return u"".join(parts)
 
     def __repr__(self):
-        return str(self)
+        return "Value(value=%s, unit=%s, uncertainty=%s)" % (self.value, self.unit, self.uncertainty)
 
     @staticmethod
     def from_obj(thing):

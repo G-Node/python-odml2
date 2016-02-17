@@ -25,7 +25,7 @@ class SB(object):
         uuid = str(uuid) if uuid is not None else str(uuid4())
         assert_uuid(uuid)
         for p in properties:
-            assert_name(p)
+            assert_prefixed_name(p)
         self.type = type
         self.uuid = uuid
         self.label = label
