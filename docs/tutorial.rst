@@ -2,6 +2,8 @@ Tutorial
 ========
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   tut_intro
+    tut_intro
+    tut_advanced
+    tut_terms
