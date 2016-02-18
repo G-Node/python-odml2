@@ -8,15 +8,21 @@ As a prototype *Python odML 2* is not recommended for production use-cases.
 Installing the library
 ----------------------
 
-The first step is to clone the repository and `cd` into the directory:
+Make sure the following dependencies are installed:
+
+```bash
+pip install PyYAML requests sortedcontainers future six enum34 setuptools nose
+```
+
+
+Now clone the repository and `cd` into the directory:
 
 ```bash
 git clone git@github.com:G-Node/python-odml2.git
 cd python-odml2
 ```
 
-You should now run the tests in order to check whether all dependencies (setuptools, PyYAML, nose) are 
-installed on your system. 
+You should now run the tests in order to check whether everything works fine.
 
 ```
 python setup.py test
