@@ -24,14 +24,12 @@ Create a document with global information
         name="Dr. Doe Lab",
         researchers=[
             SB("Person",
-                label="Doe,
-                Jhon",
+                label="Doe, Jhon",
                 first_name="Jhon",
                 last_name="Doe"
             ),
             SB("Person",
-                label="Foo,
-                Bar",
+                label="Foo, Bar",
                 first_name="Bar",
                 last_name="Foo"
             )
