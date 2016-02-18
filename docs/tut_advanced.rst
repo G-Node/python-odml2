@@ -24,8 +24,8 @@ Create a document with global information
         name="Dr. Doe Lab",
         researchers=[
             SB("Person",
-                label="Doe, Jhon",
-                first_name="Jhon",
+                label="Doe, John",
+                first_name="John",
                 last_name="Doe"
             ),
             SB("Person",
@@ -86,8 +86,8 @@ Create a document with global information
       researchers:
       - type: Person
         uuid: 81dbf66f-80b5-444b-a57e-64868765a57d
-        label: Doe, Jhon
-        first_name: Jhon
+        label: Doe, John
+        first_name: John
         last_name: Doe
       - type: Person
         uuid: ddd2717c-de93-482b-90e0-b281b46ac1e0

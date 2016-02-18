@@ -10,6 +10,8 @@ The code in this tutorial can also be found in the `introduction ipython noteboo
 Create an empty document
 ------------------------
 
+Working with *odML 2* always starts the creation of an empty :class:`~.Document`.
+
 .. code-block:: python
 
     import datetime as dt
@@ -21,6 +23,14 @@ Create an empty document
 Basic document properties
 -------------------------
 
+Each *odML 2* document has a set basic attributes which provide additional information.
+Some of those are read-only and automatically set to a certain value.
+The attribute `location` for example is set when a document is loaded or saved,
+it is always none for newly created documents.
+Other attributes are writable and meant to be defined by the user.
+
+The following listing shows how those attributes can be accessed:
+
 .. code-block:: python
 
     # automatically filled properties
@@ -29,7 +39,7 @@ Basic document properties
     print("doc.location: %s" % doc.location)
 
     # user defined properties
-    doc.author = "Jhon Doe"
+    doc.author = "John Doe"
     doc.version = 3
     doc.date = dt.datetime.now()
 
@@ -39,6 +49,14 @@ Basic document properties
 
 odML value objects
 ------------------
+
+In *odML 2* all values of non section properties are represented as :class:`~.Value` objects.
+In most places where :class:`~.Value` objects are expected as an argument one can also use a plain literal
+or variable of the respective type.
+But if one wants to define with values additional information such as `unit` or `uncertainty` it useful
+to know how to use them.
+
+The following codes shows how values can be created:
 
 .. code-block:: python
 
@@ -52,9 +70,24 @@ odML value objects
     v = Value.from_obj("42 +-0.002 mV")
     print(repr(v))
 
+:class:`~.Value` objects are immutable. If one needs a modified instance of a certain value the :meth:`~.Value.copy`
+method can used.
+
+.. code-block:: python
+
+    v = v.copy(unit="V")
+
+:class:`~.Value` objects can further be hashed (and therefore be used as keys in dicts) and support all kinds of
+comparison operations.
 
 Add a section as document root
 ------------------------------
+
+To populate an *odML 2* document with metadata one has to create a root :class:`~.Section` which represents
+the entry point to the metadata.
+:class:`~.Section` instances are usually not created directly.
+Instead the section builder class :class:`~.SB` can be used.
+It provides a much more convenient and less verbose way to create sections and even entire metadata structures.
 
 .. code-block:: python
 
@@ -65,6 +98,12 @@ Add a section as document root
 Add add properties to a section
 -------------------------------
 
+A :class:`~.Section` is basically a dict or map of properties.
+There are two different kinds of properties: value properties point to a single :class:`~.Value`,
+whereas section properties point o one or many child :class:`~.Section` objects.
+
+The following example shows how both kinds of properties can be added to a to a parent section:
+
 .. code-block:: python
 
     sec = doc.root
@@ -73,7 +112,7 @@ Add add properties to a section
     sec["time_delay"] = Value(10, unit="ms", uncertainty=0.001)
     sec["experimenter"] = SB(
             "Person",
-            first_name="Jhon",
+            first_name="John",
             last_name="Doe"
     )
 
@@ -81,27 +120,40 @@ Add add properties to a section
 Access section properties
 -------------------------
 
+Although a section can be seen as a dict with values being either lists of sections or single :class:`~.Value` objects,
+the :class:`~.Section` class acts a bit differently in order to make some common uses-cases a bit easier.
+
 .. code-block:: python
 
     sec["recording_date"]
+
+If a value property is accessed via `square brackets`, the section does actually not return the :class:`~.Value` object,
+but instead the values value.
+In the above example the returned value would be the a date.
 
 .. code-block:: python
 
     sec.get("recording_date")
 
+In contrast to the `square brackets` operator the :meth:`~.Section.get` method returns always the :class:`~.Section` object
+(if it's a value property.
+
 .. code-block:: python
 
     sec["experimenter"]
 
-.. code-block:: python
-
-    exp = sec["experimenter"]
-    print(exp["first_name"])
-    print(exp["last_name"])
+If a section property is accessed via `square brackets` the returned object is either a list of sections or a single
+section (in cases where the property points to a list of sections with only one entry).
 
 .. code-block:: python
 
     sec.get("experimenter")
+
+The :meth:`~.Section.get` method returns always a list of sections when it is used to access a section property.
+
+Generally accessing properties via `square brackets` is more convenient, especially if the type of a property is
+already known.
+Access via :meth:`~.Section.get` in contrast is more reliable and should be used when unknown documents are processed.
 
 Save the odML document
 ----------------------
@@ -118,7 +170,7 @@ Save the odML document
     date: 2016-02-17 11:59:15.587085
     document_version: 3
     format_version: 2
-    author: Jhon Doe
+    author: John Doe
     namespaces: null
     definitions: null
     metadata:
@@ -129,7 +181,7 @@ Save the odML document
       experimenter:
         type: Person
         uuid: f1473908-6a84-420a-9c25-d288a44715ef
-        first_name: Jhon
+        first_name: John
         last_name: Doe
 
 Load a document
