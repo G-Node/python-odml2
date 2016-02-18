@@ -713,7 +713,7 @@ class PropertyDef(object):
     def __init__(self, name, definition=None, types=frozenset()):
         assert_name(name)
         for t in types:
-            assert_name(t)
+            assert_prefixed_name(t)
         self.__name = name
         self.__definition = definition
         self.__types = frozenset(types)
