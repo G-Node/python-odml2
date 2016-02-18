@@ -1,83 +1,72 @@
-# here starts the root section
+# some general document attributes
+date: 2016-02-18
+document_version: 3
+format_version: 2
 author: John Doe
-date: 2004-06-14T23:34:30
-# part of the file that contains all term definitions (may be empty)
-terms:
-  # definitions in the default name space (can be used without prefix)
-  default:
-    # list with definitions for sections and properties
-    # - definitions for sections must have an attribute 'type'
-    # - definitions for properties must have an attribute 'name'
-    - type: RecordingSession
-      definition: Something I do in the lab
-      properties:
-        - date
-        - experimenter
-        - stimuli
-    - name: date
-      defintition: The date something was created or an activity or event happened.
-      types:
-        - xsd:date
-        - xsd:dateTime
-    - name: experimenter
-      definition: The person conducting an experiment
-      types:
-        - gnode:Person
-    - name: stimuli
-      definition: The stimuli used in a recording session
-      types:
-        - PulseStimulus
-    - type: PulseStimulus
-      definition: Stimulus that injects a short pulse with a defined current
-      properties:
-        - offset
-        - duration
-        - current
-    - name: offset
-      definition: The temporal offset of a stimulus
-      types:
-        - xsd:float
-    - name: duration
-      definition: The duration of a stimulus
-      types:
-        - xsd:float
-    - name: current
-      definition: Electric current measured in ampere
-      types:
-        - xsd:float
-  # definitions in the gnode name space (located in another file) terms may only be
-  # used with the 'gnode:' prefix.
-  gnode: http://portal.g-node.org/odml/terminologies/v2.0/terminologies.xml
-# part of the file that contains the actual metadata
-metadata:
-  type: RecordingSession
-  uuid: abef03
-  label: Session 1
-  # value property with just a as value literal
-  date: 2004-06-14T23:34:30
-  # section property pointing to one single section
+namespaces:
+  # Content of other documents made available under a certian namespace
+  gnode: http://portal.g-node.org/odml/terminologies/v2.0/terminologies.yml
+definitions:
+  # Therms defined in this document:
+  # property defninitios must have a property 'types'
+  current:
+    types:
+    - float
+  date:
+    types:
+    - date
+  duration:
+    types:
+    - int
   experimenter:
+    types:
+    # the type is prefixed with 'gnode' because it is defined in another document
+    - gnode:Person
+  lable:
+    types:
+    - string
+  offset:
+    types:
+    - int
+  stimuli:
+    types:
+    - PulseStimulus
+  # type definition must have a property 'properties'
+  PulseStimulus:
+    properties:
+    - current
+    - duration
+    - offset
+  RecordingSession:
+    properties:
+    - date
+    - lable
+    - stimuli
+    - experimenter
+metadata:
+  # here starts the root section of the document
+  type: RecordingSession
+  uuid: 6f3553ce-a249-4d4c-a055-71adb41eeed8
+  date: 2016-02-18
+  lable: session 12
+  experimenter:
+    # this is a subsection of type gnode:Person
     type: gnode:Person
-    uuid: def78ab
-    # a value property
+    uuid: b9882b57-8da7-49ab-b451-16b3420ec9d1
+    # the properties below alr also defined in another namespace
     gnode:first_name: John
     gnode:last_name: Doe
-    gnode:birthday: 1988-03-20
-  # section property pointing to two sections
   stimuli:
-    # here is the first section
-    - type: PulseStimulus
-      uuid: ad25feb
-      label: Pulse 1
-      # value proerties with composed values
-      offset: 10ms
-      duration: 5 ms
-      current: 0.6nA+-0.001
-    # here is the second section
-    - type: PulseStimulus
-      uuid: da37bd1
-      label: Pulse 2
-      # value properties with composed values
-      offset: 30 ms
-      duration: 5ms
-      current: 0.8nA±0.001
+    # this is a list of stimulus subsections
+  - type: PulseStimulus
+    uuid: 60bb99ee-55ee-4365-95dd-dc9078883918
+    label: pulse 1
+    current: 0.6+-0.001nA
+    duration: 5ms
+    offset: 10ms
+  - type: PulseStimulus
+    uuid: 24cda50e-2aea-44b4-9d50-8b12d61d5086
+    label: pulse 2
+    current: 0.8+-0.001nA
+    duration: 5ms
+    offset: 30ms
