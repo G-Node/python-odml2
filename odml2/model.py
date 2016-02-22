@@ -231,6 +231,9 @@ class Section(collections.MutableMapping):
         if key in sec.value_properties:
             del sec.value_properties[key]
         elif key in sec.section_properties:
+            for ref in sec.section_properties[key]:
+                if not ref.is_link and ref.uuid in self.document.back_end.sections:
+                    del self.document.back_end.sections[ref.uuid]
             del sec.section_properties[key]
         else:
             raise KeyError("The section has no property with the name '%s'" % key)
