@@ -56,10 +56,18 @@ def __ordered_dict_representer(dumper, od):
     nodes = [(dumper.represent_data(k), dumper.represent_data(v)) for k, v in od.items()]
     return yaml.nodes.MappingNode(u'tag:yaml.org,2002:map', nodes)
 
+yaml.add_representer(OrderedDict, __ordered_dict_representer)
+
 
 def __frozenset_representer(dumper, fs):
     nodes = [dumper.represent_data(v) for v in fs]
     return yaml.nodes.SequenceNode(u'tag:yaml.org,2002:seq', nodes)
 
-yaml.add_representer(OrderedDict, __ordered_dict_representer)
 yaml.add_representer(frozenset, __frozenset_representer)
+
+if six.PY2:
+    def __unicode_dict_representer(_, ustr):
+        return yaml.nodes.ScalarNode(u'tag:yaml.org,2002:str', ustr)
+
+    # noinspection PyUnresolvedReferences
+    yaml.add_representer(unicode, __unicode_dict_representer)
