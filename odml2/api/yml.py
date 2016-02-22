@@ -66,8 +66,8 @@ def __frozenset_representer(dumper, fs):
 yaml.add_representer(frozenset, __frozenset_representer)
 
 if six.PY2:
-    def __unicode_dict_representer(_, ustr):
+    def __unicode_str_representer(_, ustr):
         return yaml.nodes.ScalarNode(u'tag:yaml.org,2002:str', ustr)
 
     # noinspection PyUnresolvedReferences
-    yaml.add_representer(unicode, __unicode_dict_representer)
+    yaml.add_representer(unicode, __unicode_str_representer)
