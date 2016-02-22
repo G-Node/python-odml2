@@ -234,7 +234,6 @@ class MemSectionMap(base.BaseSectionMap):
             self.__doc.set_root(uuid)
         elif parent_uuid is not None and parent_prop is not None:
             # add a new sub section
-            # TODO handle parents with namespace
             if uuid in self:
                 raise ValueError("A section with the given uuid '%s' does already exist" % uuid)
 
@@ -279,11 +278,13 @@ class MemSectionMap(base.BaseSectionMap):
             raise KeyError("A section with the given uuid '%s' does not exist" % uuid)
 
         def remove_with_subsections(section_id):
-            sec = self[section_id]
-            for refs in sec.section_properties.values():
+            for refs in self[section_id].section_properties.values():
                 for ref in refs:
                     if not ref.is_link:
                         remove_with_subsections(ref.uuid)
+            for sec in self.__sections.values():
+                for p, refs in sec.section_properties.items():
+                    sec.section_properties[p] = tuple(ref for ref in refs if ref.uuid != section_id)
             del self.__sections[section_id]
 
         remove_with_subsections(uuid)
