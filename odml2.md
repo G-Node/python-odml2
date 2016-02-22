@@ -14,14 +14,13 @@ Components of a odML2 document
 ###### Example:
 
 ```yaml
----
 date: 2004-06-14T23:34:30
 author: null
 document_version: null
 suggested_prefix: null
-namespaces: 
-definitions: 
-metadata:
+namespaces: null
+definitions: null
+metadata: null
 ```
 
 ### Namespaces
@@ -35,8 +34,8 @@ was included with the default namespace?
 
 ```yaml
 namespaces:
-	ephys: http://portal.g-node.org/odml/terminologies/v2.0/terminologies.yml
-	myterms: ../myterms.yml
+  ephys: http://portal.g-node.org/odml/terminologies/v2.0/terminologies.yml
+  myterms: ../myterms.yml
 ```
 
 ### Term definitions:
@@ -53,14 +52,14 @@ Properties might be prefixed with a namespace.
 
 ```yaml
 definitions:
-	RecordingSession:
-		definition: Something I do in the lab
-		properties:
-			- date
-			- experimenter
-			- ephys:stimuli
-	MinimalType:
-		properties: []
+  RecordingSession:
+    definition: Something I do in the lab
+    properties:
+    - date
+    - experimenter
+    - ephys:stimuli
+  MinimalType:
+    properties: []
 ```
 
 #### Property definition:
@@ -72,14 +71,14 @@ Section types might be prefixed with a namespace.
 
 ```yaml
 definitions:
-	date:
-		definition: The date something was created or an activity or event happened.
-		types:
-			- xsd:date
-        	- xsd:dateTime
-    experimenter:
-    	types:
-    		- ephys:Person
+  date:
+    definition: The date something was created or an activity or event happened.
+    types:
+    - xsd:date
+    - xsd:dateTime
+  experimenter:
+    types:
+    - ephys:Person
 ```
 
 ### Metadata
@@ -98,9 +97,9 @@ Metadata is stored in hierarchically grouped sections. Each section contains the
 
 ```yaml
 metadata:
-	type: RecordingSession
-	uuid: bar-bla-foo
-	label: Session 1
+  type: RecordingSession
+  uuid: bar-bla-foo
+  label: Session 1
 ```
 
 Further a section can have any number of arbitrary properties. 
@@ -118,13 +117,13 @@ The value of a composite value must be an integer or a float.
 
 ```yaml
 metadata:
-	type: RecordingSession
-	uuid: bar-bla-foo
-	label: Session 1
-	# this is a value property with a literal
-	date: 2004-06-14T23:34:30
-	# this is a value property with a composite value
-	duration: 5s+-0.001
+  type: RecordingSession
+  uuid: bar-bla-foo
+  label: Session 1
+  # this is a value property with a literal
+  date: 2004-06-14T23:34:30
+  # this is a value property with a composite value
+  duration: 5s+-0.001
 ```
 
 #### Section properties
