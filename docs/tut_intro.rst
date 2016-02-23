@@ -3,8 +3,6 @@ Introduction
 
 The code in this tutorial can also be found in the `introduction ipython notebook`_.
 
-*TODO* write some text for each code listing
-
 .. _introduction ipython notebook: https://github.com/G-Node/python-odml2/blob/master/docs/notebooks/tut_intro.ipynb
 
 Create an empty document
@@ -23,7 +21,7 @@ Working with *odML 2* always starts the creation of an empty :class:`~.Document`
 Basic document properties
 -------------------------
 
-Each *odML 2* document has a set basic attributes which provide additional information.
+Each *odML 2* document has a set of basic attributes which provide additional information.
 Some of those are read-only and automatically set to a certain value.
 The attribute `location` for example is set when a document is loaded or saved,
 it is always none for newly created documents.
@@ -53,7 +51,7 @@ odML value objects
 In *odML 2* all values of non section properties are represented as :class:`~.Value` objects.
 In most places where :class:`~.Value` objects are expected as an argument one can also use a plain literal
 or variable of the respective type.
-But if one wants to define with values additional information such as `unit` or `uncertainty` it useful
+But if one wants to define with values additional information such as `unit` or `uncertainty` it is useful
 to know how to use them.
 
 The following codes shows how values can be created:
@@ -95,14 +93,14 @@ It provides a much more convenient and less verbose way to create sections and e
     doc.root
 
 
-Add add properties to a section
--------------------------------
+Add properties to a section
+---------------------------
 
 A :class:`~.Section` is basically a dict or map of properties.
 There are two different kinds of properties: value properties point to a single :class:`~.Value`,
-whereas section properties point o one or many child :class:`~.Section` objects.
+whereas section properties point to one or many child :class:`~.Section` objects.
 
-The following example shows how both kinds of properties can be added to a to a parent section:
+The following example shows how both kinds of properties can be added to a parent section:
 
 .. code-block:: python
 
@@ -135,8 +133,8 @@ In the above example the returned value would be the a date.
 
     sec.get("recording_date")
 
-In contrast to the `square brackets` operator the :meth:`~.Section.get` method returns always the :class:`~.Section` object
-(if it's a value property.
+In contrast to the `square brackets` operator the :meth:`~.Section.get` method returns always the :class:`~.Value` object
+(if it's a value property).
 
 .. code-block:: python
 

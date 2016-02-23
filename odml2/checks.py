@@ -63,7 +63,7 @@ def is_prefixed_name(name):
     return PREFIX_NAME_EXP.match(name) is not None
 
 
-def assert_prefixed_name(name, msg="A prefixed name must contains only alphanumeric characters and _ or - \n" +
+def assert_prefixed_name(name, msg="A prefixed name must contain only alphanumeric characters and _ or - \n" +
                                    "the optional prefix is separated by a ':' character"):
     if not is_prefixed_name(name):
         raise ValueError(msg)

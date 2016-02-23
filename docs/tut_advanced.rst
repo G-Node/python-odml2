@@ -1,7 +1,7 @@
 Advanced Tutorial
 =================
 
-he code in this tutorial can also be found in the `advanced ipython notebook`_.
+The code in this tutorial can also be found in the `advanced ipython notebook`_.
 
 *TODO* write some text for each code listing
 
@@ -109,8 +109,8 @@ Select data from documents
     animal = (a for a in glob.root["animals"]
               if a["subject_id"] == 11).next()
 
-Crate a document with session information
------------------------------------------
+Create a document with session information
+------------------------------------------
 
 .. code-block:: python
 
