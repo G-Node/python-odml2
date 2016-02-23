@@ -159,13 +159,13 @@ Make sure a document sticks to known terms
         )
     except Exception as e:
         print(e.message)
-        print("Does not work because no terms are not defined")
+        print("Does not work because no terms are defined")
 
 ::
 
 
     The namespace 'terms:RecordingSession' is not known in this document
-    Does not work because no terms are not defined
+    Does not work because no terms are defined
 
 .. code-block:: python
 
@@ -192,9 +192,9 @@ Make sure a document sticks to known terms
         session.root["quality_level"] = "medium"
     except Exception as e:
         print(e.message)
-        print("Does not work because no property is not defined")
+        print("Does not work because no property is defined")
 
 ::
 
     The property 'quality_level' is not defined for type 'terms:RecordingSession'
-    Does not work because no property is not defined
+    Does not work because no property is defined
