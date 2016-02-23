@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="Tutorial" href="tutorial.html" />
+    <link rel="next" title="Advanced Tutorial" href="tut_advanced.html" />
+    <link rel="prev" title="Tutorial" href="tutorial.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_advanced.html" title="Advanced Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>The code in this tutorial can also be found in the <a class="reference external" href="https://github.com/G-Node/python-odml2/blob/master/docs/notebooks/tut_intro.ipynb">introduction ipython notebook</a>.</p>
+<div class="section" id="create-an-empty-document">
+<h2>Create an empty document<a class="headerlink" href="#create-an-empty-document" title="Permalink to this headline">¶</a></h2>
+<p>Working with <em>odML 2</em> always starts the creation of an empty <a class="reference internal" href="api_document.html#odml2.Document" title="odml2.Document"><tt class="xref py py-class docutils literal"><span class="pre">Document</span></tt></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+<span class="kn">from</span> <span class="nn">odml2</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">Value</span>
+
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="basic-document-properties">
+<h2>Basic document properties<a class="headerlink" href="#basic-document-properties" title="Permalink to this headline">¶</a></h2>
+<p>Each <em>odML 2</em> document has a set of basic attributes which provide additional information.
+Some of those are read-only and automatically set to a certain value.
+The attribute <cite>location</cite> for example is set when a document is loaded or saved,
+it is always none for newly created documents.
+Other attributes are writable and meant to be defined by the user.</p>
+<p>The following listing shows how those attributes can be accessed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># automatically filled properties</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;doc.is_writable: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">is_writable</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;doc.is_attached: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">is_attached</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;doc.location: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">location</span><span class="p">)</span>
+
+<span class="c"># user defined properties</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">author</span> <span class="o">=</span> <span class="s">&quot;John Doe&quot;</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;doc.author: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">author</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;doc.version: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;doc.date: </span><span class="si">%s</span><span class="s">&quot;</span> <span class="o">%</span> <span class="n">doc</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="odml-value-objects">
+<h2>odML value objects<a class="headerlink" href="#odml-value-objects" title="Permalink to this headline">¶</a></h2>
+<p>In <em>odML 2</em> all values of non section properties are represented as <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> objects.
+In most places where <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> objects are expected as an argument one can also use a plain literal
+or variable of the respective type.
+But if one wants to define with values additional information such as <cite>unit</cite> or <cite>uncertainty</cite> it is useful
+to know how to use them.</p>
+<p>The following codes shows how values can be created:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">v</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s">&quot;µm&quot;</span><span class="p">,</span> <span class="n">uncertainty</span><span class="o">=</span><span class="mf">0.002</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+
+<span class="n">v</span> <span class="o">=</span> <span class="n">Value</span><span class="o">.</span><span class="n">from_obj</span><span class="p">(</span><span class="s">&quot;42 +-0.002 mV&quot;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> objects are immutable. If one needs a modified instance of a certain value the <a class="reference internal" href="api_value.html#odml2.Value.copy" title="odml2.Value.copy"><tt class="xref py py-meth docutils literal"><span class="pre">copy()</span></tt></a>
+method can used.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s">&quot;V&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> objects can further be hashed (and therefore be used as keys in dicts) and support all kinds of
+comparison operations.</p>
+</div>
+<div class="section" id="add-a-section-as-document-root">
+<h2>Add a section as document root<a class="headerlink" href="#add-a-section-as-document-root" title="Permalink to this headline">¶</a></h2>
+<p>To populate an <em>odML 2</em> document with metadata one has to create a root <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> which represents
+the entry point to the metadata.
+<a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> instances are usually not created directly.
+Instead the section builder class <a class="reference internal" href="api_section.html#odml2.SB" title="odml2.SB"><tt class="xref py py-class docutils literal"><span class="pre">SB</span></tt></a> can be used.
+It provides a much more convenient and less verbose way to create sections and even entire metadata structures.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span><span class="s">&quot;RecordingSession&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s">&quot;session 2&quot;</span><span class="p">)</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">root</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="add-properties-to-a-section">
+<h2>Add properties to a section<a class="headerlink" href="#add-properties-to-a-section" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> is basically a dict or map of properties.
+There are two different kinds of properties: value properties point to a single <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a>,
+whereas section properties point to one or many child <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> objects.</p>
+<p>The following example shows how both kinds of properties can be added to a parent section:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sec</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">root</span>
+
+<span class="n">sec</span><span class="p">[</span><span class="s">&quot;recording_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="n">sec</span><span class="p">[</span><span class="s">&quot;time_delay&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s">&quot;ms&quot;</span><span class="p">,</span> <span class="n">uncertainty</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">sec</span><span class="p">[</span><span class="s">&quot;experimenter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span>
+        <span class="s">&quot;Person&quot;</span><span class="p">,</span>
+        <span class="n">first_name</span><span class="o">=</span><span class="s">&quot;John&quot;</span><span class="p">,</span>
+        <span class="n">last_name</span><span class="o">=</span><span class="s">&quot;Doe&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="access-section-properties">
+<h2>Access section properties<a class="headerlink" href="#access-section-properties" title="Permalink to this headline">¶</a></h2>
+<p>Although a section can be seen as a dict with values being either lists of sections or single <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> objects,
+the <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> class acts a bit differently in order to make some common uses-cases a bit easier.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sec</span><span class="p">[</span><span class="s">&quot;recording_date&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If a value property is accessed via <cite>square brackets</cite>, the section does actually not return the <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> object,
+but instead the values value.
+In the above example the returned value would be the a date.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;recording_date&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In contrast to the <cite>square brackets</cite> operator the <a class="reference internal" href="api_section.html#odml2.Section.get" title="odml2.Section.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a> method returns always the <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> object
+(if it&#8217;s a value property).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sec</span><span class="p">[</span><span class="s">&quot;experimenter&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>If a section property is accessed via <cite>square brackets</cite> the returned object is either a list of sections or a single
+section (in cases where the property points to a list of sections with only one entry).</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">sec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;experimenter&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <a class="reference internal" href="api_section.html#odml2.Section.get" title="odml2.Section.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a> method returns always a list of sections when it is used to access a section property.</p>
+<p>Generally accessing properties via <cite>square brackets</cite> is more convenient, especially if the type of a property is
+already known.
+Access via <a class="reference internal" href="api_section.html#odml2.Section.get" title="odml2.Section.get"><tt class="xref py py-meth docutils literal"><span class="pre">get()</span></tt></a> in contrast is more reliable and should be used when unknown documents are processed.</p>
+</div>
+<div class="section" id="save-the-odml-document">
+<h2>Save the odML document<a class="headerlink" href="#save-the-odml-document" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">doc</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;intro.yml&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;intro.yml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>date: 2016-02-17 11:59:15.587085
+document_version: 3
+format_version: 2
+author: John Doe
+namespaces: null
+definitions: null
+metadata:
+  type: RecordingSession
+  uuid: 941350b3-a4e9-42d1-ad76-85def35120b0
+  label: session 2
+  recording_date: 2016-02-17
+  experimenter:
+    type: Person
+    uuid: f1473908-6a84-420a-9c25-d288a44715ef
+    first_name: John
+    last_name: Doe
+</pre></div>
+</div>
+</div>
+<div class="section" id="load-a-document">
+<h2>Load a document<a class="headerlink" href="#load-a-document" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">new_doc</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+<span class="n">new_doc</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;intro.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_advanced.html">Advanced Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_terms.html">Terminology Tutorial</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="apidoc.html">API Documentation</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/tut_intro.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

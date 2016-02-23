@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>NameSpace API &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="apidoc.html" />
+    <link rel="next" title="Terminology API" href="api_terms.html" />
+    <link rel="prev" title="Value API" href="api_value.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api_terms.html" title="Terminology API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api_value.html" title="Value API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="apidoc.html" accesskey="U">API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="namespace-api">
+<h1>NameSpace API<a class="headerlink" href="#namespace-api" title="Permalink to this headline">¶</a></h1>
+<p>A names pace makes content from an odML document available in other documents. A name space
+object therefore provided an URI to the odML document to include and a prefix. The prefix
+can be used to address content from the included document from the referencing one.</p>
+<dl class="class">
+<dt id="odml2.NameSpace">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">NameSpace</tt><big>(</big><em>prefix</em>, <em>uri</em><big>)</big><a class="headerlink" href="#odml2.NameSpace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new namespace object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The prefix used to reference the linked document.</li>
+<li><strong>uri</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The URI or path to the linked document.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="odml2.NameSpace.copy">
+<tt class="descname">copy</tt><big>(</big><em>prefix=None</em>, <em>uri=None</em><big>)</big><a class="headerlink" href="#odml2.NameSpace.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Since instances of <a class="reference internal" href="#odml2.NameSpace" title="odml2.NameSpace"><tt class="xref py py-class docutils literal"><span class="pre">NameSpace</span></tt></a> should be treated as immutable objects
+the <a class="reference internal" href="#odml2.NameSpace.copy" title="odml2.NameSpace.copy"><tt class="xref py py-meth docutils literal"><span class="pre">copy()</span></tt></a> method can be used as an alternative to change the
+objects attributes.</p>
+<p>Just reassign a modified copy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">ns</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="s">&quot;gnode&quot;</span><span class="p">]</span>
+<span class="n">doc</span><span class="o">.</span><span class="n">namespaces</span><span class="p">[</span><span class="s">&quot;gnode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ns</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="s">&quot;gnode-terms.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prefix</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The prefix used to reference the linked document.</li>
+<li><strong>uri</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The URI or path to the linked document.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A (modified) copy of the name space.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpace.get_document">
+<tt class="descname">get_document</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.NameSpace.get_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Try to open the document the uri of the name space points to.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The odML document the uri points to.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="api_document.html#odml2.Document" title="odml2.Document"><tt class="xref py py-class docutils literal"><span class="pre">Document</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.NameSpace.prefix">
+<tt class="descname">prefix</tt><a class="headerlink" href="#odml2.NameSpace.prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The prefix used to reference the linked document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.NameSpace.uri">
+<tt class="descname">uri</tt><a class="headerlink" href="#odml2.NameSpace.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The uri to the linked document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="apidoc.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_document.html">Document API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_section.html">Section API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_value.html">Value API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">NameSpace API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_terms.html">Terminology API</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/api_name_space.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

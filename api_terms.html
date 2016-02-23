@@ -1,0 +1,236 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Terminology API &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="apidoc.html" />
+    <link rel="prev" title="NameSpace API" href="api_name_space.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api_name_space.html" title="NameSpace API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="apidoc.html" accesskey="U">API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="terminology-api">
+<h1>Terminology API<a class="headerlink" href="#terminology-api" title="Permalink to this headline">¶</a></h1>
+<p>Besides storing metadata odML also provides means to define the terms used in doML documents
+in a terminology. Further the terminologies can even serve as schema like restrictions new
+documents have to adhere to.</p>
+<p>In odML terminologies consist of two building blocks: type definitions (<a class="reference internal" href="#odml2.TypeDef" title="odml2.TypeDef"><tt class="xref py py-class docutils literal"><span class="pre">TypeDef</span></tt></a>) and
+property definitions (<a class="reference internal" href="#odml2.PropertyDef" title="odml2.PropertyDef"><tt class="xref py py-class docutils literal"><span class="pre">PropertyDef</span></tt></a>).</p>
+<div class="section" id="type-definition">
+<h2>Type definition<a class="headerlink" href="#type-definition" title="Permalink to this headline">¶</a></h2>
+<p>A type definitions describes the type of a thing an odML section can represent. For example: an
+experiment, recording session or subject.</p>
+<p>The most important part of a type definition is a good type name. It is recommended to use
+camel-case names that start with a capital letter e.g. &#8216;Experiment&#8217;, &#8216;RecordingSession&#8217;
+or &#8216;Subject&#8217;.</p>
+<p>In addition a type can have a textual description of the thing it represents.</p>
+<p>Finally a type definition can have a set of property names that defined common attributes
+of the type. The property names used in type definitions should have a corresponding
+property definition (<a class="reference internal" href="#odml2.PropertyDef" title="odml2.PropertyDef"><tt class="xref py py-class docutils literal"><span class="pre">PropertyDef</span></tt></a>).</p>
+<dl class="class">
+<dt id="odml2.TypeDef">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">TypeDef</tt><big>(</big><em>name</em>, <em>definition=None</em>, <em>properties=frozenset([])</em><big>)</big><a class="headerlink" href="#odml2.TypeDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new type definition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the type.</li>
+<li><strong>definition</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The verbal definition of the type.</li>
+<li><strong>properties</strong> (<em>frozenset[str]</em>) &#8211; A set of property names.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="odml2.TypeDef.copy">
+<tt class="descname">copy</tt><big>(</big><em>name=None</em>, <em>definition=None</em>, <em>properties=frozenset([])</em><big>)</big><a class="headerlink" href="#odml2.TypeDef.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.TypeDef.definition">
+<tt class="descname">definition</tt><a class="headerlink" href="#odml2.TypeDef.definition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.TypeDef.name">
+<tt class="descname">name</tt><a class="headerlink" href="#odml2.TypeDef.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.TypeDef.properties">
+<tt class="descname">properties</tt><a class="headerlink" href="#odml2.TypeDef.properties" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="property-definition">
+<h2>Property definition<a class="headerlink" href="#property-definition" title="Permalink to this headline">¶</a></h2>
+<p>A property definition describes a certain attribute of an odML type definition. The most
+essential part of a property definition is the properties name. It is recommended to use
+snake-case names that start with a lower letter: &#8216;recording_time&#8217;, &#8216;age&#8217; or &#8216;date_of_birth&#8217;.</p>
+<p>In addition a property can have a textual description of the attribute it represents.</p>
+<p>Further a property definition can have a set of type names associated with it. The type name
+must either be the name defined by another type definition or the type of a predefined data type
+for odML values: &#8216;string&#8217;, &#8216;bool&#8217;, &#8216;int&#8217;, &#8216;float&#8217;, &#8216;time&#8217;, &#8216;date&#8217; or &#8216;datetime&#8217;.</p>
+<dl class="class">
+<dt id="odml2.PropertyDef">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">PropertyDef</tt><big>(</big><em>name</em>, <em>definition=None</em>, <em>types=frozenset([])</em><big>)</big><a class="headerlink" href="#odml2.PropertyDef" title="Permalink to this definition">¶</a></dt>
+<dd><p>Crates a new property definition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>name</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the property.</li>
+<li><strong>definition</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; A verbal definition of the property.</li>
+<li><strong>types</strong> (<em>frozenset[str]</em>) &#8211; A set of type names (names of types that can be used as
+target / &#8216;rvalue&#8217;) of the property.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="odml2.PropertyDef.copy">
+<tt class="descname">copy</tt><big>(</big><em>name=None</em>, <em>definition=None</em>, <em>types=frozenset([])</em><big>)</big><a class="headerlink" href="#odml2.PropertyDef.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.PropertyDef.definition">
+<tt class="descname">definition</tt><a class="headerlink" href="#odml2.PropertyDef.definition" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.PropertyDef.name">
+<tt class="descname">name</tt><a class="headerlink" href="#odml2.PropertyDef.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.PropertyDef.types">
+<tt class="descname">types</tt><a class="headerlink" href="#odml2.PropertyDef.types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="apidoc.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_document.html">Document API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_section.html">Section API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_value.html">Value API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_name_space.html">NameSpace API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Terminology API</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/api_terms.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

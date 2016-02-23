@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Terminology Tutorial &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="Tutorial" href="tutorial.html" />
+    <link rel="next" title="API Documentation" href="apidoc.html" />
+    <link rel="prev" title="Advanced Tutorial" href="tut_advanced.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="apidoc.html" title="API Documentation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_advanced.html" title="Advanced Tutorial"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="terminology-tutorial">
+<h1>Terminology Tutorial<a class="headerlink" href="#terminology-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>The code in this tutorial can also be found in the <a class="reference external" href="https://github.com/G-Node/python-odml2/blob/master/docs/notebooks/tut_terms.ipynb">terminology ipython notebook</a>.</p>
+<p><em>TODO</em> write some text for each code listing</p>
+<div class="section" id="create-a-document-with-terms">
+<h2>Create a document with terms<a class="headerlink" href="#create-a-document-with-terms" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+<span class="kn">from</span> <span class="nn">odml2</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">TerminologyStrategy</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">Value</span>
+
+<span class="n">terms</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+
+<span class="c"># some section types with their properties</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">type_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;RecordingSession&quot;</span><span class="p">,</span>
+                           <span class="s">&quot;An experimental procedure&quot;</span><span class="p">,</span>
+                           <span class="n">properties</span><span class="o">=</span><span class="p">[</span>
+                                <span class="s">&quot;subject&quot;</span><span class="p">,</span>
+                                <span class="s">&quot;recording_date&quot;</span><span class="p">,</span>
+                                <span class="s">&quot;session_nr&quot;</span><span class="p">])</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">type_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;Animal&quot;</span><span class="p">,</span>
+                           <span class="s">&quot;A non human, animal individual&quot;</span><span class="p">,</span>
+                           <span class="n">properties</span><span class="o">=</span><span class="p">[</span>
+                                <span class="s">&quot;subject_id&quot;</span><span class="p">,</span>
+                                <span class="s">&quot;date_of_birth&quot;</span><span class="p">,</span>
+                                <span class="s">&quot;species&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># define properties with their types</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;subject&quot;</span><span class="p">,</span>
+                               <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;Animal&quot;</span><span class="p">])</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;session_nr&quot;</span><span class="p">,</span>
+                               <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;int&quot;</span><span class="p">])</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;recording_date&quot;</span><span class="p">,</span>
+                               <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;date&quot;</span><span class="p">,</span> <span class="s">&quot;datetime&quot;</span><span class="p">])</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;subject_id&quot;</span><span class="p">,</span>
+                               <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;int&quot;</span><span class="p">])</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;species&quot;</span><span class="p">,</span>
+                               <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;string&quot;</span><span class="p">])</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;date_of_birth&quot;</span><span class="p">,</span>
+                               <span class="n">types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;date&quot;</span><span class="p">,</span> <span class="s">&quot;datetime&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">terms</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;terms.yml&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;terms.yml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>date: null
+document_version: 1
+format_version: 2
+author: null
+namespaces: null
+definitions:
+  date_of_birth:
+    types:
+    - date
+    - datetime
+  recording_date:
+    types:
+    - date
+    - datetime
+  session_nr:
+    types:
+    - int
+  species:
+    types:
+    - string
+  subject:
+    types:
+    - Animal
+  subject_id:
+    types:
+    - int
+  Animal:
+    properties:
+    - subject_id
+    - date_of_birth
+    - species
+    definition: A non human, animal individual
+  RecordingSession:
+    properties:
+    - session_nr
+    - recording_date
+    - subject
+    definition: An experimental procedure
+metadata: null
+</pre></div>
+</div>
+</div>
+<div class="section" id="alter-existing-terms">
+<h2>Alter existing terms<a class="headerlink" href="#alter-existing-terms" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">recd</span> <span class="o">=</span> <span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="p">[</span><span class="s">&quot;recording_date&quot;</span><span class="p">]</span>
+<span class="n">terms</span><span class="o">.</span><span class="n">property_definitions</span><span class="p">[</span><span class="s">&quot;recording_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">recd</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">definition</span><span class="o">=</span><span class="s">&quot;Date of a recording&quot;</span><span class="p">)</span>
+
+<span class="n">terms</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;terms.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="use-terms-from-another-document">
+<h2>Use terms from another document<a class="headerlink" href="#use-terms-from-another-document" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">session</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">TerminologyStrategy</span><span class="o">.</span><span class="n">Ignore</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;terms&quot;</span><span class="p">,</span> <span class="s">&quot;terms.yml&quot;</span><span class="p">)</span>
+
+<span class="n">session</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span>
+    <span class="s">&quot;terms:RecordingSession&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="p">{</span>
+        <span class="s">&quot;terms:session_nr&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+        <span class="s">&quot;terms:recording_date&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
+        <span class="s">&quot;terms:subject&quot;</span><span class="p">:</span> <span class="n">SB</span><span class="p">(</span>
+            <span class="s">&quot;terms:Animal&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="s">&quot;terms:subject_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="s">&quot;terms:date_of_birth&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="s">&quot;terms:species&quot;</span><span class="p">:</span> <span class="s">&quot;Mus musculus&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c"># It&#39;s ok to add things not defined in a terminology</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;quality_level&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;medium&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="make-sure-a-document-sticks-to-known-terms">
+<h2>Make sure a document sticks to known terms<a class="headerlink" href="#make-sure-a-document-sticks-to-known-terms" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">session</span> <span class="o">=</span> <span class="n">Document</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="n">TerminologyStrategy</span><span class="o">.</span><span class="n">Strict</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span>
+        <span class="s">&quot;terms:RecordingSession&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="p">{</span>
+            <span class="s">&quot;terms:session_nr&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+            <span class="s">&quot;terms:recording_date&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
+            <span class="s">&quot;terms:subject&quot;</span><span class="p">:</span> <span class="n">SB</span><span class="p">(</span>
+                <span class="s">&quot;terms:Animal&quot;</span><span class="p">,</span>
+                <span class="o">**</span><span class="p">{</span>
+                    <span class="s">&quot;terms:subject_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                    <span class="s">&quot;terms:date_of_birth&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                    <span class="s">&quot;terms:species&quot;</span><span class="p">:</span> <span class="s">&quot;Mus musculus&quot;</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Does not work because no terms are defined&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>The namespace &#39;terms:RecordingSession&#39; is not known in this document
+Does not work because no terms are defined
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">session</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;terms&quot;</span><span class="p">,</span> <span class="s">&quot;terms.yml&quot;</span><span class="p">)</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span>
+    <span class="s">&quot;terms:RecordingSession&quot;</span><span class="p">,</span>
+    <span class="o">**</span><span class="p">{</span>
+        <span class="s">&quot;terms:session_nr&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+        <span class="s">&quot;terms:recording_date&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span>
+        <span class="s">&quot;terms:subject&quot;</span><span class="p">:</span> <span class="n">SB</span><span class="p">(</span>
+            <span class="s">&quot;terms:Animal&quot;</span><span class="p">,</span>
+            <span class="o">**</span><span class="p">{</span>
+                <span class="s">&quot;terms:subject_id&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+                <span class="s">&quot;terms:date_of_birth&quot;</span><span class="p">:</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="s">&quot;terms:species&quot;</span><span class="p">:</span> <span class="s">&quot;Mus musculus&quot;</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">try</span><span class="p">:</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;quality_level&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;medium&quot;</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;Does not work because no property is defined&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>The property &#39;quality_level&#39; is not defined for type &#39;terms:RecordingSession&#39;
+Does not work because no property is defined
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tut_intro.html">Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_advanced.html">Advanced Tutorial</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Terminology Tutorial</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="apidoc.html">API Documentation</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/tut_terms.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

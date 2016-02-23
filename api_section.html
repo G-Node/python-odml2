@@ -1,0 +1,391 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Section API &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="apidoc.html" />
+    <link rel="next" title="Value API" href="api_value.html" />
+    <link rel="prev" title="Document API" href="api_document.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api_value.html" title="Value API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api_document.html" title="Document API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="apidoc.html" accesskey="U">API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="section-api">
+<h1>Section API<a class="headerlink" href="#section-api" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="odml2.Section">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">Section</tt><big>(</big><em>uuid</em>, <em>document</em>, <em>is_link=False</em><big>)</big><a class="headerlink" href="#odml2.Section" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>NOTICE</em>: Section initialization is usually done by the API</p>
+<dl class="method">
+<dt id="Section.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#Section.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all property names (keys)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#odml2.Section.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a property from the section. If the property is a section property the whole
+subtree of the document is removed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the property to remove.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>key</em><big>)</big><a class="headerlink" href="#odml2.Section.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access the target of certain property.</p>
+<p>If the property is a section property with a single section the result is a
+<a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> object for other section properties the result is a list of sections.</p>
+<p>If the property points to an odml <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> the result is the values
+<a class="reference internal" href="api_value.html#odml2.Value.value" title="odml2.Value.value"><tt class="xref py py-attr docutils literal"><span class="pre">value</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>key</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the accessed property.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Depending of the target a single section, a list of sections or
+the value of the targeted value object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.Section.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all targets of all properties of the section. Depending on the property
+the target is either a list of <a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> objects or a <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A generator over all property targets</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.__len__">
+<tt class="descname">__len__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.Section.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of properties in the section.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>key</em>, <em>element</em><big>)</big><a class="headerlink" href="#odml2.Section.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the target for a certain property. The target element can be either a
+<a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a>, <a class="reference internal" href="#odml2.SB" title="odml2.SB"><tt class="xref py py-class docutils literal"><span class="pre">SB</span></tt></a>, <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> or any allowed value
+type.</p>
+<p>If the element is a <a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> the section is linked to this property if the
+parent if it already exists in the document. Otherwise the section is copied.</p>
+<p>If the element is a <a class="reference internal" href="#odml2.SB" title="odml2.SB"><tt class="xref py py-class docutils literal"><span class="pre">SB</span></tt></a> object an analogous section will be created in
+the document.</p>
+<p>If the element is a <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> the value is used as target for the property. In
+all other cases a <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a> object will be constructed from the element if this
+is supported for the elements type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>key</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the property.</li>
+<li><strong>element</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#any" title="(in Python v2.7)"><em>any</em></a>) &#8211; The target element for the given property.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Section.document">
+<tt class="descname">document</tt><a class="headerlink" href="#odml2.Section.document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reference to the document the section belongs to.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="api_document.html#odml2.Document" title="odml2.Document"><tt class="xref py py-class docutils literal"><span class="pre">Document</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.get">
+<tt class="descname">get</tt><big>(</big><em>key</em>, <em>default=None</em><big>)</big><a class="headerlink" href="#odml2.Section.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Access the target object of a certain property.</p>
+<p>If the property is a section property the result is a list of <a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> objects.</p>
+<p>If the property is a value property the result is a single <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>key</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The name of the accessed property.</li>
+<li><strong>default</strong> &#8211; The default value if the property does not exist.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of sections or a value</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Section.is_link">
+<tt class="descname">is_link</tt><a class="headerlink" href="#odml2.Section.is_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or not the section is a link. Depending on the parent from which the section
+was accessed the same section can be a link or not a link.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.items">
+<tt class="descname">items</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.Section.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all property, property target pairs of the section. Depending on the property
+the target is either a list of <a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> objects or a <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A generator over all property, property target pairs</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Section.label">
+<tt class="descname">label</tt><a class="headerlink" href="#odml2.Section.label" title="Permalink to this definition">¶</a></dt>
+<dd><p>The label of the section. The label is an optional, human readable identifier of
+a section.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Section.reference">
+<tt class="descname">reference</tt><a class="headerlink" href="#odml2.Section.reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>An URI or path to other data related to this specific section.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Section.type">
+<tt class="descname">type</tt><a class="headerlink" href="#odml2.Section.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of the section. The type names the kind of thing the section represents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Section.uuid">
+<tt class="descname">uuid</tt><a class="headerlink" href="#odml2.Section.uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>The uuid of the section. This is a read only property.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Section.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.Section.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all targets of all properties of the section. Depending on the property
+the target is either a list of <a class="reference internal" href="#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> objects or a <a class="reference internal" href="api_value.html#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A generator over all property targets</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="the-section-builder-sb">
+<h2>The section builder <a class="reference internal" href="#odml2.SB" title="odml2.SB"><tt class="xref py py-class docutils literal"><span class="pre">SB</span></tt></a><a class="headerlink" href="#the-section-builder-sb" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="odml2.SB">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">SB</tt><big>(</big><em>type</em>, <em>uuid=None</em>, <em>label=None</em>, <em>reference=None</em>, <em>**properties</em><big>)</big><a class="headerlink" href="#odml2.SB" title="Permalink to this definition">¶</a></dt>
+<dd><p>A section builder</p>
+<dl class="method">
+<dt id="odml2.SB.build">
+<tt class="descname">build</tt><big>(</big><em>document</em>, <em>parent_uuid=None</em>, <em>parent_prop=None</em><big>)</big><a class="headerlink" href="#odml2.SB.build" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="apidoc.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_document.html">Document API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Section API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_value.html">Value API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_name_space.html">NameSpace API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_terms.html">Terminology API</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/api_section.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

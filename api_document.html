@@ -1,0 +1,649 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Document API &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="apidoc.html" />
+    <link rel="next" title="Section API" href="api_section.html" />
+    <link rel="prev" title="API Documentation" href="apidoc.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api_section.html" title="Section API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="apidoc.html" title="API Documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="apidoc.html" accesskey="U">API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="document-api">
+<h1>Document API<a class="headerlink" href="#document-api" title="Permalink to this headline">¶</a></h1>
+<p>Representation of an odML document.
+Depending on the used back-end an odML document can either be attached to a certain
+data source (e.g. a data base) or it can be detached.
+Attached documents persist changes immediately to the respective data source while detached
+documents write data only when <a class="reference internal" href="#odml2.Document.save" title="odml2.Document.save"><tt class="xref py py-meth docutils literal"><span class="pre">save()</span></tt></a> is called.</p>
+<dl class="class">
+<dt id="odml2.Document">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">Document</tt><big>(</big><em>back_end='yaml'</em>, <em>strategy=TerminologyStrategy.Ignore</em><big>)</big><a class="headerlink" href="#odml2.Document" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>back_end</strong> (str | <tt class="xref py py-class docutils literal"><span class="pre">odml2.api.base.BaseDocument</span></tt>) &#8211; The name of the back-end to use for this document or a back-end instance.</li>
+<li><strong>strategy</strong> (<a class="reference internal" href="#odml.TerminologyStrategy" title="odml.TerminologyStrategy"><tt class="xref py py-class docutils literal"><span class="pre">TerminologyStrategy</span></tt></a>) &#8211; How to deal with definitions and terminologies.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="odml2.Document.author">
+<tt class="descname">author</tt><a class="headerlink" href="#odml2.Document.author" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the documents author. Is <cite>None</cite> if not specified otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.back_end">
+<tt class="descname">back_end</tt><a class="headerlink" href="#odml2.Document.back_end" title="Permalink to this definition">¶</a></dt>
+<dd><p>The back-end used by a document.</p>
+<p><em>NOTICE</em>: This is mostly for internal use.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><tt class="xref py py-class docutils literal"><span class="pre">odml2.api.base.BaseDocument</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Document.create_root">
+<tt class="descname">create_root</tt><big>(</big><em>type</em>, <em>uuid</em>, <em>label=None</em>, <em>reference=None</em><big>)</big><a class="headerlink" href="#odml2.Document.create_root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an empty root section. If the document already contains sections the whole content
+of the document will be replaces with the new root.</p>
+<p><em>NOTICE:</em> This method is primarily for internal use (see <a class="reference internal" href="#odml2.Document.root" title="odml2.Document.root"><tt class="xref py py-attr docutils literal"><span class="pre">root</span></tt></a> as alternative)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>type</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The odML type name of the new section.</li>
+<li><strong>uuid</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The uuid of the section.</li>
+<li><strong>label</strong> (<em>str|None</em>) &#8211; The label (a human readable identifier) of the section</li>
+<li><strong>reference</strong> (<em>str|None</em>) &#8211; A uri or path to other data referenced by this section.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.date">
+<tt class="descname">date</tt><a class="headerlink" href="#odml2.Document.date" title="Permalink to this definition">¶</a></dt>
+<dd><p>The creation date of the document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/2.7/library/datetime.html#datetime.date" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">datetime.date</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Document.find_section">
+<tt class="descname">find_section</tt><big>(</big><em>uuid</em>, <em>search_namespaces=False</em><big>)</big><a class="headerlink" href="#odml2.Document.find_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> within the document and associated documents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>uuid</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the section</li>
+<li><strong>search_namespaces</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; If True also search in other namespaces.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The found section or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Document.find_section_and_prefix">
+<tt class="descname">find_section_and_prefix</tt><big>(</big><em>uuid</em>, <em>search_namespaces=False</em><big>)</big><a class="headerlink" href="#odml2.Document.find_section_and_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find a <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> and its namespace within the document and associated
+documents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>uuid</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The UUID of the section</li>
+<li><strong>search_namespaces</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; If True also search in other namespaces.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The section with its namespace or None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.is_attached">
+<tt class="descname">is_attached</tt><a class="headerlink" href="#odml2.Document.is_attached" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or not the back-end used by the odML document is attached to a data source.
+This is a read only property.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.is_writable">
+<tt class="descname">is_writable</tt><a class="headerlink" href="#odml2.Document.is_writable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or not the the document is writable. This is a read only property.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Document.iter_sections">
+<tt class="descname">iter_sections</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.Document.iter_sections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over all <a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> objects of the odML document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">generator</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Document.load">
+<tt class="descname">load</tt><big>(</big><em>source</em>, <em>is_writable=True</em><big>)</big><a class="headerlink" href="#odml2.Document.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load data to the document from a certain source.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>source</strong> (<em>str | io.FileIO | io.StringIO</em>) &#8211; Where to load the content of the document from.</li>
+<li><strong>is_writable</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; Whether or not the loaded document should be writable.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.location">
+<tt class="descname">location</tt><a class="headerlink" href="#odml2.Document.location" title="Permalink to this definition">¶</a></dt>
+<dd><p>An uri or path to the location of the document. Is <cite>None</cite> for newly created documents.
+This is a read only property.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.namespaces">
+<tt class="descname">namespaces</tt><a class="headerlink" href="#odml2.Document.namespaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>A dictionary like access to all name spaces of the document. Name spaces can be
+used to include other documents under a certain prefix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="#odml2.NameSpaceMap" title="odml2.NameSpaceMap"><tt class="xref py py-class docutils literal"><span class="pre">NameSpaceMap</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.property_definitions">
+<tt class="descname">property_definitions</tt><a class="headerlink" href="#odml2.Document.property_definitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary like access to all property definitions. Property definitions are terms
+that provide descriptions for properties which may occur in sections of the document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="#odml2.PropertyDefMap" title="odml2.PropertyDefMap"><tt class="xref py py-class docutils literal"><span class="pre">PropertyDefMap</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.root">
+<tt class="descname">root</tt><a class="headerlink" href="#odml2.Document.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>The root section of the document. Is always <cite>None</cite> for newly created documents.
+If the document already contains sections the whole content of the document will be
+replaces with the new root.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="api_section.html#odml2.Section" title="odml2.Section"><tt class="xref py py-class docutils literal"><span class="pre">Section</span></tt></a> | <a class="reference internal" href="api_section.html#odml2.SB" title="odml2.SB"><tt class="xref py py-class docutils literal"><span class="pre">SB</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.Document.save">
+<tt class="descname">save</tt><big>(</big><em>destination=None</em><big>)</big><a class="headerlink" href="#odml2.Document.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save a document to a given destination.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>destination</strong> (<em>str | io.FileIO | io.StringIO</em>) &#8211; Where to store the content of the document.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.terminology_strategy">
+<tt class="descname">terminology_strategy</tt><a class="headerlink" href="#odml2.Document.terminology_strategy" title="Permalink to this definition">¶</a></dt>
+<dd><p>The terminology strategy defines how section types and property names are
+handled with respect to a given terminology.</p>
+<p><a class="reference internal" href="#odml.TerminologyStrategy" title="odml.TerminologyStrategy"><tt class="xref py py-class docutils literal"><span class="pre">TerminologyStrategy</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.type_definitions">
+<tt class="descname">type_definitions</tt><a class="headerlink" href="#odml2.Document.type_definitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary like access to all type definitions. Type definitions are terms
+that provide descriptions for section types which may occur in a document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference internal" href="#odml2.TypeDefMap" title="odml2.TypeDefMap"><tt class="xref py py-class docutils literal"><span class="pre">TypeDefMap</span></tt></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Document.version">
+<tt class="descname">version</tt><a class="headerlink" href="#odml2.Document.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>The version of the document. Is <cite>1</cite> unless specified otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="terminologystrategy">
+<h2>TerminologyStrategy<a class="headerlink" href="#terminologystrategy" title="Permalink to this headline">¶</a></h2>
+<p>The terminology strategy defines how section types and property names are handled
+with respect to a given terminology.</p>
+<dl class="class">
+<dt id="odml.TerminologyStrategy">
+<em class="property">class </em><tt class="descclassname">odml.</tt><tt class="descname">TerminologyStrategy</tt><a class="headerlink" href="#odml.TerminologyStrategy" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="odml.TerminologyStrategy.Ignore">
+<tt class="descname">Ignore</tt><a class="headerlink" href="#odml.TerminologyStrategy.Ignore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminology violations such as undefined type or property names are always ignored.
+This is the default strategy.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml.TerminologyStrategy.Create">
+<tt class="descname">Create</tt><a class="headerlink" href="#odml.TerminologyStrategy.Create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property and type definitions without prefix are created and updated on the fly.
+This strategy can be used in order to define your custom terminology.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml.TerminologyStrategy.Strict">
+<tt class="descname">Strict</tt><a class="headerlink" href="#odml.TerminologyStrategy.Strict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Each property and type must be defined and used correctly.
+This strategy can be used to ensure that a document adheres to a terminology.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="namespacemap">
+<h2>NameSpaceMap<a class="headerlink" href="#namespacemap" title="Permalink to this headline">¶</a></h2>
+<p>Provides a dictionary like access to all name spaces of a document.</p>
+<dl class="class">
+<dt id="odml2.NameSpaceMap">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">NameSpaceMap</tt><big>(</big><em>back_end</em><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="NameSpaceMap.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#NameSpaceMap.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator of all keys</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="NameSpaceMap.items">
+<tt class="descname">items</tt><big>(</big><big>)</big><a class="headerlink" href="#NameSpaceMap.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all items</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="NameSpaceMap.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#NameSpaceMap.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all name space objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>prefix</em><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>prefix</em><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.__len__">
+<tt class="descname">__len__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.__len__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>prefix</em>, <em>ns</em><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.NameSpaceMap.set">
+<tt class="descname">set</tt><big>(</big><em>prefix</em>, <em>uri</em><big>)</big><a class="headerlink" href="#odml2.NameSpaceMap.set" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="typedefmap">
+<h2>TypeDefMap<a class="headerlink" href="#typedefmap" title="Permalink to this headline">¶</a></h2>
+<p>Provides a dictionary like access to all type definitions which are part of the terminology
+of a document.</p>
+<dl class="class">
+<dt id="odml2.TypeDefMap">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">TypeDefMap</tt><big>(</big><em>back_end</em><big>)</big><a class="headerlink" href="#odml2.TypeDefMap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="TypeDefMap.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#TypeDefMap.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator of all keys</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TypeDefMap.items">
+<tt class="descname">items</tt><big>(</big><big>)</big><a class="headerlink" href="#TypeDefMap.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all items</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="TypeDefMap.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#TypeDefMap.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all type definition objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.TypeDefMap.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#odml2.TypeDefMap.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.TypeDefMap.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#odml2.TypeDefMap.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.TypeDefMap.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.TypeDefMap.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.TypeDefMap.__len__">
+<tt class="descname">__len__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.TypeDefMap.__len__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.TypeDefMap.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>name</em>, <em>td</em><big>)</big><a class="headerlink" href="#odml2.TypeDefMap.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.TypeDefMap.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.TypeDefMap.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="propertydefmap">
+<h2>PropertyDefMap<a class="headerlink" href="#propertydefmap" title="Permalink to this headline">¶</a></h2>
+<p>Provides a dictionary like access to all property definitions which are part of the terminology
+of a document.</p>
+<dl class="class">
+<dt id="odml2.PropertyDefMap">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">PropertyDefMap</tt><big>(</big><em>back_end</em><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="PropertyDefMap.keys">
+<tt class="descname">keys</tt><big>(</big><big>)</big><a class="headerlink" href="#PropertyDefMap.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator of all keys</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PropertyDefMap.items">
+<tt class="descname">items</tt><big>(</big><big>)</big><a class="headerlink" href="#PropertyDefMap.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all items</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="PropertyDefMap.values">
+<tt class="descname">values</tt><big>(</big><big>)</big><a class="headerlink" href="#PropertyDefMap.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>List or generator over all property definition objects</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="odml2.PropertyDefMap.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.PropertyDefMap.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.PropertyDefMap.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.PropertyDefMap.__len__">
+<tt class="descname">__len__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap.__len__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.PropertyDefMap.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>name</em>, <em>pd</em><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="odml2.PropertyDefMap.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="headerlink" href="#odml2.PropertyDefMap.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="apidoc.html">API Documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Document API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_section.html">Section API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_value.html">Value API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_name_space.html">NameSpace API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_terms.html">Terminology API</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/api_document.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Advanced Tutorial &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="Tutorial" href="tutorial.html" />
+    <link rel="next" title="Terminology Tutorial" href="tut_terms.html" />
+    <link rel="prev" title="Introduction" href="tut_intro.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tut_terms.html" title="Terminology Tutorial"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tut_intro.html" title="Introduction"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="tutorial.html" accesskey="U">Tutorial</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="advanced-tutorial">
+<h1>Advanced Tutorial<a class="headerlink" href="#advanced-tutorial" title="Permalink to this headline">¶</a></h1>
+<p>The code in this tutorial can also be found in the <a class="reference external" href="https://github.com/G-Node/python-odml2/blob/master/docs/notebooks/tut_advanced.ipynb">advanced ipython notebook</a>.</p>
+<p><em>TODO</em> write some text for each code listing</p>
+<div class="section" id="create-a-document-with-global-information">
+<h2>Create a document with global information<a class="headerlink" href="#create-a-document-with-global-information" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">datetime</span> <span class="kn">as</span> <span class="nn">dt</span>
+<span class="kn">from</span> <span class="nn">odml2</span> <span class="kn">import</span> <span class="n">Document</span><span class="p">,</span> <span class="n">SB</span><span class="p">,</span> <span class="n">Value</span>
+
+<span class="n">glob</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">glob</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span>
+    <span class="s">&quot;ResearchLab&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">&quot;Dr. Doe Lab&quot;</span><span class="p">,</span>
+    <span class="n">researchers</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">SB</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s">&quot;Doe, John&quot;</span><span class="p">,</span>
+            <span class="n">first_name</span><span class="o">=</span><span class="s">&quot;John&quot;</span><span class="p">,</span>
+            <span class="n">last_name</span><span class="o">=</span><span class="s">&quot;Doe&quot;</span>
+        <span class="p">),</span>
+        <span class="n">SB</span><span class="p">(</span><span class="s">&quot;Person&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s">&quot;Foo, Bar&quot;</span><span class="p">,</span>
+            <span class="n">first_name</span><span class="o">=</span><span class="s">&quot;Bar&quot;</span><span class="p">,</span>
+            <span class="n">last_name</span><span class="o">=</span><span class="s">&quot;Foo&quot;</span>
+        <span class="p">)</span>
+    <span class="p">],</span>
+    <span class="n">animals</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">SB</span><span class="p">(</span><span class="s">&quot;Animal&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s">&quot;subj 11&quot;</span><span class="p">,</span>
+            <span class="n">subject_id</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+            <span class="n">date_of_birth</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">24</span><span class="p">),</span>
+            <span class="n">species</span><span class="o">=</span><span class="s">&quot;Mus musculus&quot;</span>
+        <span class="p">),</span>
+        <span class="n">SB</span><span class="p">(</span><span class="s">&quot;Animal&quot;</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="s">&quot;subj 12&quot;</span><span class="p">,</span>
+            <span class="n">subject_id</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span>
+            <span class="n">date_of_birth</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2015</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+            <span class="n">species</span><span class="o">=</span><span class="s">&quot;Mus musculus&quot;</span>
+        <span class="p">)</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">glob</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;global.yml&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&quot;global.yml&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>date: null
+document_version: 1
+format_version: 2
+author: null
+namespaces: null
+definitions: null
+metadata:
+  type: ResearchLab
+  uuid: 49301a53-13de-44bd-bbf8-0a8756acbd67
+  name: Dr. Doe Lab
+  animals:
+  - type: Animal
+    uuid: 510520c9-a2af-479c-81dd-1448500d3222
+    label: subj 11
+    date_of_birth: 2015-11-24
+    species: Mus musculus
+    subject_id: 11
+  - type: Animal
+    uuid: a5b1167c-bce2-4ef7-97be-522060f75557
+    label: subj 12
+    date_of_birth: 2015-11-25
+    species: Mus musculus
+    subject_id: 12
+  researchers:
+  - type: Person
+    uuid: 81dbf66f-80b5-444b-a57e-64868765a57d
+    label: Doe, John
+    first_name: John
+    last_name: Doe
+  - type: Person
+    uuid: ddd2717c-de93-482b-90e0-b281b46ac1e0
+    label: Foo, Bar
+    first_name: Bar
+    last_name: Foo
+</pre></div>
+</div>
+</div>
+<div class="section" id="select-data-from-documents">
+<h2>Select data from documents<a class="headerlink" href="#select-data-from-documents" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># select a person with last name &#39;Doe&#39; from all sections</span>
+<span class="n">experimenter</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iter_sections</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">s</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s">&quot;Person&quot;</span> <span class="ow">and</span>
+                   <span class="n">s</span><span class="p">[</span><span class="s">&quot;last_name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;Doe&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+
+<span class="c"># select the animal with id 11 from all animals</span>
+<span class="n">animal</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;animals&quot;</span><span class="p">]</span>
+          <span class="k">if</span> <span class="n">a</span><span class="p">[</span><span class="s">&quot;subject_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">11</span><span class="p">)</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-a-document-with-session-information">
+<h2>Create a document with session information<a class="headerlink" href="#create-a-document-with-session-information" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">session</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">SB</span><span class="p">(</span><span class="s">&quot;RecordingSession&quot;</span><span class="p">,</span>
+    <span class="n">label</span><span class="o">=</span><span class="s">&quot;session 42&quot;</span><span class="p">,</span>
+    <span class="n">session_nr</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span>
+    <span class="n">recording_date</span><span class="o">=</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+<span class="p">)</span>
+
+<span class="n">session</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s">&quot;session.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="copy-data-from-other-documents">
+<h2>Copy data from other documents<a class="headerlink" href="#copy-data-from-other-documents" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">session</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+<span class="n">session</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;session.yml&quot;</span><span class="p">)</span>
+
+<span class="c"># copy global data to session document</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;experimenter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">experimenter</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">animal</span>
+
+<span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;subject&quot;</span><span class="p">][</span><span class="s">&quot;health&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;good&quot;</span>
+<span class="k">if</span> <span class="s">&quot;health&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">animal</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;It&#39;s a copy&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>It&#39;s a copy
+</pre></div>
+</div>
+</div>
+<div class="section" id="link-data-from-other-documents">
+<h2>Link data from other documents<a class="headerlink" href="#link-data-from-other-documents" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">session</span> <span class="o">=</span> <span class="n">Document</span><span class="p">()</span>
+<span class="n">session</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s">&quot;session.yml&quot;</span><span class="p">)</span>
+
+<span class="n">session</span><span class="o">.</span><span class="n">namespaces</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s">&quot;glob&quot;</span><span class="p">,</span> <span class="s">&quot;global.yml&quot;</span><span class="p">)</span>
+
+<span class="c"># copy global data to session document</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;experimenter&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">experimenter</span>
+<span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;subject&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">animal</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">root</span><span class="p">[</span><span class="s">&quot;subject&quot;</span><span class="p">][</span><span class="s">&quot;health&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;good&quot;</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s">&quot;It&#39;s a link, can&#39;t change a section&quot;</span> <span class="o">+</span>
+          <span class="s">&quot;from another document&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre>It&#39;s a link, can&#39;t change a section from another document
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tut_intro.html">Introduction</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Advanced Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tut_terms.html">Terminology Tutorial</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="apidoc.html">API Documentation</a></li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/tut_advanced.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>

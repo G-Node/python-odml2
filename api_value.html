@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Value API &mdash; The python library for odML2 2.0.0 Alpha documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0 Alpha',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="The python library for odML2 2.0.0 Alpha documentation" href="index.html" />
+    <link rel="up" title="API Documentation" href="apidoc.html" />
+    <link rel="next" title="NameSpace API" href="api_name_space.html" />
+    <link rel="prev" title="Section API" href="api_section.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9">
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="api_name_space.html" title="NameSpace API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="api_section.html" title="Section API"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">The python library for odML2 2.0.0 Alpha documentation</a> &raquo;</li>
+          <li><a href="apidoc.html" accesskey="U">API Documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="value-api">
+<h1>Value API<a class="headerlink" href="#value-api" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="odml2.Value">
+<em class="property">class </em><tt class="descclassname">odml2.</tt><tt class="descname">Value</tt><big>(</big><em>value</em>, <em>unit=None</em>, <em>uncertainty=None</em><big>)</big><a class="headerlink" href="#odml2.Value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new value.</p>
+<p>If the values value is not a <a class="reference external" href="http://docs.python.org/2.7/library/numbers.html#numbers.Number" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">numbers.Number</span></tt></a> unit and
+uncertainty are expected to be None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>value</strong> (<em>bool | float | int | str | datetime | time</em>) &#8211; The actual value of the value :-)</li>
+<li><strong>unit</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The SI unit of the value.</li>
+<li><strong>uncertainty</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The uncertainty of the value.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="odml2.Value.copy">
+<tt class="descname">copy</tt><big>(</big><em>value=None</em>, <em>unit=None</em>, <em>uncertainty=None</em><big>)</big><a class="headerlink" href="#odml2.Value.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Since values should be treated as immutable objects, the <a class="reference internal" href="#odml2.Value.copy" title="odml2.Value.copy"><tt class="xref py py-meth docutils literal"><span class="pre">copy()</span></tt></a> method
+can be used instead of setting the attributes of the value.</p>
+<p>Just assign a modified copy:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">v</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s">&quot;V&quot;</span><span class="p">)</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">unit</span><span class="o">=</span><span class="s">&quot;mV&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>value</strong> (<em>bool | float | int | str | datetime | time</em>) &#8211; The actual value of the value (optional)</li>
+<li><strong>unit</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The SI unit of the value (optional)</li>
+<li><strong>uncertainty</strong> (<a class="reference external" href="http://docs.python.org/2.7/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The uncertainty of the value (optional)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A (modified) copy of the value.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="odml2.Value.from_obj">
+<em class="property">static </em><tt class="descname">from_obj</tt><big>(</big><em>thing</em><big>)</big><a class="headerlink" href="#odml2.Value.from_obj" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a value from all sorts of types of objects.</p>
+<p>If the value is a sting like &#8216;10 +-0.001 mV&#8217; it will be parsed to an equivalent of <tt class="docutils literal"><span class="pre">Value(10,</span> <span class="pre">'mV',</span> <span class="pre">0.001)</span></tt></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>thing</strong> &#8211; The object to create a value from.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The created value object.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#odml2.Value" title="odml2.Value"><tt class="xref py py-class docutils literal"><span class="pre">Value</span></tt></a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body">ValueError if the object can&#8217;t be converted to a value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Value.type">
+<tt class="descname">type</tt><a class="headerlink" href="#odml2.Value.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the values data type.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Value.uncertainty">
+<tt class="descname">uncertainty</tt><a class="headerlink" href="#odml2.Value.uncertainty" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Value.unit">
+<tt class="descname">unit</tt><a class="headerlink" href="#odml2.Value.unit" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="odml2.Value.value">
+<tt class="descname">value</tt><a class="headerlink" href="#odml2.Value.value" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bool | float | int | str | datetime | time</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/logo.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+<p>
+<iframe src="http://ghbtns.com/github-btn.html?user=G-Node&repo=python-odml2&type=watch&count=False&size=large"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="apidoc.html">API Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="api_document.html">Document API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_section.html">Section API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">Value API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_name_space.html">NameSpace API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api_terms.html">Terminology API</a></li>
+</ul>
+</li>
+</ul>
+
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2015, A. Stoewer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.2.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.6.0</a>
+      
+      |
+      <a href="_sources/api_value.txt"
+          rel="nofollow">Page source</a></li>
+    </div>
+
+    
+
+    
+  </body>
+</html>
